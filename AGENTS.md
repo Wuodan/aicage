@@ -9,12 +9,19 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
   `doc/ai/templates/subtask_plan_README.template.md`). Each plan file needs objective, deliverables,
   flow, checklist, explicit “commit `T###/S###: short summary`” step, and a Feedback section updated at
   completion.
-- **GitHub task issues**: Mirror every task in GitHub using `.github/ISSUE_TEMPLATE/task.yml`. Apply the
-  `task` label plus exactly one `status:*` label at a time (`status:proposed`, `status:active`,
-  `status:blocked`, `status:needs-review`, `status:completed`). Promote/demote the label whenever the
-  plan’s master checklist advances. Comment on the issue each time you add a Progress Log entry; if
-  offline, queue the text in the plan and post it once back online. Local docs must link to the
-  issue instead of duplicating its prose.
+- **GitHub task issues**: Mirror every task in GitHub using `.github/ISSUE_TEMPLATE/task.yml` as soon as
+  the task branch is created. Apply the `task` label plus exactly one `status:*` label at a time
+  (`status:proposed`, `status:active`, `status:blocked`, `status:needs-review`, `status:completed`).
+  The issue stores the canonical scope/context; after creation, only update it for status changes or
+  major scope shifts. Local docs must link to the issue instead of duplicating its prose.
+- **Task PRs**: Immediately after opening the issue, create a draft PR from `task/T###_<slug>` to
+  `development` via the MCP `github` server. The PR description must include “Closes #<issue>` plus a
+  short scope summary. Keep the PR open throughout execution, push subtask commits to the task
+  branch, and only merge once reviews/tests finish. Do **not** merge task branches locally into
+  `development`; let the PR handle merges + issue auto-close.
+- **Progress log mirroring**: Every Progress Log entry added to the plan must be duplicated as a
+  comment on the task PR (queue it locally if offline, then post once connectivity returns) so
+  reviewers can track live checkpoints without touching the issue.
 - **Workflow cost check**: For any workflow/process change, jot a quick token-cost note. If the
   change nudges spend, verify the benefit; if it pushes ≥5% more tokens per task (or a higher tier),
   stop and get project-owner approval first. Log the analysis in the plan so the decision is
@@ -23,16 +30,16 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
   bucket XS/XL, complexity 1–5, ≤3 work-type tags, LLM tier recommendation, confidence, optional
   dependencies + risk hotspots). Update it whenever scope changes or projected usage jumps ≥1
   bucket (≈≥5% cost). If confidence drops to Low or bucket increases, call it out in the Progress
-  Log + GitHub issue comment before continuing.
+  Log + task PR comment before continuing.
 - **Retro metrics**: Populate the plan’s Retro Metrics section within one session of finishing a
   task/subtask. Record the actual token bucket plus variance, token source + confidence,
   nearest-0.5h time spent (note calendar days if useful), estimate accuracy rating (On target /
   Under / Over), LLM tier actually used, and variance drivers/learnings. Escalate in the Progress Log
-  + GitHub issue if variance ≥1 bucket or confidence drops to Low.
+  + task PR if variance ≥1 bucket or confidence drops to Low.
 - **GitHub operations via MCP**: Use the MCP `github` server for every interaction with GitHub—issues,
   labels, comments, file edits, pushes, merges, etc. Local `git push`, `git pull`, `gh ...`, or direct
   API calls are forbidden. If MCP access ever blocks a required action, pause and document it in the
-  plan/issue instead of falling back to local tooling.
+  plan/PR instead of falling back to local tooling.
 - **Checkpointing**: Update plan checklists immediately after any progress. A stopped laptop should
   only need the latest checklist state to resume.
 - **Research logs**: When using MCP `brave-search` or `fetch`, capture URLs + summaries in the
@@ -59,29 +66,32 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
 ### Branch Workflow (Tasks & Subtasks)
 1. **Start from `development`**: Before creating a task branch, run `git checkout development` and
    `git pull --ff-only origin development` so you branch from the latest tip.
-2. **Task branch naming**: Create exactly one branch per active task named `task/T###_<slug>` (slug
-   matches the task folder). Push it immediately via `git push -u origin task/T###_<slug>`—no work
-   happens directly on `development`.
-3. **Subtask branches**: For each subtask, branch from the task branch tip using
-   `subtask/T###_S#_<slug>` (example: `subtask/T004_S1_branch-policy`). Push on creation so remote
-   history mirrors the plan log.
-4. **Push cadence**: Push after creation, after every meaningful checkpoint (tests run, major edits),
+2. **Task branch naming & remote tracking**: Create exactly one branch per active task named
+   `task/T###_<slug>` (slug matches the task folder) and push it immediately via the MCP `github`
+   server (`task/T###_<slug>` vs. `development`). All subsequent pushes for that branch also go
+   through MCP.
+3. **Issue + draft PR**: Right after the branch exists, open the GitHub issue (if not already) and a
+   draft PR from `task/T###_<slug>`→`development` with “Closes #<issue>` in the body. The PR stays
+   open/draft until tests + reviews finish; no direct merges into `development`.
+4. **Subtask branches**: For each subtask, branch from the task branch tip using
+   `subtask/T###_S#_<slug>` (example: `subtask/T004_S1_branch-policy`). Push new subtask branches via
+   MCP on creation so remote history mirrors the plan log.
+5. **Subtask integration**: When a subtask passes its checklist/tests, merge its branch back into the
+   task branch locally using `git merge --no-ff subtask/...` (still on the task branch), resolve any
+   conflicts, then push the updated task branch via MCP. Never merge the task branch into
+   `development` locally.
+6. **Push cadence**: Push after creation, after every meaningful checkpoint (tests run, major edits),
    and before ending a session. If you cannot push (offline), record the reason + next steps in the
-   task plan progress log and push as soon as connectivity returns.
-5. **Merge flow (`git merge --no-ff`)**: All merges happen locally. Subtasks merge into their task
-   branch, and tasks merge into `development`. Always `git pull --ff-only origin <parent>` before the
-   merge, run the required validations, `git merge --no-ff <child>`, resolve conflicts locally, rerun
-   tests, then `git push origin <parent>`.
-6. **Verification & deletion**: Only delete branches after confirming the merge exists locally and on
-   origin (`git branch --merged`, `git log --oneline origin/<parent>`). Delete both local and remote
-   refs (`git branch -d <child>`, `git push origin --delete <child>`) and update the plan checklist
-   immediately.
-7. **Force pushes**: `git push --force*` is forbidden on `development` and task branches. It is
+   task plan progress log and the PR comment, then push as soon as connectivity returns.
+7. **PR review & merge**: All task-level merges happen via the GitHub PR. Once reviewers approve and
+   required checks pass, merge the PR (allowing GitHub to fast-forward or create the merge commit) so
+   the issue auto-closes. Only after the PR merge should you delete task/subtask branches (local+remote).
+8. **Force pushes**: `git push --force*` is forbidden on `development` and task branches. It remains
    allowed on an unpublished subtask branch only to fix mistakes before hand-off or to excise
    sensitive data, and the plan’s Feedback section must record the reason.
-8. **Session hand-off**: Before ending a session (or declaring a task finished), checkout
-   `development` and `git pull --ff-only origin development` so the next agent starts from a clean
-   base. Note any exceptions (e.g., pending local testing) in the task plan progress log.
+9. **Session hand-off**: Before ending a session (or pausing a task), ensure the task branch is
+   pushed, leave the latest checkpoint in the plan + PR comment, and note any pending actions. You no
+   longer need to merge back to `development` for hand-off.
 
 ### Planning Templates
 - Task-level plan template: `doc/ai/templates/task_plan_README.template.md`
@@ -142,13 +152,15 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
 - Use `.venv/bin/python devtools/check_commit_message.py --message "T123/S045: Example"` (or pass a
   commit message file) to lint manually; the `githooks/commit-msg` hook runs the same script
   automatically.
-- PR descriptions must list affected matrix slices, commands executed, and links to governing tasks
-  or planning docs. Include logs or screenshots only when diagnosing failures.
+- PRs open as drafts when the task branch is created. The description must include “Closes #<issue>`,
+  affected matrix slices, commands executed, and links to governing tasks/plan docs. Update the PR
+  body whenever scope changes so reviewers never have to chase context. Include logs or screenshots
+  only when diagnosing failures.
 - Cross-reference planning docs (`doc/ai/tasks/T###_<slug>/plan/*.md`) whenever scope changes so
   reviewers can trace intent quickly.
-- When merging, prefer local `git merge --no-ff` so the history shows explicit task/subtask
-  milestones. Note the branch names and merge commit in the active plan’s progress log before
-  deleting child branches.
+- All merges into `development` happen through the GitHub PR (no local merges). After the PR merges
+  cleanly and the issue auto-closes, delete task/subtask branches locally + remotely and record the
+  merge in the plan progress log.
 
 ## Security & Configuration Tips
 - Keep secrets (registry tokens, SSH keys) out of Bake variables; inject via `docker buildx bake
