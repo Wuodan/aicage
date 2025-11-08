@@ -17,6 +17,7 @@
 ## Historical Log
 | Task ID | Title | Status | Notes |
 |---------|-------|--------|-------|
-| T001 | Build the llm-agent-dock Matrix Builder | Active | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/README.md`
+| T001 | Build the llm-agent-dock Matrix Builder | Completed | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/README.md`
+| T002 | Validate llm-agent-dock Builds & Docker Access | Active | `doc/ai/tasks/T002_validate-builds-docker/README.md`
 
 Update this table as tasks finish or new ones start. Always keep `doc/ai/TASK.md` aligned with the active task ID.
