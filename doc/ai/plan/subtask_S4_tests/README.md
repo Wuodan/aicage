@@ -1,4 +1,4 @@
-# Subtask S4 — Smoke Tests
+# Task T001 / Subtask S4 — Smoke Tests
 
 ## Objective
 Provide smoke-test coverage for every tool so that `scripts/test.sh` can verify container boot,

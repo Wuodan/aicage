@@ -1,4 +1,4 @@
-# Subtask S2 — Parameterized Dockerfile
+# Task T001 / Subtask S2 — Parameterized Dockerfile
 
 ## Objective
 Create a single `Dockerfile` that can build every base/tool combination via `BASE_IMAGE`, `TOOL`, and

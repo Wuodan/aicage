@@ -1,4 +1,4 @@
-# Subtask S5 — Documentation & Polish
+# Task T001 / Subtask S5 — Documentation & Polish
 
 ## Objective
 Align all written guidance with the implemented build system so newcomers can understand the matrix,

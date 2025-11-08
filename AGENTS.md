@@ -14,6 +14,10 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
   unrelated work in a single commit.
 - **Status visibility**: Keep a progress log in the root plan so new agents can inspect the latest
   timestamp and continue confidently.
+- **Task catalog**: Number tasks as `T###` (e.g., `T001`) and track them under
+  `doc/ai/tasks/README.md`. The active task must have a folder `doc/ai/tasks/current/` pointing to
+  `doc/ai/TASK.md`. Every task doc (and each subtask file) needs a Feedback section with open
+  problems, outstanding questions, and learnings for future sessions.
 
 ## Project Structure & Ownership
 - Root `Dockerfile` stays parameterized via `BASE_IMAGE`, `TOOL`, and `TARGETARCH` so the same
