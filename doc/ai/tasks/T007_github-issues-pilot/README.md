@@ -3,7 +3,13 @@
 ## Status
 - Status: Active (plan live)
 - Owner: Codex (current agent)
-- Links: `doc/ai/tasks/T007_github-issues-pilot/plan/README.md`
+- Links: `doc/ai/tasks/T007_github-issues-pilot/plan/README.md`, [GitHub issue #1](https://github.com/Wuodan/llm-agent-dock/issues/1)
+
+## GitHub Issue Sync
+- Canonical tracker: [#1 — T007: Pilot GitHub-Issue Task Tracking](https://github.com/Wuodan/llm-agent-dock/issues/1).
+- Labels: `task` + `status:active` (swap to `status:needs-review` when work is ready, then `status:completed` once merged).
+- Comment cadence: leave a GitHub comment every time the plan Progress Log gains a timestamp; if offline, paste the comment text into the plan and post it once reconnected.
+- Offline fallback: keep updating the plan + Feedback sections; when back online, replay the queued comments so GitHub mirrors the log.
 
 ## Background
 All planning currently lives in repo files. We want to experiment with managing tasks at the GitHub

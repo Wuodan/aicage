@@ -17,20 +17,21 @@ Create the GitHub issue representing T007, align local docs to reference it, and
 5. Commit `T007/S003: wire pilot gh issue sync` after verifying checklist completion.
 
 ## Checklist
-- [ ] GitHub issue created + linked in local docs.
-- [ ] Task index/README updated to reference issue + Active status.
-- [ ] Sync + offline guidance documented.
-- [ ] Documented findings in Feedback.
+- [x] GitHub issue created + linked in local docs.
+- [x] Task index/README updated to reference issue + Active status.
+- [x] Sync + offline guidance documented.
+- [x] Documented findings in Feedback.
 - [ ] Commit `T007/S003: wire pilot gh issue sync`.
 
 ## Inputs & References
 - GitHub issue template + policies from S001 and docs from S002.
 - `doc/ai/tasks/README.md`, `doc/ai/tasks/T007_github-issues-pilot/README.md`.
+- GitHub issue #1: https://github.com/Wuodan/llm-agent-dock/issues/1
 
 ## Exit Criteria
 - Pilot issue live, local docs cross-linked, Feedback captures follow-ups; checklist fully checked.
 
 ## Feedback & Learnings
-- **Open Problems**: _TBD_
-- **Questions**: _TBD_
-- **Learnings**: _TBD_
+- **Open Problems**: Need a lightweight reminder (maybe lint or checklist) to ensure every Progress Log entry really makes it into the GitHub issue comments.
+- **Questions**: Should earlier completed tasks get retroactive GitHub issues for completeness, or do we start fresh with new work only?
+- **Learnings**: Creating the label set via `gh label create` was required before the issue could be filed with `task`/`status:*` labels; document this for future pilots.
