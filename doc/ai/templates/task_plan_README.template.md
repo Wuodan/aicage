@@ -18,9 +18,11 @@ Last updated: <ISO8601 timestamp> by <author>
 - **Risk Hotspots** *(optional)*: security, availability, or reviewer considerations.
 - Update the snapshot whenever scope changes or token projections shift ≥1 bucket (≈≥5% budget hit).
 
-## GitHub Issue
+## GitHub Issue & PR
 - Link to the GitHub issue created from `.github/ISSUE_TEMPLATE/task.yml`.
 - Record the current `status:*` label + assignee, and note when to update it.
+- Link the draft PR (`task/T###_<slug>` → `development`) and confirm its description references the
+  issue via “Closes #<issue>”.
 - List the task + subtask branch names so reviewers can jump to history quickly.
 
 ## Workflow Guardrails
@@ -28,7 +30,7 @@ Last updated: <ISO8601 timestamp> by <author>
 2. Reference AGENTS.md rules that apply.
 3. Specify any research logging expectations.
 4. Remind contributors to finish each subtask with documentation and commit `T###/S###: short summary` (use `S000` for task-level commits).
-5. Every time you add a Progress Log entry, mirror the same summary as a GitHub issue comment (queue it locally if offline).
+5. Every time you add a Progress Log entry, mirror the same summary as a comment on the task PR (queue it locally if offline).
 
 ## Retro Metrics (fill after completion)
 - **Actual Token Bucket**: XS/S/M/L/XL plus variance (e.g., “Actual: L vs. Estimate: M, +1 bucket / +30%”).
@@ -37,7 +39,7 @@ Last updated: <ISO8601 timestamp> by <author>
 - **Estimate Accuracy Rating**: `On target`, `Under`, or `Over` with ≤2 sentence rationale.
 - **LLM Tier Used**: actual tier(s) and why it differed from the recommendation (if applicable).
 - **Variance Drivers & Learnings**: bullets noting what increased/decreased cost and how to act on it.
-- Escalate in the Progress Log + GitHub issue if variance ≥1 bucket or confidence drops to Low.
+- Escalate in the Progress Log + task PR if variance ≥1 bucket or confidence drops to Low.
 - Leave placeholder text until the task/subtask finishes; populate within 1 working session.
 
 ## Subtask Directory Map (TXXX)
@@ -51,7 +53,7 @@ Last updated: <ISO8601 timestamp> by <author>
 - [ ] S2 — ...
 
 ## Progress Log (TXXX)
-- YYYY-MM-DDThh:mmZ — <entry> (mirror to GitHub issue comments)
+- YYYY-MM-DDThh:mmZ — <entry> (mirror to task PR comments)
 
 ## References
 - Link to related tasks, research docs, etc.
