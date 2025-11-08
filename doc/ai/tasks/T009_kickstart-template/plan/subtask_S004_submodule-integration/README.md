@@ -23,7 +23,7 @@ Add the new template repository as a git submodule in this project, ensure instr
 - [x] Submodule added + initialized.
 - [x] References/docs updated.
 - [x] Feedback updated.
-- [ ] Commit `T009/S004: integrate template submodule`.
+- [x] Commit `T009/S004: integrate template submodule`.
 
 ## Inputs & References
 - GitHub template repo (once created).
