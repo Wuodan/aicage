@@ -47,7 +47,7 @@ Select and document the authoritative branching workflow (naming, creation, push
 - [x] Define naming + merge + push policies with rationale recorded here.
 - [x] Provide draft wording / bullets for downstream docs.
 - [x] Document findings in Feedback.
-- [ ] Commit `[codex][subtask_S1_branch-policy]: summary`.
+- [x] Commit `[codex][subtask_S1_branch-policy]: summary`.
 
 ## Inputs & References
 - `doc/ai/tasks/T004_branch-workflow-discipline/README.md`
