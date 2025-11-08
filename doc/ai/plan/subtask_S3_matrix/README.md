@@ -1,4 +1,4 @@
-# Subtask S3 — Matrix & Helper Scripts
+# Task T001 / Subtask S3 — Matrix & Helper Scripts
 
 ## Objective
 Wire the Dockerfile into a reproducible build system using `docker-bake.hcl` and helper scripts that

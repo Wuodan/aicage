@@ -1,4 +1,4 @@
-# llm-agent-dock Execution Plan
+# Task T001 — llm-agent-dock Execution Plan
 
 Last updated: 2025-11-08T02:30Z by Codex
 

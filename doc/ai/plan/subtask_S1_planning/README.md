@@ -1,4 +1,4 @@
-# Subtask S1 — Planning & Scaffolding
+# Task T001 / Subtask S1 — Planning & Scaffolding
 
 ## Objective
 Establish a restart-friendly execution plan with explicit subtasks, checklists, and documentation

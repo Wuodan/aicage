@@ -1,4 +1,4 @@
-# Task: Build the llm-agent-dock Matrix Builder
+# Task T001 — Build the llm-agent-dock Matrix Builder
 
 ## Background
 This repository must evolve into a reusable multi-architecture Docker build system for agentic
@@ -80,3 +80,20 @@ Definition of done:
   place.
 - Include inline comments wherever future bases/tools will plug in.
 - Keep human-readable documentation synchronized with automation files to avoid drift.
+
+## Feedback — Open Problems, Questions, Learnings
+- **Open Problems**
+  - Local `docker build` attempts fail because this environment cannot access `/var/run/docker.sock`.
+    Once permissions are fixed, rerun `scripts/build.sh …` to validate real builds.
+  - `scripts/test.sh` currently requires `bats` on the host; install guidance is documented, but CI
+    plumbing is still outstanding.
+- **Questions**
+  - Should images publish to a shared registry namespace or remain per-user? Define this before
+    enabling `--push` in automation.
+  - Are additional tools/bases planned for the near term? If so, reserve Task IDs (e.g., `T002`) and
+    extend the scope tables early.
+- **Learnings**
+  - Capturing installer fallbacks (like npm shim scripts) keeps builds reproducible even when
+    registries throttle.
+  - Structuring plans + subtasks with explicit feedback sections makes hand-offs resilient when
+    tooling (Docker/Bats) is unavailable mid-task.
