@@ -65,6 +65,9 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
 7. **Force pushes**: `git push --force*` is forbidden on `development` and task branches. It is
    allowed on an unpublished subtask branch only to fix mistakes before hand-off or to excise
    sensitive data, and the plan’s Feedback section must record the reason.
+8. **Session hand-off**: Before ending a session (or declaring a task finished), checkout
+   `development` and `git pull --ff-only origin development` so the next agent starts from a clean
+   base. Note any exceptions (e.g., pending local testing) in the task plan progress log.
 
 ### Planning Templates
 - Task-level plan template: `doc/ai/templates/task_plan_README.template.md`
