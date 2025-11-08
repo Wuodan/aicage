@@ -1,0 +1,39 @@
+# Task T004 — Enforce Branch Workflow & Merge Discipline
+
+Last updated: 2025-11-08T15:20Z by Codex
+
+## Context
+- Repository policy allows direct pushes and history edits on `development`, which conflicts with the hardened workflow expectations in AGENTS.md.
+- Deliverables: documented branch naming + flow for tasks/subtasks, push/merge/force-push guidelines, and reusable completion checklists that agents can follow.
+- Assumptions: task branches build off `development`; no CI changes required; instructions must stay tool-agnostic for future agents.
+
+## Workflow Guardrails
+1. Update this master checklist and each subtask checklist immediately after progress so hand-offs are recoverable.
+2. Follow AGENTS.md planning requirements: reference plan folders in commits, keep Docker/build/test logs in plan docs, and avoid dumping chat logs.
+3. Document any external research (e.g., Git workflow references) under the relevant subtask plan or `doc/ai/research/` with URLs and summaries.
+4. Every subtask finishes with commit `[codex][subtask-name]: summary` plus Feedback entries in both subtask and task plans.
+
+## Subtask Directory Map (T004)
+| ID | Title | Status | Checklist |
+|----|-------|--------|-----------|
+| S1 | Branch workflow policy decisions | ☑ complete | `plan/subtask_S1_branch-policy/README.md` |
+| S2 | Update AGENTS.md and related docs | ☐ pending | `plan/subtask_S2_doc-updates/README.md` |
+| S3 | Checklist + template propagation | ☐ pending | `plan/subtask_S3_checklists/README.md` |
+
+## Master Checklist (T004)
+- [x] S1 — Branch workflow policy decisions
+- [ ] S2 — Update AGENTS.md and related docs
+- [ ] S3 — Checklist + template propagation
+
+## Progress Log (T004)
+- 2025-11-08T15:15Z — Initialized task plan scaffolding and updated task index to mark T004 active.
+- 2025-11-08T15:45Z — Completed S1 policy decisions; branching rules + merge/force-push guidance captured in subtask doc for downstream docs.
+
+## References
+- `AGENTS.md`
+- `doc/ai/templates/task_plan_README.template.md`
+- `doc/ai/templates/subtask_plan_README.template.md`
+
+## Notes
+- Decide whether merges happen via GitHub PRs or enforced local `git merge --no-ff` during S1.
+- Capture any push/force-push troubleshooting tips (e.g., diverged branches) for future agents.
