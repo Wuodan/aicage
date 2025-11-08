@@ -1,7 +1,7 @@
 # Task T009 / Subtask S002 — Template Structure & Contents
 
 ## Objective
-Decide which files/folders belong in the kickstart template (README, minimal AGENTS, template AGENTS reference, scripts if any) without bringing project-specific code.
+Decide which files/folders belong in the kickstart template (README, AGENTS copy, supporting templates/scripts if any) without bringing project-specific code.
 
 ## Deliverables
 - File/folder map showing what the template repo contains at initialization.
@@ -10,7 +10,7 @@ Decide which files/folders belong in the kickstart template (README, minimal AGE
 
 ## Flow
 1. Review current repo structure and identify reusable elements.
-2. Propose a minimal set of files (README, AGENTS, template AGENTS, optional helper scripts).
+2. Propose a minimal set of files (README, AGENTS, optional helper scripts/templates).
 3. Validate against “no empty dirs / no unnecessary placeholders”.
 4. Document decisions for S003 authoring.
 5. Commit `T009/S002: define template structure` after checklist complete.
@@ -19,7 +19,7 @@ Decide which files/folders belong in the kickstart template (README, minimal AGE
 | Path | Purpose | Notes |
 |------|---------|-------|
 | `README.md` | Quickstart for humans + agents to clone, rename, and wire their project | Will outline setup steps, task catalog expectations, links into AGENTS.
-| `AGENTS.md` | Canonical workflow guardrails in condensed form | Derived from this repo’s AGENTS but scoped to template-friendly instructions.
+| `AGENTS.md` | Canonical workflow guardrails copied from this repo (minus tech-specific bits) |
 | `doc/ai/tasks/README.md` | Task catalog scaffold so teams can immediately log T### rows | Keeps “one active task” rule; links back to templates + issue tracker.
 | `doc/ai/templates/task_plan_README.template.md` | Task planning template | Copied from this repo for continuity.
 | `doc/ai/templates/subtask_plan_README.template.md` | Subtask planning template | Same as above; ensures plan scaffolding ships with template.

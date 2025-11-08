@@ -1,6 +1,6 @@
 # Task T009 — Project Kickstart Template
 
-Last updated: 2025-11-08T18:54Z by Codex
+Last updated: 2025-11-08T19:30Z by Codex
 
 ## Context
 - We want to spin up a reusable template repo that captures our workflow best practices without project-specific details.
@@ -35,7 +35,8 @@ Last updated: 2025-11-08T18:54Z by Codex
 - 2025-11-08T17:44Z — Drafted task plan scaffold pending naming discussion.
 - 2025-11-08T18:06Z — Completed S001: selected repo name `workflow-ready-template`, description "Kickstarts new repos with the documented AGENTS workflow baked in.", and submodule path `submodules/workflow-ready-template` to keep its Git nature obvious.
 - 2025-11-08T18:26Z — Completed S002: locked the initial template file map (README, AGENTS, doc/ai/tasks catalog, plan templates, `.gitignore`, and `.github/ISSUE_TEMPLATE/task.yml`) and documented the decision to stay documentation-first for now.
-- 2025-11-08T18:54Z — Completed S003: added README, AGENTS kickstart notice, AGENTS reference, task catalog scaffold, and supporting templates inside the `workflow-ready-template` submodule.
+- 2025-11-08T18:54Z — Initial S003 draft (later replaced): added README, AGENTS kickstart notice, AGENTS reference, task catalog scaffold, and supporting templates inside the `workflow-ready-template` submodule.
+- 2025-11-08T19:30Z — Reworked S003 per user feedback: replaced the human README instructions, removed AGENTS.reference, and copied the full AGENTS guardrails minus tech-specific sections into the submodule.
 
 ## References
 - T008 outputs (workflow guardrails) for reuse.
