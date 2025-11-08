@@ -1,60 +1,82 @@
-# Task: Build llm-agent-dock Matrix Builder
+# Task: Build the llm-agent-dock Matrix Builder
 
-## Context
-This repository shall host the **llm-agent-dock** build system: a multi-arch Docker image framework that combines several “fat” public base images with modular layers for different agentic developer tools.
+## Background
+This repository must evolve into a reusable multi-architecture Docker build system for agentic
+developer tools. The system combines “fat” public base images with thin tool-specific layers and
+delivers every permutation via a matrix build.
 
-Codex must generate the necessary structure, plan, subtasks, and commits to reach a working prototype.
+## Goals
+1. Produce a parameterized Dockerfile that installs any supported tool on top of any supported base.
+2. Define a `docker-bake.hcl` matrix plus helper scripts to build, test, and publish multi-arch
+   images.
+3. Create smoke tests that assert containers boot, agent binaries respond, and critical CLIs exist.
+4. Document structure, workflows, and extension steps so future contributors can resume instantly.
 
----
+## Scope (initial matrix, extendable)
 
-## Base Images (extendable list)
-1. `ghcr.io/catthehacker/ubuntu:act-latest`
-2. `ghcr.io/devcontainers/images/universal:2-linux`
-3. `ubuntu:24.04`
+| Base Alias | Image Reference                                |
+|------------|------------------------------------------------|
+| `act`      | `ghcr.io/catthehacker/ubuntu:act-latest`       |
+| `universal`| `ghcr.io/devcontainers/images/universal:2-linux` |
+| `ubuntu`   | `ubuntu:24.04`                                 |
 
-Each base image represents a different ecosystem environment and must be easily swapped or extended.
+| Tool Key          | Description            |
+|-------------------|------------------------|
+| `cline`           | Cline CLI / VSCode AI  |
+| `codex`           | Codex coding agent     |
+| `factory_ai_droid`| Factory.AI Droid agent |
 
----
+Platforms: `linux/amd64`, `linux/arm64`. Every combination base×tool×arch must be addressable from a
+single configuration.
 
-## Agent Tools (extendable list)
-1. `cline`
-2. `codex`
-3. `factory.ai droid`
+## Required Workflow (non-negotiable)
+1. **Planning first**: Author `doc/ai/plan/README.md` plus one subfolder per subtask (S1–S5). Each
+   file records objectives, deliverables, flow, checklist, and feedback.
+2. **Subtasks**:
+   - S1 Planning & scaffolding.
+   - S2 Parameterized Dockerfile + installer research.
+   - S3 Matrix + scripts (Bake, bootstrap, build, test).
+   - S4 Smoke tests.
+   - S5 Documentation & polish.
+3. **Checkpointing**: Update checklists and logs immediately after progress so work can resume after
+   interruptions.
+4. **Research logging**: When agent installer details are unclear, use MCP `brave-search` followed by
+   `fetch`; summarize findings and URLs inside the relevant subtask doc (or `doc/ai/research/` if
+   shared).
+5. **Commits**: Complete each subtask with a dedicated commit using `[codex][subtask-name]: summary`
+   and include references to the updated plan docs.
 
-Each tool should build as a thin layer extending one of the base images. Codex must make this structure open for new tools to be added via a single configuration.
+## Deliverables & Acceptance Criteria
+1. `Dockerfile` — uses `ARG BASE_IMAGE`, `ARG TOOL`, `ARG TARGETARCH`; includes shared base prep,
+   tool installers, and commented extension hooks.
+2. `docker-bake.hcl` — defines matrix targets, registry/tag variables, and documentation inline.
+3. `scripts/dev/bootstrap.sh`, `scripts/build.sh`, `scripts/test.sh` — reproducible helpers described
+   in README.
+4. `tests/smoke/` — Bats suites per tool plus helpers; runnable via `scripts/test.sh`.
+5. `README.md` — intro, architecture description, matrix summary, quick-start commands, extension
+   guide, testing instructions.
+6. `doc/ai/plan/` — up-to-date plan, subtask logs, and feedback entries for each phase.
 
----
+Definition of done:
+- Matrix builds succeed locally via `docker buildx bake ... --print` and at least one real build.
+- Smoke tests execute against a built image without fatal errors (document gaps if tooling missing).
+- Documentation matches implemented behavior and lists commands to reproduce results.
+- No pending checklist items in any subtask doc.
 
-## Objectives
-- Design a **matrix** that produces all combinations of base images × agent tools for `amd64` and `arm64`.
-- Implement **multi-arch builds**, automatic tagging, and pushing to a configurable registry.
-- Include **tests** to verify builds succeed, containers run, and expected commands exist.
-- Provide **documentation** explaining structure, usage, and extension.
-- Organize the plan and subtasks following the conventions shown in other projects (see README.md example).
-- Use separate commits for each completed subtask, following the `[codex][subtask-name]: summary` convention.
+## Sequencing
+1. Plan & scaffolding (S1) → Dockerfile (S2) → Bake/scripts (S3) → Tests (S4) → Documentation (S5).
+2. Each stage must update the master plan log with timestamps.
+3. If new bases/tools are introduced mid-task, append them to the Scope tables and adjust scripts,
+   tests, and docs accordingly before proceeding.
 
----
+## Validation
+- Dry-run matrix: `docker buildx bake -f docker-bake.hcl matrix --print`.
+- Sample build: `scripts/build.sh cline ubuntu --platform linux/amd64`.
+- Smoke tests: `scripts/test.sh ghcr.io/<registry>/llm-agent-dock:cline-ubuntu-latest`.
+- Document results and any known issues in the relevant subtask feedback section.
 
-## Expected Artifacts
-1. `Dockerfile` — parameterized using build arguments `BASE_IMAGE` and `TOOL`.
-2. `docker-bake.hcl` — defines the matrix, variables, and outputs.
-3. `scripts/` — helper scripts for local builds and tests.
-4. `doc/ai/plan/` — structured subtask documentation generated by Codex.
-5. `README.md` — short intro and usage guide.
-6. `tests/` — validation routines for built images.
-
----
-
-## Initial Action
-Codex must:
-1. Create a detailed execution plan under `doc/ai/plan/README.md`.
-2. Split the work into subtasks (planning, Docker setup, matrix build, documentation, tests).
-3. Execute and commit progress for each subtask individually.
-4. Ensure all generated content is clear, reproducible, and documented.
-
----
-
-## Notes
-- Do **not** implement all builds immediately; start with a dry-run plan and structure.
-- Include comments in files explaining extension points for future base images and tools.
-- Keep human-readable markdown and generated automation files synchronized.
+## Additional Notes
+- Start with scaffolding; do not attempt to implement every build until the plan and structure are in
+  place.
+- Include inline comments wherever future bases/tools will plug in.
+- Keep human-readable documentation synchronized with automation files to avoid drift.

@@ -1,78 +1,71 @@
 # 🧠 llm-agent-dock
 
-**llm-agent-dock** is a modular, multi-arch Docker build system for **agentic coding assistants** such as *Cline*, *Codex*, and *Factory.AI Droid*.  
-It provides a shared, “fat” base environment and builds thin layers for each assistant using a matrix.  
+llm-agent-dock builds ready-to-run Docker images for popular agentic coding assistants. Each image
+combines a curated “fat” base OS with a thin layer that installs and configures the selected agent.
+The same configuration produces images for `linux/amd64` and `linux/arm64`.
 
 ---
 
-## 🚀 Goal
+## Why Use It?
 
-Simplify the deployment and development of LLM-powered coding tools by offering:
-- Pre-built, ready-to-run environments for multiple assistants  
-- Unified, reproducible base images  
-- Automated **multi-architecture** builds (`amd64`, `arm64`)  
-- Easy extension for new tools or environments  
-
----
-
-## 🧩 Architecture Overview
-
-Each image combines:
-- One **base** (from a configurable list of public, pre-loaded OS images)
-- One **agentic tool layer**
-
-The project defines this matrix and builds all combinations.
+- **One command, many variants**: Generate every base × tool combination through a single Bake file.
+- **Consistent tooling**: Shared packages (git, curl, Python, etc.) plus per-agent installers ensure
+  parity across environments.
+- **Multi-arch by default**: Buildx and QEMU support mean you can test both architectures locally or
+  in CI.
+- **Smoke-tested**: Automated Bats suites confirm that containers boot and agent CLIs respond.
 
 ---
 
-## 🧰 Current Components
+## Matrix at a Glance
 
-### Base Images (extendable)
-1. `ghcr.io/catthehacker/ubuntu:act-latest`
-2. `ghcr.io/devcontainers/images/universal:2-linux`
-3. `ubuntu:24.04`
+| Base Alias | Image Reference                                |
+|------------|------------------------------------------------|
+| `act`      | `ghcr.io/catthehacker/ubuntu:act-latest`       |
+| `universal`| `ghcr.io/devcontainers/images/universal:2-linux` |
+| `ubuntu`   | `ubuntu:24.04`                                 |
 
-### Agent Tools (extendable)
-1. `cline`
-2. `codex`
-3. `factory.ai droid`
+| Tool Key          | Description            |
+|-------------------|------------------------|
+| `cline`           | Cline CLI / VSCode AI  |
+| `codex`           | Codex coding agent     |
+| `factory_ai_droid`| Factory.AI Droid agent |
 
----
-
-## 🧱 Repository Structure
-
-| Path | Purpose |
-|------|----------|
-| `scripts/` | Build helpers and local test utilities |
-| `tests/` | Smoke tests for built images |
-| `doc/ai/plan/` | Generated execution plans and logs |
-| `AGENTS.md` | Agent definitions and responsibilities |
-| `TASK.md` | Initial Codex directive |
-| `README.md` | This document |
+Platforms: `linux/amd64`, `linux/arm64`.
 
 ---
 
-## 🧭 How to Extend
+## Quick Start
 
-### Add a new base
-1. Todo ...
+> Scripts are introduced gradually; check `git log` or `doc/ai/plan/` for availability while the
+> project is under active development.
 
-### Add a new tool
-1. Todo ...
+```bash
+# 1) Prepare BuildKit + QEMU emulation
+scripts/dev/bootstrap.sh
 
----
+# 2) Build a specific variant
+scripts/build.sh cline ubuntu --platform linux/amd64
 
-## ⚙️ Automation
-
-The AI agent coordinates:
-- Subtask planning under `doc/ai/plan/`
-- File generation (Dockerfiles, docs, scripts)
-- Commit orchestration and task completion
-
-See [AGENTS.md](./AGENTS.md) and [TASK.md](./TASK.md) for details.
+# 3) Run smoke tests against a tag
+scripts/test.sh ghcr.io/<org>/llm-agent-dock:cline-ubuntu-latest
+```
 
 ---
 
-## 📜 License
+## Extending the Catalog
 
-MIT — use freely, modify openly, credit appreciated.
+1. **Add a base**: Register the image alias in `docker-bake.hcl`, tweak the Dockerfile’s base-prep
+   section if required, and document it in the matrix table above.
+2. **Add a tool**: Implement an installer block inside the Dockerfile, extend the Bake matrix,
+   and create `tests/smoke/<tool>.bats`.
+3. **Share the process**: Update this README and any relevant plan docs so others can follow along.
+
+Need contributor details or current milestones? See `doc/ai/TASK.md` and the latest entries in
+`doc/ai/plan/`.
+
+---
+
+## License
+
+Apache-2.0 — see `LICENSE`.

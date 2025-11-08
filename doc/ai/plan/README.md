@@ -1,6 +1,6 @@
 # llm-agent-dock Execution Plan
 
-Last updated: 2025-11-08T02:15Z by Codex
+Last updated: 2025-11-08T02:30Z by Codex
 
 ## Context
 - Build a reusable, multi-arch Docker image matrix combining base OS variants with agentic developer tools.
@@ -12,7 +12,8 @@ Last updated: 2025-11-08T02:15Z by Codex
 2. Before implementing: review the relevant subtask doc, note prerequisites, and mark checklist items as work progresses.
 3. After completing a subtask: update its **Feedback** section, mark its checklist complete, and record progress in the log below.
 4. For agent installer details, research official instructions; if missing, use MCP `brave-search` followed by `fetch`, and summarize findings in the subtask doc.
-5. Every subtask finishes with two required actions: update planning docs and make a commit `[codex][subtask-name]: summary`.
+5. Keep user-facing docs (e.g., `README.md`) focused on end users; park contributor/process notes in this plan or `AGENTS.md`.
+6. Every subtask finishes with two required actions: update planning docs and make a commit `[codex][subtask-name]: summary`.
 
 ## Subtask Directory Map
 | ID | Title | Status | Checklist |
@@ -39,3 +40,4 @@ Last updated: 2025-11-08T02:15Z by Codex
 ## Progress Log
 - 2025-11-08T02:03Z — Initial roadmap drafted (S1 kick-off).
 - 2025-11-08T02:15Z — Plan reorganized with per-subtask checklists and guardrails (S1 complete).
+- 2025-11-08T02:30Z — README refocused on users; plan + subtasks updated to drop legacy references.

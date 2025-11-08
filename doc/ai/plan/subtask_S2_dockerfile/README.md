@@ -15,14 +15,15 @@ agent.
 
 ## Flow
 1. **Research installers**: Confirm CLI/agent installation steps for `cline`, `codex`, and
-   `factory.ai droid`. If unclear, use MCP `brave-search` → `fetch` and summarize findings in this
+   `factory_ai_droid`. If unclear, use MCP `brave-search` → `fetch` and summarize findings in this
    file under *Feedback & Learnings*.
 2. Define shared base setup (apt packages, locale fixes, user settings) compatible with all bases.
 3. Implement tool install sections using Bash functions or `case` statements; fail fast on unknown
    tools.
 4. Add comments `# Add new base tweaks here` and `# Add new agent installers below`.
 5. Build at least one variant locally (amd64) to ensure syntax correctness.
-6. Update this checklist and plan log, then commit `[codex][dockerfile]: add parameterized build`.
+6. Capture any user-facing implications (notes for README) here rather than editing README mid-task.
+7. Update this checklist and plan log, then commit `[codex][dockerfile]: add parameterized build`.
 
 ## Checklist
 - [ ] Installer research recorded for all tools (links + summary).

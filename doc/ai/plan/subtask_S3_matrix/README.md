@@ -20,7 +20,8 @@ cover builder bootstrapping, matrix builds, and test execution.
 2. Draft `docker-bake.hcl` with locals for tool/base metadata; ensure it stays extendable.
 3. Implement scripts with `#!/usr/bin/env bash`, `set -euo pipefail`, two-space indent.
 4. Dry-run `docker buildx bake ... --print` to validate matrix expansion.
-5. Document usage notes (temporary) either in script headers or README TODO for S5.
+5. Document usage notes (temporary) inside script comments or this plan so README can stay user-only
+   until S5.
 6. Update plan checklists and commit `[codex][matrix-build]: add bake + scripts`.
 
 ## Checklist
