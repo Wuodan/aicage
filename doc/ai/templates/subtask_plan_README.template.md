@@ -16,12 +16,12 @@ Describe the singular goal for this subtask.
 ## Deliverables
 - Bullet list of artifacts required.
 - Include “Updated plan + Feedback section” if applicable.
-- Reference the parent GitHub issue comment or checklist update that mirrors this work.
+- Reference the task PR comment or checklist update that mirrors this work.
 
 ## Flow
 1. Step-by-step actions (call out when to refresh the Estimate Snapshot if scope changes).
 2. Include explicit reminder to run required tests.
-3. Note when to leave a GitHub issue comment so remote collaborators see the same progress update.
+3. Note when to leave a task PR comment so remote collaborators see the same progress update.
 4. End with “Commit `T###/S###: short summary` once all checklist items complete.”
 
 ## Checklist
@@ -29,14 +29,14 @@ Describe the singular goal for this subtask.
 - [ ] Requirement 1.
 - [ ] Requirement 2.
 - [ ] Document findings in Feedback.
-- [ ] Mirrored update in the GitHub issue comments.
+- [ ] Mirrored update in the task PR comments.
 - [ ] Commit `T###/S###: short summary`.
 
 ## Inputs & References
-- Link to parent task README, the GitHub issue, and other supporting docs.
+- Link to parent task README, the GitHub issue, the task PR, and other supporting docs.
 
 ## Exit Criteria
-- State what must be true before moving on (e.g., checklist checked, tests passing, Feedback updated, GitHub issue comment posted).
+- State what must be true before moving on (e.g., checklist checked, tests passing, Feedback updated, task PR comment posted).
 
 ## Retro Metrics (fill after completion)
 - Actual Token Bucket: XS/S/M/L/XL plus variance note (e.g., “Actual S vs. Estimate XS, +1 bucket”).
@@ -45,7 +45,7 @@ Describe the singular goal for this subtask.
 - Estimate Accuracy Rating: `On target`, `Under`, or `Over` with ≤2 sentence rationale.
 - LLM Tier Used: record deviations and why tier upgrades/downgrades happened.
 - Variance Drivers & Learnings: bullet list for future planners; link to research logs if helpful.
-- Populate within one working session after completion; escalate if variance ≥1 bucket.
+- Populate within one working session after completion; escalate on the task PR if variance ≥1 bucket.
 
 ## Feedback & Learnings
 - **Open Problems**: _TBD_
