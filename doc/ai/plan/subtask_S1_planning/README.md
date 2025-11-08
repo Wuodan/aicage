@@ -10,8 +10,8 @@ guardrails so future contributors can resume work after interruptions.
 - Status updates recorded in the master checklist.
 
 ## Flow
-1. Review `doc/ai/TASK.md`, `AGENTS.md`, and `doc/ai/OLD_TASK_FROM_OTHER_PROJECT.md` to capture
-   structure expectations.
+1. Review `doc/ai/TASK.md`, `AGENTS.md`, and the current `README.md` to capture structure
+   expectations.
 2. Draft the global plan (context, workflow rules, dependency map, progress log).
 3. Create per-subtask directories/files describing objectives, deliverables, flow, checklist, and
    feedback placeholder.
@@ -27,7 +27,7 @@ guardrails so future contributors can resume work after interruptions.
 ## Inputs & References
 - `doc/ai/TASK.md` — primary requirements.
 - `AGENTS.md` — repository conventions.
-- `doc/ai/OLD_TASK_FROM_OTHER_PROJECT.md` — reference for flow/checklists/feedback.
+- `README.md` — user-facing overview to keep contributor docs aligned.
 
 ## Exit Criteria
 - All checklist items checked.
