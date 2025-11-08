@@ -1,6 +1,6 @@
 # Task T007 — Pilot GitHub-Issue Task Tracking
 
-Last updated: 2025-11-08T14:31Z by Codex
+Last updated: 2025-11-08T14:43Z by Codex
 
 ## Context
 - Experiment with shifting task briefs from repo-only markdown to canonical GitHub issues so async contributors can track work without cloning.
@@ -12,6 +12,7 @@ Last updated: 2025-11-08T14:31Z by Codex
 2. Follow `AGENTS.md` rules: branch discipline, commit format `T007/S###: ...`, research logging for any MCP `brave-search`/`fetch` usage, and Feedback updates at completion.
 3. Capture any GitHub/product research URLs in `doc/ai/tasks/T007_github-issues-pilot/plan/research.md` (create if needed) or in the relevant subtask README Feedback section.
 4. Each subtask finishes with documentation + checklist updates + commit `T007/S###: short summary` (use `S000` only for task-wide actions that span multiple subtasks).
+5. Mirror every Progress Log entry to [GitHub issue #1](https://github.com/Wuodan/llm-agent-dock/issues/1); if offline, paste the pending comment text into the plan and post it later.
 
 ## Subtask Directory Map (T007)
 | ID | Title | Status | Checklist |
@@ -31,10 +32,11 @@ Last updated: 2025-11-08T14:31Z by Codex
 - 2025-11-08T14:36Z — Committed S001 deliverables and recorded GitHub issue model references.
 - 2025-11-08T14:38Z — Updated AGENTS + plan templates with GitHub issue workflow (S002 in progress).
 - 2025-11-08T14:39Z — Committed S002 guidance changes and logged outstanding label/automation questions.
-- 2025-11-08T14:33Z — Drafted GitHub issue template plus label/linking policy (S001).
+- 2025-11-08T14:42Z — Created GitHub issue #1, seeded status labels, and mirrored prior log entries on GitHub (S003).
 
 ## References
 - `doc/ai/tasks/T007_github-issues-pilot/README.md`
+- GitHub issue #1: https://github.com/Wuodan/llm-agent-dock/issues/1
 - Repository workflow guardrails in `AGENTS.md`
 - Task planning templates in `doc/ai/templates/`
 
