@@ -1,16 +1,16 @@
 # Task T009 / Subtask S003 — Author README + AGENTS Kickstart Flow
 
 ## Objective
-Write the template’s README and AGENTS instructions so new users/agents can bootstrap a real project (README creation, AGENTS merge) with or without AGENTS support.
+Write the template’s README and AGENTS instructions so new users/agents can bootstrap a real project (README creation, AGENTS merge) assuming AGENTS.md support is available.
 
 ## Deliverables
-- Template README describing how to use the project (agent-assisted flow + manual fallback).
+- Template README describing how to use the project (AGENTS-first flow, human-readable overview only).
 - Minimal AGENTS.md that detects kickstart mode and guides the agent to help the user produce real README + AGENTS content.
 - Stripped “template AGENTS” reference file containing reusable workflow guidance.
 - Checklist + Feedback updates.
 
 ## Flow
-1. Based on S002 structure, draft the README (explain template nature, steps 1–2, fallback instructions).
+1. Based on S002 structure, draft the README (explain template nature, steps 1–2, and point humans toward AGENTS.md for full workflow).
 2. Author the minimal AGENTS.md (kickstart instructions, mention MCP servers, etc.).
 3. Produce the template AGENTS reference, retaining general workflow rules but removing project-specific details.
 4. Cross-check instructions for clarity + brevity.
