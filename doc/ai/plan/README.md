@@ -1,0 +1,41 @@
+# llm-agent-dock Execution Plan
+
+Last updated: 2025-11-08T02:15Z by Codex
+
+## Context
+- Build a reusable, multi-arch Docker image matrix combining base OS variants with agentic developer tools.
+- Deliverables: parameterized `Dockerfile`, `docker-bake.hcl` matrix, helper scripts, smoke tests, and synced documentation.
+- Constraints: follow AGENTS.md conventions (scripts foldering, planning history, commit naming).
+
+## Workflow Guardrails
+1. Keep this plan and each subtask checklist up to date after every change.
+2. Before implementing: review the relevant subtask doc, note prerequisites, and mark checklist items as work progresses.
+3. After completing a subtask: update its **Feedback** section, mark its checklist complete, and record progress in the log below.
+4. For agent installer details, research official instructions; if missing, use MCP `brave-search` followed by `fetch`, and summarize findings in the subtask doc.
+5. Every subtask finishes with two required actions: update planning docs and make a commit `[codex][subtask-name]: summary`.
+
+## Subtask Directory Map
+| ID | Title | Status | Checklist |
+|----|-------|--------|-----------|
+| S1 | Planning & Scaffolding | ✅ complete | `doc/ai/plan/subtask_S1_planning/README.md` |
+| S2 | Parameterized Dockerfile | ☐ pending | `doc/ai/plan/subtask_S2_dockerfile/README.md` |
+| S3 | Matrix & Scripts | ☐ pending | `doc/ai/plan/subtask_S3_matrix/README.md` |
+| S4 | Smoke Tests | ☐ pending | `doc/ai/plan/subtask_S4_tests/README.md` |
+| S5 | Documentation & Polish | ☐ pending | `doc/ai/plan/subtask_S5_docs/README.md` |
+
+## Master Checklist
+- [x] Establish planning structure (S1).
+- [ ] Implement parameterized Dockerfile with agent installers (S2).
+- [ ] Author matrix build configs and helper scripts (S3).
+- [ ] Create smoke tests and wire into scripts (S4).
+- [ ] Finalize documentation, extension guides, and sync references (S5).
+
+## Dependencies & Flow
+1. **S2** depends on the scaffolding from **S1**.
+2. **S3** consumes Dockerfile outputs; scripts expect build args defined in S2.
+3. **S4** needs runnable images from S2/S3.
+4. **S5** references artifacts from all earlier subtasks.
+
+## Progress Log
+- 2025-11-08T02:03Z — Initial roadmap drafted (S1 kick-off).
+- 2025-11-08T02:15Z — Plan reorganized with per-subtask checklists and guardrails (S1 complete).
