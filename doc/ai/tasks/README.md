@@ -15,6 +15,10 @@
 | T001 | Build the llm-agent-dock Matrix Builder | Completed | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/plan/` | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/README.md`
 | T002 | Validate llm-agent-dock Builds & Docker Access | Completed | `doc/ai/tasks/T002_validate-builds-docker/plan/` | `doc/ai/tasks/T002_validate-builds-docker/README.md`
 | T003 | Intensive Agent Startup & Prompt Capture | Completed | `doc/ai/tasks/T003_intensive-startup-tests/plan/` | `doc/ai/tasks/T003_intensive-startup-tests/README.md`
+| T004 | Enforce Branch Workflow & Merge Discipline | Proposed | _(Plan pending)_ | `doc/ai/tasks/T004_branch-workflow-discipline/README.md`
+| T005 | GHCR Auth & Release-Build Pipeline Readiness | Proposed | _(Plan pending)_ | `doc/ai/tasks/T005_ghcr-release-pipeline/README.md`
+| T006 | Deterministic Agent Auth Fixtures for Tests | Proposed | _(Plan pending)_ | `doc/ai/tasks/T006_agent-auth-fixtures/README.md`
+| T007 | Pilot GitHub-Issue Task Tracking | Proposed | _(Plan pending)_ | `doc/ai/tasks/T007_github-issues-pilot/README.md`
 
 Update this table as tasks finish or new ones start. Mark exactly one row as **Active** so the current folder is obvious. (No task is active at the moment; set the next task to **Active** when assigned.)
 
