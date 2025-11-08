@@ -14,9 +14,9 @@
 |---------|-------|--------|-------------|-------|
 | T001 | Build the llm-agent-dock Matrix Builder | Completed | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/plan/` | `doc/ai/tasks/T001_llm-agent-dock-matrix-builder/README.md`
 | T002 | Validate llm-agent-dock Builds & Docker Access | Completed | `doc/ai/tasks/T002_validate-builds-docker/plan/` | `doc/ai/tasks/T002_validate-builds-docker/README.md`
-| T003 | Intensive Agent Startup & Prompt Capture | **Active** | `doc/ai/tasks/T003_intensive-startup-tests/plan/` | `doc/ai/tasks/T003_intensive-startup-tests/README.md`
+| T003 | Intensive Agent Startup & Prompt Capture | Completed | `doc/ai/tasks/T003_intensive-startup-tests/plan/` | `doc/ai/tasks/T003_intensive-startup-tests/README.md`
 
-Update this table as tasks finish or new ones start. Mark exactly one row as **Active** so the current folder is obvious.
+Update this table as tasks finish or new ones start. Mark exactly one row as **Active** so the current folder is obvious. (No task is active at the moment; set the next task to **Active** when assigned.)
 
 ## Plan Usage
 - Planning artifacts live inside each task’s `plan/` directory (see the table above for quick links).

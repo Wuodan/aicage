@@ -1,6 +1,6 @@
 # Task T003 — Intensive Agent Startup & Prompt Capture
 
-Last updated: 2025-11-08T17:45Z by Codex
+Last updated: 2025-11-08T19:05Z by Codex
 
 ## Context
 - Validate startup behavior for `cline`, `codex`, and `factory_ai_droid` agents across `ubuntu`, `act`, and `universal` bases so CI can exercise their CLIs deterministically.
@@ -32,6 +32,7 @@ Last updated: 2025-11-08T17:45Z by Codex
 - 2025-11-08T17:52Z — Ran docker/bats diagnostics and reviewed build/test scripts for S2 prep.
 - 2025-11-08T18:15Z — Built act/ubuntu images, documented GHCR 403 for universal base, and captured startup logs via the new capture script.
 - 2025-11-08T18:50Z — Upgraded images to Node.js 20.17, added codex/API-key guidance, and published the capture helper + troubleshooting docs.
+- 2025-11-08T19:05Z — Final review completed; task T003 marked ready for closure.
 
 ## References
 - `doc/ai/tasks/T003_intensive-startup-tests/README.md`
