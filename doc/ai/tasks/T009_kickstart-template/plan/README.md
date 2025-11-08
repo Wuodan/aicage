@@ -14,7 +14,7 @@ Last updated: 2025-11-08T17:44Z by Codex
 ## Workflow Guardrails
 1. Handle naming + repo description interactively with the user before creating files.
 2. No empty directories—only commit files that carry instructions or necessary configs.
-3. Keep template instructions concise but actionable for agents that support AGENTS.md; mirror essentials in README for agents that don’t.
+3. Keep template instructions concise but actionable for AGENTS-aware agents; README content can summarize but does not need to duplicate AGENTS.md.
 4. Submodule path decision is part of the task—capture reasoning in plan logs.
 
 ## Subtask Directory Map (T009)
