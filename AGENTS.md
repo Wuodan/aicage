@@ -24,6 +24,30 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
   (and each subtask file) needs a Feedback section with open problems, outstanding questions, and
   learnings for future sessions.
 
+### Branch Workflow (Tasks & Subtasks)
+1. **Start from `development`**: Before creating a task branch, run `git checkout development` and
+   `git pull --ff-only origin development` so you branch from the latest tip.
+2. **Task branch naming**: Create exactly one branch per active task named `task/T###_<slug>` (slug
+   matches the task folder). Push it immediately via `git push -u origin task/T###_<slug>`—no work
+   happens directly on `development`.
+3. **Subtask branches**: For each subtask, branch from the task branch tip using
+   `subtask/T###_S#_<slug>` (example: `subtask/T004_S1_branch-policy`). Push on creation so remote
+   history mirrors the plan log.
+4. **Push cadence**: Push after creation, after every meaningful checkpoint (tests run, major edits),
+   and before ending a session. If you cannot push (offline), record the reason + next steps in the
+   task plan progress log and push as soon as connectivity returns.
+5. **Merge flow (`git merge --no-ff`)**: All merges happen locally. Subtasks merge into their task
+   branch, and tasks merge into `development`. Always `git pull --ff-only origin <parent>` before the
+   merge, run the required validations, `git merge --no-ff <child>`, resolve conflicts locally, rerun
+   tests, then `git push origin <parent>`.
+6. **Verification & deletion**: Only delete branches after confirming the merge exists locally and on
+   origin (`git branch --merged`, `git log --oneline origin/<parent>`). Delete both local and remote
+   refs (`git branch -d <child>`, `git push origin --delete <child>`) and update the plan checklist
+   immediately.
+7. **Force pushes**: `git push --force*` is forbidden on `development` and task branches. It is
+   allowed on an unpublished subtask branch only to fix mistakes before hand-off or to excise
+   sensitive data, and the plan’s Feedback section must record the reason.
+
 ### Planning Templates
 - Task-level plan template: `doc/ai/templates/task_plan_README.template.md`
 - Subtask plan template: `doc/ai/templates/subtask_plan_README.template.md`
@@ -77,8 +101,11 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
 - Commit subject format: `[codex][subtask-name]: summary` with wrapped bodies ≤72 chars.
 - PR descriptions must list affected matrix slices, commands executed, and links to governing tasks
   or planning docs. Include logs or screenshots only when diagnosing failures.
-- Cross-reference planning docs (`doc/ai/tasks/T###_<slug>/plan/*.md`) whenever scope changes so reviewers can trace
-  intent quickly.
+- Cross-reference planning docs (`doc/ai/tasks/T###_<slug>/plan/*.md`) whenever scope changes so
+  reviewers can trace intent quickly.
+- When merging, prefer local `git merge --no-ff` so the history shows explicit task/subtask
+  milestones. Note the branch names and merge commit in the active plan’s progress log before
+  deleting child branches.
 
 ## Security & Configuration Tips
 - Keep secrets (registry tokens, SSH keys) out of Bake variables; inject via `docker buildx bake
