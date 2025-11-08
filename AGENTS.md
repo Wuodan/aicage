@@ -29,10 +29,11 @@ the workflow hardening and coding conventions below to keep hand-offs simple and
   nearest-0.5h time spent (note calendar days if useful), estimate accuracy rating (On target /
   Under / Over), LLM tier actually used, and variance drivers/learnings. Escalate in the Progress Log
   + GitHub issue if variance ≥1 bucket or confidence drops to Low.
-- **GitHub operations via MCP**: Use the MCP `github` server for all GitHub interactions (issues,
-  labels, comments, content reads/writes). Do not call local `gh`/`git push` with network access
-  unless explicitly approved for non-MCP scenarios; this keeps audit trails centralized and avoids
-  sandbox/network surprises.
+- **GitHub operations via MCP**: Use the MCP `github` server for every interaction with GitHub—issues,
+  labels, comments, file edits, pushes, merges, etc. Local `git push`, `git pull`, `gh ...`, or direct
+  API calls are forbidden unless the project owner explicitly grants a written exception for that
+  command. If MCP access ever blocks a required action, pause and document it in the plan/issue
+  instead of falling back to local tooling.
 - **Checkpointing**: Update plan checklists immediately after any progress. A stopped laptop should
   only need the latest checklist state to resume.
 - **Research logs**: When using MCP `brave-search` or `fetch`, capture URLs + summaries in the
