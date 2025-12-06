@@ -37,3 +37,8 @@ RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
 
 RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
     /tmp/install/install_python.sh
+
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+CMD ["bash"]

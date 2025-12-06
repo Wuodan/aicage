@@ -113,9 +113,6 @@ parse_args() {
         shift
         break
         ;;
-      -*)
-        die "Unknown option '$1'"
-        ;;
       *)
         die "Unknown option '$1'"
         ;;

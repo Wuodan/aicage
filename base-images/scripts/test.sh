@@ -52,9 +52,6 @@ parse_args() {
         BATS_ARGS=("$@")
         break
         ;;
-      -*)
-        usage
-        ;;
       *)
         usage
         ;;

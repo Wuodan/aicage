@@ -17,7 +17,5 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN --mount=type=bind,source=scripts/installers/,target=/tmp/installers,readonly \
     /tmp/installers/install_${TOOL}.sh
 
-COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
-CMD ["bash"]
+ENV TOOL=${TOOL}
+CMD ["sh", "-c", "$TOOL"]
