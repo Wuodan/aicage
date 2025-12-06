@@ -26,62 +26,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN set -euxo pipefail \
-    && if command -v apt-get >/dev/null; then \
-         apt-get update; \
-         apt-get install -y --no-install-recommends \
-           bash \
-           bash-completion \
-           build-essential \
-           ca-certificates \
-           curl \
-           git \
-           gnupg \
-           jq \
-           locales \
-           nano \
-           openssh-client \
-           pipx \
-           python3 \
-           python3-pip \
-           python3-venv \
-           gosu \
-           ripgrep \
-           sudo \
-           tar \
-           tini \
-           unzip \
-           xz-utils \
-           zip; \
-         rm -rf /var/lib/apt/lists/*; \
-       else \
-         echo "Unsupported base image for aicage; apt-get required" >&2; \
-         exit 1; \
-       fi \
-    && locale-gen en_US.UTF-8 || true
+RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
+    /tmp/install/install_os_packages.sh
 
 # Install Node.js 20.x (cline core requires >=20).
-RUN set -euxo pipefail \
-    && case "${TARGETARCH}" in \
-         amd64) NODE_DIST_ARCH="x64" ;; \
-         arm64) NODE_DIST_ARCH="arm64" ;; \
-         *) echo "Unsupported TARGETARCH ${TARGETARCH}" >&2; exit 1 ;; \
-       esac \
-    && curl -fsSL "https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-${NODE_DIST_ARCH}.tar.xz" \
-      | tar -xJ -C /usr/local --strip-components=1 \
-    && ln -sf /usr/local/bin/node /usr/bin/node \
-    && ln -sf /usr/local/bin/npm /usr/bin/npm \
-    && ln -sf /usr/local/bin/npx /usr/bin/npx
+RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
+    /tmp/install/install_node.sh
 
 # Add new base tweaks here (e.g., base-specific packages or config overrides).
 
-RUN python3 -m pip install --break-system-packages --ignore-installed --upgrade pip setuptools wheel
-RUN npm config set prefix /usr/local
-RUN mkdir -p ${PIPX_HOME} ${PIPX_BIN_DIR}
-RUN PIPX_HOME=${PIPX_HOME} PIPX_BIN_DIR=${PIPX_BIN_DIR} pipx ensurepath
-
-RUN PIP_NO_CACHE_DIR=1 \
-    PIPX_HOME=${PIPX_HOME} \
-    PIPX_BIN_DIR=${PIPX_BIN_DIR} \
-    pipx install uv \
-      --pip-args="--no-cache-dir"
+RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
+    /tmp/install/install_python.sh
