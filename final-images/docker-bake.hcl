@@ -16,5 +16,4 @@ target "agent" {
   platforms = [
     for platform in split(" ", AICAGE_PLATFORMS) : platform
   ]
-  pull = true
 }

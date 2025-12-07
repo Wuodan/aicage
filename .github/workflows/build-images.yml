@@ -46,13 +46,16 @@ jobs:
 
       - name: "Test: Set up Buildx"
         uses: docker/setup-buildx-action@v3.11.1
+        with:
+          driver: docker
 
       - name: "Test: Setup BATS testing framework"
         uses: mig4/setup-bats@v1.2.0
 
       - name: "Test: Build base images for tests"
         run: |
-            base-images/scripts/build-all.sh --platform linux/amd64
+            base-images/scripts/build-all.sh \
+            --platform linux/amd64
 
       - name: "Test: Run smoke suites on base images"
         run: |
@@ -60,7 +63,8 @@ jobs:
 
       - name: "Test: Build final images for tests"
         run: |
-          final-images/scripts/build-all.sh --platform linux/amd64
+          final-images/scripts/build-all.sh \
+            --platform linux/amd64
 
       - name: "Test: Run smoke suites on final images"
         run: |

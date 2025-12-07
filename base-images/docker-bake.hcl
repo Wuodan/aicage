@@ -8,7 +8,6 @@ target "base" {
   platforms = [
     for platform in split(" ", AICAGE_PLATFORMS) : platform
   ]
-  pull = true
 }
 
 variable "AICAGE_PLATFORMS" {
