@@ -1,5 +1,5 @@
 ---
-name: Build, Test, and Publish Docker Images
+name: Build, Test, and Publish Final Images
 
 "on":
   push:
@@ -8,24 +8,22 @@ name: Build, Test, and Publish Docker Images
     tags:
       - "*"
     paths:
-      - "base-images/**"
       - "final-images/**"
+      - "scripts/**"
       - ".env"
-      - ".github/workflows/build-images.yml"
+      - ".github/workflows/final-images.yml"
   pull_request:
     paths:
-      - "base-images/**"
       - "final-images/**"
+      - "scripts/**"
       - ".env"
-      - ".github/workflows/build-images.yml"
+      - ".github/workflows/final-images.yml"
   workflow_dispatch: {}
 
 jobs:
   build:
-    name: Build, test and push all images
+    name: Build, test and push final images
     runs-on: ubuntu-latest
-    env:
-      BUILDX_BAKE_ALLOW: fs=/tmp
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.1
@@ -54,15 +52,6 @@ jobs:
       - name: "Test: Setup BATS testing framework"
         uses: mig4/setup-bats@v1.2.0
 
-      - name: "Test: Build base images for tests"
-        run: |
-            base-images/scripts/build-all.sh \
-            --platform linux/amd64
-
-      - name: "Test: Run smoke suites on base images"
-        run: |
-            base-images/scripts/test-all.sh
-
       - name: "Test: Build final images for tests"
         run: |
           final-images/scripts/build-all.sh \
@@ -82,13 +71,6 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: "Publish: Build base images"
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          base-images/scripts/build-all.sh \
-            --version "${{ github.ref_name }}" \
-            --push
 
       - name: "Publish: Build and push all images"
         if: startsWith(github.ref, 'refs/tags/')

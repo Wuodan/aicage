@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 FINAL_DIR="${ROOT_DIR}/final-images"
-BASE_DIR="${ROOT_DIR}/base-images"
 SUPPORTED_TOOLS=()
 SUPPORTED_BASES=()
 SUPPORTED_BASE_ALIASES=()
@@ -129,8 +128,8 @@ main() {
   [[ -n "${base_alias}" ]] || die "Base alias not found for '${BASE}'. Check AICAGE_BASES/AICAGE_BASE_ALIASES."
 
   local target="${TOOL}-${base_alias}"
-  local base_image="${AICAGE_BASE_REPOSITORY}:${base_alias}-${AICAGE_VERSION}"
-  local tag="${AICAGE_REPOSITORY}:${TOOL}-${base_alias}-${AICAGE_VERSION}"
+  local base_image="${AICAGE_BASE_REPOSITORY}:${base_alias}-latest"
+  local tag="${AICAGE_REPOSITORY}:${TOOL}-${base_alias}-latest"
   local description="Agent image for ${TOOL}"
   local env_prefix=(
     AICAGE_REPOSITORY="${AICAGE_REPOSITORY}"
@@ -140,21 +139,16 @@ main() {
 
   local cmd=("env" "${env_prefix[@]}" \
     docker buildx bake \
-      -f "${BASE_DIR}/docker-bake.hcl" \
       -f "${FINAL_DIR}/docker-bake.hcl" \
-      base \
       agent \
-      --set "base.args.BASE_IMAGE=${BASE}" \
-      --set "base.tags=${base_image}" \
-      --set "agent.contexts.base=target:base" \
-      --set "agent.args.BASE_IMAGE=base" \
+      --set "agent.args.BASE_IMAGE=${base_image}" \
       --set "agent.args.TOOL=${TOOL}" \
       --set "agent.tags=${tag}" \
       --set "agent.labels.org.opencontainers.image.description=${description}" \
       "${PUSH_MODE}"
   )
 
-  echo "[build] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_REPOSITORY} Version=${AICAGE_VERSION} BaseImage=${base_image} Mode=${PUSH_MODE} (building base+agent together)" >&2
+  echo "[build] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_REPOSITORY} Tag=${tag} BaseImage=${base_image} Mode=${PUSH_MODE}" >&2
   "${cmd[@]}"
 }
 

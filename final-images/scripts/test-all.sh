@@ -75,7 +75,7 @@ main() {
     for idx in "${!BASES[@]}"; do
       local base="${BASES[$idx]}"
       local base_alias="${BASE_ALIASES[$idx]}"
-      local image="${repository}:${tool}-${base_alias}-${version}"
+      local image="${repository}:${tool}-${base_alias}-latest"
       echo "[test-all] Testing ${image}" >&2
       "${FINAL_DIR}/scripts/test.sh" --image "${image}" -- "${BATS_ARGS[@]}"
     done

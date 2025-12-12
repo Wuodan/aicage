@@ -117,7 +117,8 @@ main() {
   [[ -n "${base_alias}" ]] || die "Base alias not found for '${BASE}'. Check AICAGE_BASES/AICAGE_BASE_ALIASES."
 
   local target="base-${base_alias}"
-  local tag="${AICAGE_BASE_REPOSITORY}:${base_alias}-${AICAGE_VERSION}"
+  local version_tag="${AICAGE_BASE_REPOSITORY}:${base_alias}-${AICAGE_VERSION}"
+  local latest_tag="${AICAGE_BASE_REPOSITORY}:${base_alias}-latest"
   local description="Base image for aicage (${base_alias})"
   local env_prefix=(
     AICAGE_BASE_REPOSITORY="${AICAGE_BASE_REPOSITORY}"
@@ -130,12 +131,13 @@ main() {
       -f "${BASE_DIR}/docker-bake.hcl" \
       base \
       --set "base.args.BASE_IMAGE=${BASE}" \
-      --set "base.tags=${tag}" \
+      --set "base.tags=${version_tag}" \
+      --set "base.tags+=${latest_tag}" \
       --set "base.labels.org.opencontainers.image.description=${description}" \
       "${PUSH_MODE}"
   )
 
-  echo "[build-base] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_BASE_REPOSITORY} Version=${AICAGE_VERSION} UpstreamBase=${BASE} Mode=${PUSH_MODE}" >&2
+  echo "[build-base] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_BASE_REPOSITORY} Version=${AICAGE_VERSION} UpstreamBase=${BASE} Tags=${version_tag},${latest_tag} Mode=${PUSH_MODE}" >&2
   "${cmd[@]}"
 }
 
