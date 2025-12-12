@@ -2,7 +2,6 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-ENV_FILE="${ROOT_DIR}/.env"
 FINAL_DIR="${ROOT_DIR}/final-images"
 SUPPORTED_TOOLS=()
 SUPPORTED_BASES=()
@@ -32,42 +31,19 @@ USAGE
   exit 1
 }
 
-contains() {
-  local needle=$1; shift
-  local item
-  for item in "$@"; do
-    if [[ "$item" == "$needle" ]]; then
-      return 0
-    fi
-  done
-  return 1
-}
-
-load_env_file() {
-  if [[ -f "${ENV_FILE}" ]]; then
-    set -a
-    # shellcheck disable=SC1090
-    source "${ENV_FILE}"
-    set +a
-  fi
-}
-
-split_list() {
-  local raw="$1"
-  local -n out=$2
-  read -r -a out <<< "${raw}"
-}
+# shellcheck source=../../scripts/common.sh
+source "${ROOT_DIR}/scripts/common.sh"
 
 init_supported_lists() {
   split_list "${AICAGE_TOOLS}" SUPPORTED_TOOLS
   split_list "${AICAGE_BASES}" SUPPORTED_BASES
   split_list "${AICAGE_BASE_ALIASES}" SUPPORTED_BASE_ALIASES
-  [[ ${#SUPPORTED_TOOLS[@]} -gt 0 ]] || die "AICAGE_TOOLS is empty; update ${ENV_FILE}."
-  [[ ${#SUPPORTED_BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty; update ${ENV_FILE}."
-  [[ ${#SUPPORTED_BASE_ALIASES[@]} -gt 0 ]] || die "AICAGE_BASE_ALIASES is empty; update ${ENV_FILE}."
+  [[ ${#SUPPORTED_TOOLS[@]} -gt 0 ]] || die "AICAGE_TOOLS is empty."
+  [[ ${#SUPPORTED_BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
+  [[ ${#SUPPORTED_BASE_ALIASES[@]} -gt 0 ]] || die "AICAGE_BASE_ALIASES is empty."
   [[ ${#SUPPORTED_BASES[@]} -eq ${#SUPPORTED_BASE_ALIASES[@]} ]] || die "AICAGE_BASES and AICAGE_BASE_ALIASES must have the same length."
-  [[ -n "${AICAGE_BASE_REPOSITORY:-}" ]] || die "AICAGE_BASE_REPOSITORY is empty; update ${ENV_FILE}."
-  [[ -n "${AICAGE_VERSION:-}" ]] || die "AICAGE_VERSION is empty; update ${ENV_FILE}."
+  [[ -n "${AICAGE_BASE_REPOSITORY:-}" ]] || die "AICAGE_BASE_REPOSITORY is empty."
+  [[ -n "${AICAGE_VERSION:-}" ]] || die "AICAGE_VERSION is empty."
   if [[ "${AICAGE_BASE_REPOSITORY}" == "${AICAGE_REPOSITORY}" ]]; then
     die "AICAGE_BASE_REPOSITORY must differ from AICAGE_REPOSITORY to keep base images separate."
   fi

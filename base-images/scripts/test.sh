@@ -21,19 +21,11 @@ USAGE
   exit 1
 }
 
+# shellcheck source=../../scripts/common.sh
+source "${ROOT_DIR}/scripts/common.sh"
+
 log() {
   printf '[base-test] %s\n' "$*" >&2
-}
-
-require_cmd() {
-  local bin=$1
-  if ! command -v "$bin" >/dev/null 2>&1; then
-    log "Missing dependency: $bin"
-    if [[ "$bin" == "bats" ]]; then
-      log "Install via 'npm install -g bats' or 'brew install bats-core'."
-    fi
-    exit 1
-  fi
 }
 
 parse_args() {
@@ -65,9 +57,6 @@ parse_args() {
 }
 
 run_tests() {
-  require_cmd docker
-  require_cmd bats
-
   log "Running base smoke tests via bats"
   AICAGE_BASE_IMAGE="${IMAGE_REF}" bats "${SMOKE_DIR}" "${BATS_ARGS[@]}"
 }

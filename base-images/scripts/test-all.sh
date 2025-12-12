@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BASE_DIR="${ROOT_DIR}/base-images"
-ENV_FILE="${ROOT_DIR}/.env"
 BASES=()
 BASE_ALIASES=()
 BATS_ARGS=()
@@ -30,26 +29,14 @@ USAGE
   exit 1
 }
 
-load_env_file() {
-  if [[ -f "${ENV_FILE}" ]]; then
-    set -a
-    # shellcheck disable=SC1090
-    source "${ENV_FILE}"
-    set +a
-  fi
-}
-
-split_list() {
-  local raw="$1"
-  local -n out=$2
-  read -r -a out <<< "${raw}"
-}
+# shellcheck source=../../scripts/common.sh
+source "${ROOT_DIR}/scripts/common.sh"
 
 init_supported_lists() {
   split_list "${AICAGE_BASES}" BASES
   split_list "${AICAGE_BASE_ALIASES}" BASE_ALIASES
-  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty; update ${ENV_FILE}."
-  [[ ${#BASE_ALIASES[@]} -gt 0 ]] || die "AICAGE_BASE_ALIASES is empty; update ${ENV_FILE}."
+  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
+  [[ ${#BASE_ALIASES[@]} -gt 0 ]] || die "AICAGE_BASE_ALIASES is empty."
   [[ ${#BASES[@]} -eq ${#BASE_ALIASES[@]} ]] || die "AICAGE_BASES and AICAGE_BASE_ALIASES must have the same length."
 }
 

@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BASE_DIR="${ROOT_DIR}/base-images"
-ENV_FILE="${ROOT_DIR}/.env"
 BASES=()
 
 die() {
@@ -28,24 +27,12 @@ USAGE
   exit 1
 }
 
-load_env_file() {
-  if [[ -f "${ENV_FILE}" ]]; then
-    set -a
-    # shellcheck disable=SC1090
-    source "${ENV_FILE}"
-    set +a
-  fi
-}
-
-split_list() {
-  local raw="$1"
-  local -n out=$2
-  read -r -a out <<< "${raw}"
-}
+# shellcheck source=../../scripts/common.sh
+source "${ROOT_DIR}/scripts/common.sh"
 
 init_supported_lists() {
   split_list "${AICAGE_BASES}" BASES
-  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty; update ${ENV_FILE}."
+  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
 }
 
 if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
@@ -90,7 +77,7 @@ if [[ -n "${platform_override}" ]]; then
   echo "[build-base-all] Building platform ${platforms[*]}." >&2
 elif [[ -n "${AICAGE_PLATFORMS:-${PLATFORMS:-}}}" ]]; then
   split_list "${AICAGE_PLATFORMS:-${PLATFORMS:-}}" platforms
-  echo "[build-base-all] Building platforms ${platforms[*]} (from env)." >&2
+  echo "[build-base-all] Building platforms ${platforms[*]}." >&2
 else
   die "Platform list is empty; set AICAGE_PLATFORMS or use --platform."
 fi
