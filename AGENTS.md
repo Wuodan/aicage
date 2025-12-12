@@ -18,7 +18,8 @@
 - Build agent: `final-images/scripts/build.sh --tool <tool> --base <base> [--platform linux/amd64]`
 - Test base: `base-images/scripts/test-all.sh`
 - Test agent: `final-images/scripts/test-all.sh`
-- Helpful prereqs: `docker info`, `bats --version`
+- Test GitHub pipeline: `act`
+- Test GitHub pipeline for git tags: `act push -s GITHUB_REF=refs/tags/0.0.0`
 
 ## Coding Style
 
