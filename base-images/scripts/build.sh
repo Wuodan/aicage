@@ -3,8 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BASE_DIR="${ROOT_DIR}/base-images"
-SUPPORTED_BASES=()
-SUPPORTED_BASE_ALIASES=()
 
 die() {
   echo "[build-base] $*" >&2
@@ -13,10 +11,10 @@ die() {
 
 usage() {
   cat <<'USAGE'
-Usage: base-images/scripts/build.sh [--base <ref>] [options]
+Usage: base-images/scripts/build.sh [--base <alias>] [options]
 
 Options:
-  --base <value>       Upstream base image reference (required)
+  --base <value>       Base alias (required; must match a base-images/bases folder)
   --platform <value>   Override platform list (default: env or linux/amd64,linux/arm64)
   --push               Push the image instead of loading it locally
   --version <value>    Override AICAGE_VERSION for this build
@@ -32,12 +30,7 @@ USAGE
 # shellcheck source=../../scripts/common.sh
 source "${ROOT_DIR}/scripts/common.sh"
 
-init_supported_lists() {
-  split_list "${AICAGE_BASES}" SUPPORTED_BASES
-  split_list "${AICAGE_BASE_ALIASES}" SUPPORTED_BASE_ALIASES
-  [[ ${#SUPPORTED_BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
-  [[ ${#SUPPORTED_BASE_ALIASES[@]} -gt 0 ]] || die "AICAGE_BASE_ALIASES is empty."
-  [[ ${#SUPPORTED_BASES[@]} -eq ${#SUPPORTED_BASE_ALIASES[@]} ]] || die "AICAGE_BASES and AICAGE_BASE_ALIASES must have the same length."
+validate_base_settings() {
   [[ -n "${AICAGE_BASE_REPOSITORY:-}" ]] || die "AICAGE_BASE_REPOSITORY is empty."
   [[ -n "${AICAGE_VERSION:-}" ]] || die "AICAGE_VERSION is empty."
   if [[ "${AICAGE_BASE_REPOSITORY}" == "${AICAGE_REPOSITORY}" ]]; then
@@ -49,13 +42,13 @@ parse_args() {
   PLATFORM_OVERRIDE=""
   PUSH_MODE="--load"
   VERSION_OVERRIDE=""
-  BASE=""
+  BASE_ALIAS=""
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --base)
         [[ $# -ge 2 ]] || die "--base requires a value"
-        BASE="$2"
+        BASE_ALIAS="$2"
         shift 2
         ;;
       --platform)
@@ -85,7 +78,7 @@ parse_args() {
     esac
   done
 
-  if [[ -z "${BASE}" ]]; then
+  if [[ -z "${BASE_ALIAS}" ]]; then
     die "--base is required"
   fi
 }
@@ -96,9 +89,14 @@ main() {
   if [[ -n "${VERSION_OVERRIDE}" ]]; then
     AICAGE_VERSION="${VERSION_OVERRIDE}"
   fi
-  init_supported_lists
-
-  contains "${BASE}" "${SUPPORTED_BASES[@]}" || die "Unsupported base '${BASE}'. Valid: ${SUPPORTED_BASES[*]}"
+  validate_base_settings
+  # Validate alias by loading its fields directly.
+  local base_image
+  base_image="$(get_base_field "${BASE_ALIAS}" base_image)"
+  local os_installer
+  os_installer="$(get_base_field "${BASE_ALIAS}" os_installer)"
+  local os_installer_path="${BASE_DIR}/${os_installer}"
+  [[ -f "${os_installer_path}" ]] || die "OS installer not found for '${BASE_ALIAS}': ${os_installer}"
 
   local raw_platforms="${PLATFORM_OVERRIDE:-${AICAGE_PLATFORMS:-${PLATFORMS:-}}}"
   [[ -n "${raw_platforms}" ]] || die "Platform list is empty; set AICAGE_BASE_PLATFORMS or use --platform."
@@ -107,19 +105,10 @@ main() {
   [[ ${#platform_list[@]} -gt 0 ]] || die "Platform list is empty; set AICAGE_BASE_PLATFORMS or use --platform."
   local platforms_str="${platform_list[*]}"
 
-  local base_alias=""
-  for idx in "${!SUPPORTED_BASES[@]}"; do
-    if [[ "${SUPPORTED_BASES[$idx]}" == "${BASE}" ]]; then
-      base_alias="${SUPPORTED_BASE_ALIASES[$idx]}"
-      break
-    fi
-  done
-  [[ -n "${base_alias}" ]] || die "Base alias not found for '${BASE}'. Check AICAGE_BASES/AICAGE_BASE_ALIASES."
-
-  local target="base-${base_alias}"
-  local version_tag="${AICAGE_BASE_REPOSITORY}:${base_alias}-${AICAGE_VERSION}"
-  local latest_tag="${AICAGE_BASE_REPOSITORY}:${base_alias}-latest"
-  local description="Base image for aicage (${base_alias})"
+  local target="base-${BASE_ALIAS}"
+  local version_tag="${AICAGE_BASE_REPOSITORY}:${BASE_ALIAS}-${AICAGE_VERSION}"
+  local latest_tag="${AICAGE_BASE_REPOSITORY}:${BASE_ALIAS}-latest"
+  local description="Base image for aicage (${BASE_ALIAS})"
   local env_prefix=(
     AICAGE_BASE_REPOSITORY="${AICAGE_BASE_REPOSITORY}"
     AICAGE_VERSION="${AICAGE_VERSION}"
@@ -130,14 +119,15 @@ main() {
     docker buildx bake \
       -f "${BASE_DIR}/docker-bake.hcl" \
       base \
-      --set "base.args.BASE_IMAGE=${BASE}" \
+      --set "base.args.BASE_IMAGE=${base_image}" \
+      --set "base.args.OS_INSTALLER=${os_installer}" \
       --set "base.tags=${version_tag}" \
       --set "base.tags+=${latest_tag}" \
       --set "base.labels.org.opencontainers.image.description=${description}" \
       "${PUSH_MODE}"
   )
 
-  echo "[build-base] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_BASE_REPOSITORY} Version=${AICAGE_VERSION} UpstreamBase=${BASE} Tags=${version_tag},${latest_tag} Mode=${PUSH_MODE}" >&2
+  echo "[build-base] Target=${target} Platforms=${platforms_str} Repo=${AICAGE_BASE_REPOSITORY} Version=${AICAGE_VERSION} UpstreamBase=${base_image} Installer=${os_installer} Tags=${version_tag},${latest_tag} Mode=${PUSH_MODE}" >&2
   "${cmd[@]}"
 }
 

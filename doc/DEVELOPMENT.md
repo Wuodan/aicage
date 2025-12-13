@@ -26,32 +26,34 @@ sudo apt install docker.io docker-buildx-plugin qemu-user-static bats
 - `AICAGE_VERSION` (default `dev`)
 - `AICAGE_PLATFORMS` (default `linux/amd64 linux/arm64`, space-separated)
 - `AICAGE_TOOLS` (default `cline codex droid`, space-separated)
-- `AICAGE_BASES` (default `ghcr.io/catthehacker/ubuntu:act-latest ubuntu:24.04`, space-separated)
-- `AICAGE_BASE_ALIASES` (default `act ubuntu`, space-separated, aligned by index with `AICAGE_BASES`)
 - `AICAGE_BASE_REPOSITORY` (default `wuodan/aicage-base`, must differ from `AICAGE_REPOSITORY`)
+- Base definitions live in `base-images/bases/<alias>/base.yaml` with keys:
+  - `base_image` (upstream image reference, e.g., `fedora:latest`)
+  - `os_installer` (relative path to the install script to run, e.g., `scripts/install_os_packages_redhat.sh`)
+- `yq` is required for parsing `base.yaml` files (install from https://github.com/mikefarah/yq/).
 
 ## Build
 ### Base images
 ```bash
-base-images/scripts/build.sh --base <ref> [--platform list] [--version <tag>]
+base-images/scripts/build.sh --base <alias> [--platform list] [--version <tag>]
 base-images/scripts/build-all.sh [--platform list]
 ```
-- `base` values come from `.env` (`AICAGE_BASES`) and align with aliases in `AICAGE_BASE_ALIASES`.
+- `base` values come from folders in `base-images/bases/` (folder name is the alias, files define upstream and installer).
 - Images are tagged `${AICAGE_BASE_REPOSITORY}:<base-alias>-<AICAGE_VERSION>`.
 
 ### Agent (final) images
 ```bash
-final-images/scripts/build.sh --tool <tool> --base <base> [--platform list] [--version <tag>]
+final-images/scripts/build.sh --tool <tool> --base <alias> [--platform list] [--version <tag>]
 final-images/scripts/build-all.sh [--platform list]
 ```
 - `tool` values come from `.env` (`AICAGE_TOOLS`).
-- `base` values come from `.env` (`AICAGE_BASES`) and are paired with aliases in `AICAGE_BASE_ALIASES`.
+- `base` values come from `base-images/bases/` (folder name is the alias).
 - Images are tagged `${REPOSITORY}:<tool>-<base-alias>-<version>`.
 
 ## Test (smoke)
 Run all suites or filter by tool:
 ```bash
-final-images/scripts/test.sh --image wuodan/aicage:codex-ubuntu-24.04-dev --tool codex
+final-images/scripts/test.sh --image wuodan/aicage:codex-node-dev --tool codex
 ```
 - `AICAGE_IMAGE` can be set manually when running Bats directly.
 
@@ -89,8 +91,8 @@ code into `/workspace` and pass your host IDs, e.g.
 4) Update README tables to mention the tool.
 
 ## Adding a base
-1) Add the full base image reference to `.env` (`AICAGE_BASES`).  
-2) Extend the `Dockerfile` only if the base needs extra packages/config.  
+1) Create `base-images/bases/<alias>/base.yaml` with `base_image` and `os_installer`.  
+2) Extend the Dockerfile only if the base needs extra packages/config.  
 3) Update README tables to mention the base and alias.
 
 ## Coding style

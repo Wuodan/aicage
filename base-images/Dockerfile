@@ -1,10 +1,12 @@
 # syntax=docker/dockerfile:1.7-labs
 ARG BASE_IMAGE=ubuntu:24.04
+ARG OS_INSTALLER=scripts/os-installers/install_os_packages_debian.sh
 ARG NODEJS_VERSION=20.17.0
 
 FROM ${BASE_IMAGE} AS base
 
 ARG TARGETARCH
+ARG OS_INSTALLER
 ARG NODEJS_VERSION
 
 LABEL org.opencontainers.image.title="aicage-base" \
@@ -26,8 +28,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \
-    /tmp/install/install_os_packages.sh
+RUN --mount=type=bind,source=${OS_INSTALLER},target=/tmp/install_os_packages.sh,readonly \
+    /tmp/install_os_packages.sh
 
 # Install Node.js 20.x (cline core requires >=20).
 RUN --mount=type=bind,source=scripts,target=/tmp/install,readonly \

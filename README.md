@@ -6,7 +6,7 @@ base OS, pull the tag, and you get a ready-to-run shell with the agent preinstal
 ## What you get
 
 - Prebuilt tags for `cline`, `codex`, and `droid`.
-- Base choices defined in `.env` (defaults: `ubuntu:24.04` and `ghcr.io/catthehacker/ubuntu:act-latest`).
+- Base choices live under `base-images/bases/` (defaults: `fedora` → `fedora:latest`, `node` → `node:lts-slim` via `base.yaml`).
 - Multi-arch images (`linux/amd64` and `linux/arm64`) via Buildx.
 - Thin images: agent install only; you bring your own API keys.
 
@@ -17,14 +17,14 @@ Tags follow `${REPOSITORY}:<tool>-<base-alias>-<version>`.
 Default repo: `wuodan/aicage` on Docker Hub. Base layers live separately at
 `wuodan/aicage-base` and are pulled by the agent builds.
 
-Tools, bases, platforms, and base image references are defined once in `.env` and respected by the
-scripts and Bake targets.
+Tools and platforms are configured in `.env`. Bases come from directories in `base-images/bases/`
+(folder name is the alias; `base.yaml` inside defines the upstream image and OS installer script).
 
 Examples:
 
 - `wuodan/aicage:codex-ubuntu-latest`
-- `wuodan/aicage:cline-act-latest`
-- `wuodan/aicage-base:ubuntu-base-dev` (pulled automatically by the agent images)
+- `wuodan/aicage:cline-fedora-latest`
+- `wuodan/aicage-base:codex-act-latest` (pulled automatically by the agent images)
 
 ## Quick start (use prebuilt images)
 
@@ -53,13 +53,13 @@ created and chowned to that user.
 
 Base images are built once per upstream base and published to Docker Hub separately from the final
 agent images. They are tagged `${AICAGE_BASE_REPOSITORY}:<base-alias>-<AICAGE_VERSION>` (defaults to
-`wuodan/aicage-base:ubuntu-dev` and `wuodan/aicage-base:act-dev`).
+`wuodan/aicage-base:fedora-dev` and `wuodan/aicage-base:node-dev`).
 
 Build locally:
 
 ```bash
 # Build a single base (loads locally)
-base-images/scripts/build.sh --base ubuntu:24.04 --platform linux/amd64
+base-images/scripts/build.sh --base fedora --platform linux/amd64
 
 # Build all bases (loads locally)
 base-images/scripts/build-all.sh --platform linux/amd64
@@ -80,7 +80,7 @@ Agent builds now live under `final-images/`. Commands:
 
 ```bash
 # Build and load a single agent image
-final-images/scripts/build.sh --tool codex --base ubuntu:24.04 --platform linux/amd64
+final-images/scripts/build.sh --tool codex --base ubuntu --platform linux/amd64
 
 # Build the full matrix
 final-images/scripts/build-all.sh --platform linux/amd64

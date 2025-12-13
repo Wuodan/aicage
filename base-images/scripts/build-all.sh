@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BASE_DIR="${ROOT_DIR}/base-images"
-BASES=()
 
 die() {
   echo "[build-base-all] $*" >&2
@@ -30,17 +29,11 @@ USAGE
 # shellcheck source=../../scripts/common.sh
 source "${ROOT_DIR}/scripts/common.sh"
 
-init_supported_lists() {
-  split_list "${AICAGE_BASES}" BASES
-  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
-}
-
 if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
   usage
 fi
 
 load_env_file
-init_supported_lists
 
 platform_override=""
 push_flag=""
@@ -87,12 +80,15 @@ if [[ -n "${version_override}" ]]; then
   AICAGE_VERSION="${version_override}"
 fi
 
-for base in "${BASES[@]}"; do
+for base_dir in "${BASE_DIR}/bases"/*; do
+  base_alias="$(basename "${base_dir}")"
   local_platforms="${platforms[*]}"
-  echo "[build-base-all] Building ${base} (platforms: ${local_platforms})" >&2
+  base_image="$(get_base_field "${base_alias}" base_image)"
+  installer="$(get_base_field "${base_alias}" os_installer)"
+  echo "[build-base-all] Building ${base_alias} (upstream: ${base_image}; platforms: ${local_platforms})" >&2
   if [[ -n "${push_flag}" ]]; then
-    "${BASE_DIR}/scripts/build.sh" --base "${base}" "${platform_arg[@]}" "${push_flag}" --version "${AICAGE_VERSION}"
+    "${BASE_DIR}/scripts/build.sh" --base "${base_alias}" "${platform_arg[@]}" "${push_flag}" --version "${AICAGE_VERSION}"
   else
-    "${BASE_DIR}/scripts/build.sh" --base "${base}" "${platform_arg[@]}" --version "${AICAGE_VERSION}"
+    "${BASE_DIR}/scripts/build.sh" --base "${base_alias}" "${platform_arg[@]}" --version "${AICAGE_VERSION}"
   fi
 done

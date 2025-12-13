@@ -19,7 +19,6 @@
 - Test base: `base-images/scripts/test-all.sh`
 - Test agent: `final-images/scripts/test-all.sh`
 - Test GitHub pipeline: `act`
-- Test GitHub pipeline for git tags: `act push -s GITHUB_REF=refs/tags/0.0.0`
 
 ## Coding Style
 

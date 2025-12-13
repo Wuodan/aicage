@@ -4,7 +4,6 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 FINAL_DIR="${ROOT_DIR}/final-images"
 TOOLS=()
-BASES=()
 
 die() {
   echo "[build-all] $*" >&2
@@ -32,9 +31,7 @@ source "${ROOT_DIR}/scripts/common.sh"
 
 init_supported_lists() {
   split_list "${AICAGE_TOOLS}" TOOLS
-  split_list "${AICAGE_BASES}" BASES
   [[ ${#TOOLS[@]} -gt 0 ]] || die "AICAGE_TOOLS is empty."
-  [[ ${#BASES[@]} -gt 0 ]] || die "AICAGE_BASES is empty."
 }
 
 if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
@@ -90,13 +87,14 @@ if [[ -n "${version_override}" ]]; then
 fi
 
 for tool in "${TOOLS[@]}"; do
-  for base in "${BASES[@]}"; do
+  for base_dir in "${ROOT_DIR}/base-images/bases"/*; do
+    base_alias="$(basename "${base_dir}")"
     local_platforms="${platforms[*]}"
-    echo "[build-all] Building ${tool}-${base} (platforms: ${local_platforms})" >&2
+    echo "[build-all] Building ${tool}-${base_alias} (platforms: ${local_platforms})" >&2
     if [[ -n "${push_flag}" ]]; then
-      "${FINAL_DIR}/scripts/build.sh" --tool "${tool}" --base "${base}" "${platform_arg[@]}" "${push_flag}"
+      "${FINAL_DIR}/scripts/build.sh" --tool "${tool}" --base "${base_alias}" "${platform_arg[@]}" "${push_flag}"
     else
-      "${FINAL_DIR}/scripts/build.sh" --tool "${tool}" --base "${base}" "${platform_arg[@]}"
+      "${FINAL_DIR}/scripts/build.sh" --tool "${tool}" --base "${base_alias}" "${platform_arg[@]}"
     fi
   done
 done
