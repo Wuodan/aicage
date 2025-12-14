@@ -1,0 +1,18 @@
+[project]
+name = "aicage"
+version = "0.1.0"
+description = "CLI wrapper to run coding agents inside Docker with per-project configuration."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Wuodan" }]
+
+[project.scripts]
+aicage = "aicage.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"

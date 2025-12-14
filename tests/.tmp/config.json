@@ -1,0 +1,8 @@
+{
+  "docker_args": "--network=host",
+  "tools": {
+    "codex": {
+      "base": "ubuntu"
+    }
+  }
+}

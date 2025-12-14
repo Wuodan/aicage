@@ -1,0 +1,3 @@
+# aicage settings
+AICAGE_REPOSITORY: wuodan/aicage
+AICAGE_DEFAULT_BASE: ubuntu
