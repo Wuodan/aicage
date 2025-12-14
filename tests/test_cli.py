@@ -106,9 +106,11 @@ class PromptTests(TestCase):
             cmd = cli.assemble_docker_run(
                 image_ref="wuodan/aicage:codex-ubuntu-latest",
                 project_path=Path("/work/project"),
-                tool_config_path=Path("/home/user/.codex"),
+                tool_config_host=Path("/host/.codex"),
+                tool_mount_container=Path("/aicage/tool-config"),
                 merged_docker_args="--network=host",
                 tool_args=["--flag"],
+                extra_env=["-e", "AICAGE_TOOL_PATH_LABEL=~/.codex"],
             )
         self.assertEqual(
             [
@@ -116,10 +118,12 @@ class PromptTests(TestCase):
                 "run",
                 "--rm",
                 "-it",
+                "-e",
+                "AICAGE_TOOL_PATH_LABEL=~/.codex",
                 "-v",
                 "/work/project:/workspace",
                 "-v",
-                "/home/user/.codex:/home/user/.codex",
+                "/host/.codex:/aicage/tool-config",
                 "--network=host",
                 "wuodan/aicage:codex-ubuntu-latest",
                 "--flag",

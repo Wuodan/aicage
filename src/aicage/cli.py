@@ -116,14 +116,18 @@ def resolve_user_ids() -> List[str]:
 def assemble_docker_run(
     image_ref: str,
     project_path: Path,
-    tool_config_path: Path,
+    tool_config_host: Path,
+    tool_mount_container: Path,
     merged_docker_args: str,
     tool_args: List[str],
+    extra_env: List[str],
 ) -> List[str]:
     cmd: List[str] = ["docker", "run", "--rm", "-it"]
     cmd.extend(resolve_user_ids())
+    if extra_env:
+        cmd.extend(extra_env)
     cmd.extend(["-v", f"{project_path}:/workspace"])
-    cmd.extend(["-v", f"{tool_config_path}:{tool_config_path}"])
+    cmd.extend(["-v", f"{tool_config_host}:{tool_mount_container}"])
 
     if merged_docker_args:
         cmd.extend(shlex.split(merged_docker_args))
@@ -175,19 +179,30 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         pull_image(image_ref)
         tool_path_label = read_tool_label(image_ref, "tool_path")
-        tool_config_path = Path(os.path.expanduser(tool_path_label)).resolve()
-        tool_config_path.mkdir(parents=True, exist_ok=True)
+        tool_config_host = Path(os.path.expanduser(tool_path_label)).resolve()
+        tool_config_host.mkdir(parents=True, exist_ok=True)
+
+        tool_mount_container = Path("/aicage/tool-config")
 
         merged_docker_args = " ".join(
             part for part in [global_cfg.get("docker_args", ""), project_cfg.get("docker_args", ""), cli_docker_args] if part
         ).strip()
 
+        extra_env = [
+            "-e",
+            f"AICAGE_TOOL_PATH_LABEL={tool_path_label}",
+            "-e",
+            f"AICAGE_TOOL_MOUNT={tool_mount_container}",
+        ]
+
         run_cmd = assemble_docker_run(
             image_ref=image_ref,
             project_path=project_path,
-            tool_config_path=tool_config_path,
+            tool_config_host=tool_config_host,
+            tool_mount_container=tool_mount_container,
             merged_docker_args=merged_docker_args,
             tool_args=tool_args,
+            extra_env=extra_env,
         )
 
         if dry_run:
