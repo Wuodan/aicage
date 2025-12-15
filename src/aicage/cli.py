@@ -264,6 +264,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         subprocess.run(run_cmd, check=True)
         return 0
+    except KeyboardInterrupt:
+        print()  # Tidy up the prompt when interrupted with Ctrl-C.
+        return 130
     except (CliError, ConfigError, DiscoveryError) as exc:
         print(f"[aicage] {exc}", file=sys.stderr)
         return 1
