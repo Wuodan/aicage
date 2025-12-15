@@ -2,7 +2,6 @@ import io
 import json
 import sys
 import tempfile
-import types
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -110,7 +109,7 @@ class PromptTests(TestCase):
                 tool_mount_container=Path("/aicage/tool-config"),
                 merged_docker_args="--network=host",
                 tool_args=["--flag"],
-                extra_env=["-e", "AICAGE_TOOL_PATH_LABEL=~/.codex"],
+                extra_env=["-e", "AICAGE_TOOL_PATH=~/.codex"],
             )
         self.assertEqual(
             [
@@ -119,7 +118,7 @@ class PromptTests(TestCase):
                 "--rm",
                 "-it",
                 "-e",
-                "AICAGE_TOOL_PATH_LABEL=~/.codex",
+                "AICAGE_TOOL_PATH=~/.codex",
                 "-v",
                 "/work/project:/workspace",
                 "-v",

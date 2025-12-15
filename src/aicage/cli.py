@@ -138,10 +138,56 @@ def assemble_docker_run(
 
 
 def pull_image(image_ref: str) -> None:
+    pull_result = subprocess.run(["docker", "pull", image_ref], capture_output=True, text=True)
+    if pull_result.returncode == 0:
+        return
+
+    # Pull failed; if image exists locally, continue with a warning.
+    inspect = subprocess.run(
+        ["docker", "image", "inspect", image_ref],
+        capture_output=True,
+        text=True,
+    )
+    if inspect.returncode == 0:
+        msg = pull_result.stderr.strip() or f"docker pull failed for {image_ref}"
+        print(f"[aicage] Warning: {msg}. Using local image.", file=sys.stderr)
+        return
+
+    raise CliError(f"docker pull failed for {image_ref}: {pull_result.stderr.strip() or pull_result.stdout.strip()}")
+
+
+def discover_local_bases(repository: str, tool: str) -> List[str]:
+    """
+    Fallback discovery using local images when Docker Hub is unavailable.
+    """
     try:
-        subprocess.run(["docker", "pull", image_ref], check=True)
+        result = subprocess.run(
+            ["docker", "image", "ls", repository, "--format", "{{.Repository}}:{{.Tag}}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
     except subprocess.CalledProcessError as exc:
-        raise CliError(f"docker pull failed for {image_ref}: {exc.stderr or exc}") from exc
+        raise CliError(f"Failed to list local images for {repository}: {exc.stderr or exc}") from exc
+
+    aliases: set[str] = set()
+    for line in result.stdout.splitlines():
+        line = line.strip()
+        if not line or line.endswith(":<none>"):
+            continue
+        if ":" not in line:
+            continue
+        repo, tag = line.split(":", 1)
+        if repo != repository:
+            continue
+        prefix = f"{tool}-"
+        suffix = "-latest"
+        if tag.startswith(prefix) and tag.endswith(suffix):
+            base = tag[len(prefix) : -len(suffix)]
+            if base:
+                aliases.add(base)
+
+    return sorted(aliases)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -167,7 +213,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         base = tool_project_cfg.get("base") or tool_global_cfg.get("base")
         available_bases: List[str] = []
         if not base:
-            available_bases = discover_base_aliases(repository, tool)
+            remote_bases: List[str] = []
+            local_bases: List[str] = []
+            try:
+                remote_bases = discover_base_aliases(repository, tool)
+            except DiscoveryError as exc:
+                print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
+            try:
+                local_bases = discover_local_bases(repository, tool)
+            except CliError as exc:
+                print(f"[aicage] Warning: {exc}", file=sys.stderr)
+
+            available_bases = sorted(set(remote_bases) | set(local_bases))
+            if not available_bases:
+                raise CliError(f"No base images found for tool '{tool}' (repository={repository}).")
             base = prompt_for_base(tool, default_base, available_bases)
             tools_cfg = project_cfg.setdefault("tools", {})
             tool_entry = tools_cfg.setdefault(tool, {})
@@ -188,12 +247,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             part for part in [global_cfg.get("docker_args", ""), project_cfg.get("docker_args", ""), cli_docker_args] if part
         ).strip()
 
-        extra_env = [
-            "-e",
-            f"AICAGE_TOOL_PATH_LABEL={tool_path_label}",
-            "-e",
-            f"AICAGE_TOOL_MOUNT={tool_mount_container}",
-        ]
+        extra_env = ["-e", f"AICAGE_TOOL_PATH={tool_path_label}"]
 
         run_cmd = assemble_docker_run(
             image_ref=image_ref,
