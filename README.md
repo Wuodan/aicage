@@ -1,21 +1,28 @@
 # aicage
 
-Run your favorite AI coding agents in Docker with a host-matching user and your local config mounted
-automatically.
+Run your favorite AI coding agents comfortably in Docker.
 
-## Why cage agents?
+## Why use `aicage`?
 
 Agents need deep access (read code, run shells, install deps).
 Their built-in safety checks are naturally limited.
 
 Running agents in containers gives a hard boundary - while the experience stays the same.
-See [Why cage agents? (detailed)](#why-cage-agents-detailed) for the full rationale.
+See [Why cage agents?](#why-cage-agents) for the full rationale.
 
 ## Quickstart
 
-- Prerequisites: Docker, Python 3.10+, and `pipx` (or `pip` if you prefer).
-- Install: `pipx install aicage` (or `pip install aicage`).
-- Use from a project directory:
+- Prerequisites:
+  - Docker
+  - Python 3.10+ and `pipx`
+- Install:
+  
+  ```bash
+  pipx install aicage
+  ```
+  
+- Navigate to your project directory.
+- Use one of these commands:
 
   ```bash
   aicage claude
@@ -28,21 +35,25 @@ See [Why cage agents? (detailed)](#why-cage-agents-detailed) for the full ration
 
 The first run asks which base image to use; pick Ubuntu or whatever matches your Linux distro.
 
-| Base   | Notes                                          |
-|--------|------------------------------------------------|
-| ubuntu | Good default for most users.                   |
-| debian | Stable Debian base.                            |
-| fedora | Fedora users can choose this.                  |
-| alpine | Minimal footprint; more packages may be needed.|
-| node   | Official Node image (Ubuntu-based).            |
-| act    | Default runner image from `act`.               |
+| Base   | Distro | Notes                                                                                              |
+|--------|--------|----------------------------------------------------------------------------------------------------|
+| ubuntu | Ubuntu | Good default for most users                                                                        |
+| debian | Debian | For Debian users                                                                                   |
+| fedora | Fedora | For RedHat/Fedora users                                                                            |
+| alpine | Alpine | Minimal footprint; experimental                                                                    |
+| node   | Ubuntu | Official Node image (all base images have Node)                                                    |
+| act    | Ubuntu | Default runner image from [act](https://github.com/nektos/act) (`act` runs GitHub Actions locally) |
+
+All base images have the same stack of tools installed.
 
 ## Agents
 
-- claude — Anthropic Claude CLI · [anthropic.com](https://www.anthropic.com)
-- cline — Cline VS Code-style agent · [github.com/cline/cline](https://github.com/cline/cline)
-- codex — OpenAI-style agent · [openai.com](https://openai.com)
-- droid — Dev-Droid assistant · [github.com/ckaznocha/devdroid](https://github.com/ckaznocha/devdroid)
+| CLI    | Agent       | Homepage                                                                           |
+|--------|-------------|------------------------------------------------------------------------------------|
+| claude | Claude Code | [https://claude.com/product/claude-code](https://claude.com/product/claude-code)   |
+| cline  | Cline CLI   | [https://docs.cline.bot/cline-cli](https://docs.cline.bot/cline-cli/overview)      |
+| codex  | Codex CLI   | [https://developers.openai.com/codex/cli](https://developers.openai.com/codex/cli) |
+| droid  | Factory CLI | [https://factory.ai/product/cli](https://factory.ai/product/cli)                   |
 
 Your existing CLI config for each tool is mounted inside the container so you can keep using your
 preferences and credentials.
@@ -51,11 +62,7 @@ preferences and credentials.
 
 - `--dry-run` prints the composed `docker run` command without executing it.
 
-## More info
-
-More details are in [DEVELOPMENT.md](DEVELOPMENT.md).
-
-## Why cage agents? (detailed)
+## Why cage agents?
 
 AI coding agents read your code, run shells, install packages, and edit files. That power is useful,
 but granting it directly on the host expands your risk surface.
@@ -71,3 +78,7 @@ How aicage mitigates this:
 
 - Containers create a hard boundary: the agent can access only what you explicitly mount. Day-to-day
   use stays familiar—just with the host kept out of reach.
+
+## Development info
+
+More details are in [DEVELOPMENT.md](DEVELOPMENT.md).
