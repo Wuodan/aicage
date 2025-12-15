@@ -6,6 +6,7 @@ dist/
 /node_modules/
 
 **/.coverage
+**/_version.py
 
 .roomodes
 # may contain API-keys

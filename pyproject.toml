@@ -1,18 +1,24 @@
+[build-system]
+requires = ["hatchling>=1.18", "hatch-vcs"]
+build-backend = "hatchling.build"
+
 [project]
 name = "aicage"
-version = "0.1.0"
-description = "CLI wrapper to run coding agents inside Docker with per-project configuration."
+description = "Runs agentic coding assistants in docker containers"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "Wuodan" }]
+authors = [{ name = "Stefan Kuhn" }]
+dynamic = ["version"]
 
 [project.scripts]
 aicage = "aicage.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/aicage"]
 
-[build-system]
-requires = ["setuptools>=64"]
-build-backend = "setuptools.build_meta"
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/aicage/_version.py"
