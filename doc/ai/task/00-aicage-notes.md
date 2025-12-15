@@ -27,7 +27,7 @@ Runtime expectations
 State layout
 - Central config file in repo root (`config.yaml`) defines `AICAGE_REPOSITORY` and
   `AICAGE_DEFAULT_BASE`.
-- Persistent state lives under `~/.aicage/` with global config (`config.json`) and per-project files
+- Persistent state lives under `~/.aicage/` with global config (`config.yaml`) and per-project files
   keyed by cwd realpath hash (`projects/<hash>.json`). Both support stored docker args and per-tool
   base choices.
 

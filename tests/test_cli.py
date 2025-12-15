@@ -5,6 +5,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aicage import cli  # noqa: E402
@@ -95,6 +97,12 @@ class ConfigStoreTests(TestCase):
 
             reloaded_project = store.load_project(project_path)
             self.assertEqual(project_cfg, reloaded_project)
+
+            yaml_files = list(store.projects_dir.glob("*.yaml"))
+            self.assertEqual(1, len(yaml_files))
+            with yaml_files[0].open("r", encoding="utf-8") as handle:
+                raw = yaml.safe_load(handle)
+            self.assertEqual(project_cfg, raw)
 
 
 class PromptTests(TestCase):

@@ -6,6 +6,8 @@ from importlib import resources
 from pathlib import Path
 from typing import Any, Dict
 
+import yaml
+
 
 class ConfigError(Exception):
     """Raised when configuration cannot be loaded or saved."""
@@ -60,6 +62,21 @@ class SettingsStore:
             json.dump(data, handle, indent=2, sort_keys=True)
             handle.write("\n")
 
+    def _load_yaml(self, path: Path) -> Dict[str, Any]:
+        if not path.exists():
+            return {}
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                data = yaml.safe_load(handle)
+                return data or {}
+        except yaml.YAMLError as exc:
+            raise ConfigError(f"Failed to parse YAML config at {path}: {exc}") from exc
+
+    def _save_yaml(self, path: Path, data: Dict[str, Any]) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as handle:
+            yaml.safe_dump(data, handle, sort_keys=True)
+
     def load_global(self) -> Dict[str, Any]:
         data = self._load_json(self.global_path)
         return {
@@ -75,10 +92,10 @@ class SettingsStore:
 
     def _project_path(self, project_realpath: Path) -> Path:
         digest = hashlib.sha256(str(project_realpath).encode("utf-8")).hexdigest()
-        return self.projects_dir / f"{digest}.json"
+        return self.projects_dir / f"{digest}.yaml"
 
     def load_project(self, project_realpath: Path) -> Dict[str, Any]:
-        data = self._load_json(self._project_path(project_realpath))
+        data = self._load_yaml(self._project_path(project_realpath))
         return {
             "path": data.get("path", str(project_realpath)),
             "docker_args": data.get("docker_args", ""),
@@ -91,7 +108,7 @@ class SettingsStore:
             "docker_args": data.get("docker_args", ""),
             "tools": data.get("tools", {}),
         }
-        self._save_json(self._project_path(project_realpath), payload)
+        self._save_yaml(self._project_path(project_realpath), payload)
 
     def _ensure_central_config(self) -> None:
         """
