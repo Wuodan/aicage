@@ -1,33 +1,29 @@
 # AI Agent Playbook
 
-Audience: AI coding agents working in this repository (including submodules). Keep user-facing docs
-clean and follow development guidance in `DEVELOPMENT.md` for commands and workflows.
+Audience: AI coding agents working in this repo and its submodules. Keep user-facing docs clean and
+follow [DEVELOPMENT.md](DEVELOPMENT.md) for workflows.
 
 ## Ground rules
 
-- Stay within the repo’s conventions: Bash scripts use `#!/usr/bin/env bash`, `set -euo pipefail`,
-  and two-space indents; Dockerfiles declare args at the top and keep steps POSIX-friendly;
-  Markdown wraps near ~100 chars.
-- Prefer `rg` for searches; avoid reverting changes you did not make.
-- Respect the separation of concerns: `README.md` is user-only; put build/test/process details into
-  `DEVELOPMENT.md`.
+- Markdown: wrap near ~120 chars.
+- Keep [README.md](README.md) user-only.
+- Put build/process notes in [DEVELOPMENT.md](DEVELOPMENT.md).
+- For all Python commands, use a virtualenv:  
+  `python -m venv .venv && source .venv/bin/activate && pip install -r requirements-dev.txt`.
+- Keep code and docs free of conversational feedback to humans; only ship product-ready content.
+- Disabling linters via comments (e.g., `# noqa`) is a last resort; analyze and fix first, and only
+  add suppressions with explicit approval.
 
-## Where to work
+## Repo structure
 
-- Base images live in `aicage-image-base/` with their own `README.md`, `DEVELOPMENT.md`, and
-  `AGENTS.md`.
-- Agent images live in `aicage-image/` with the same doc set.
-- Use the per-repo development guides for exact commands, env vars, and test matrices.
+- [README.md](README.md) (users)
+- [DEVELOPMENT.md](DEVELOPMENT.md) (advanced users)
+- [Why cage agents?](README.md#why-cage-agents-detailed) (rationale).
+- Submodules:
+  - `aicage-image-base/` builds base OS layers
+  - `aicage-image/` builds final agent images
 
-## Testing expectations
+## Linting and tests
 
-- Run the relevant smoke suites after changing build or runtime behavior:
-  - Base images: `aicage-image-base/scripts/test-all.sh`
-  - Agent images: `aicage-image/scripts/test-all.sh`
-- Note any skipped tests or platform limits when you cannot execute them.
-
-## Style and quality
-
-- Keep changes minimal and well explained in commit messages and PR descriptions.
-- Add brief comments only where behavior is non-obvious; avoid restating code.
-- When adding tools or bases, ensure corresponding smoke coverage is updated or created.
+- Lint: `yamllint .`, `ruff check .`, `pymarkdown --config .pymarkdown.json scan .`
+- Tests: `pytest --cov=src --cov-report=term-missing`

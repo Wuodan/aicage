@@ -9,9 +9,9 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aicage import cli  # noqa: E402
-from aicage.config import GlobalConfig, ProjectConfig, SettingsStore  # noqa: E402
-from aicage.discovery import discover_base_aliases  # noqa: E402
+from aicage import cli
+from aicage.config import ProjectConfig, SettingsStore
+from aicage.discovery import discover_base_aliases
 
 
 class ParseCliTests(TestCase):
@@ -52,10 +52,10 @@ class DiscoveryTests(TestCase):
         }
 
         class FakeResponse:
-            def __enter__(self):  # noqa: D401
+            def __enter__(self):
                 return io.BytesIO(json.dumps(payload).encode("utf-8"))
 
-            def __exit__(self, exc_type, exc, tb):  # noqa: D401
+            def __exit__(self, exc_type, exc, tb):
                 return False
 
         def fake_urlopen(url: str):  # pylint: disable=unused-argument

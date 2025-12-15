@@ -1,45 +1,73 @@
 # aicage
 
-Prebuilt Docker images for popular AI coding agents. Pick a tool, choose a base OS, and start a
-container with a user that matches your host IDs.
+Run your favorite AI coding agents in Docker with a host-matching user and your local config mounted
+automatically.
 
-## Images at a glance
+## Why cage agents?
 
-- Agents: `cline`, `codex`, and `droid`.
-- Bases: aliases published from `wuodan/aicage-image-base` (e.g., `ubuntu`, `fedora`, `act`).
-- Tags live at `wuodan/aicage` and support `linux/amd64` and `linux/arm64`.
-- Images are thin: the agent is installed, you provide API keys at runtime.
+Agents need deep access (read code, run shells, install deps).
+Their built-in safety checks are naturally limited.
 
-## Tag format
+Running agents in containers gives a hard boundary - while the experience stays the same.
+See [Why cage agents? (detailed)](#why-cage-agents-detailed) for the full rationale.
 
-- `${AICAGE_REPOSITORY:-wuodan/aicage}:<tool>-<base>-<version>` (e.g., `codex-ubuntu-latest`).
-- Base layers come from `${AICAGE_BASE_REPOSITORY:-wuodan/aicage-image-base}:<base>-<version>`.
-- `<base>-latest` tags are convenience aliases discovered from the base repository.
+## Quickstart
 
-## Quick start
+- Prerequisites: Docker, Python 3.10+, and `pipx` (or `pip` if you prefer).
+- Install: `pipx install aicage` (or `pip install aicage`).
+- Use from a project directory:
 
-```bash
-docker pull wuodan/aicage:codex-ubuntu-latest
+  ```bash
+  aicage claude
+  aicage cline
+  aicage codex
+  aicage droid
+  ```
 
-docker run -it --rm \
-  -e OPENAI_API_KEY=sk-... \
-  -e AICAGE_UID=$(id -u) \
-  -e AICAGE_GID=$(id -g) \
-  -e AICAGE_USER=$(id -un) \
-  -v "$(pwd)":/workspace \
-  wuodan/aicage:cline-ubuntu-latest
-```
+## Base images
 
-Swap `codex` for `cline` or `droid`, and switch `ubuntu` to any available base alias.
+The first run asks which base image to use; pick Ubuntu or whatever matches your Linux distro.
 
-## Runtime behavior
+| Base   | Notes                                          |
+|--------|------------------------------------------------|
+| ubuntu | Good default for most users.                   |
+| debian | Stable Debian base.                            |
+| fedora | Fedora users can choose this.                  |
+| alpine | Minimal footprint; more packages may be needed.|
+| node   | Official Node image (Ubuntu-based).            |
+| act    | Default runner image from `act`.               |
 
-- Containers start as root, then `scripts/entrypoint.sh` creates a user from `AICAGE_UID`/`AICAGE_GID`/
-  `AICAGE_USER` (defaults `1000`/`1000`/`aicage`) and switches into it with `gosu`.
-- `/workspace` is created and owned by that user; mount your project there.
+## Agents
 
-## Related repositories
+- claude — Anthropic Claude CLI · [anthropic.com](https://www.anthropic.com)
+- cline — Cline VS Code-style agent · [github.com/cline/cline](https://github.com/cline/cline)
+- codex — OpenAI-style agent · [openai.com](https://openai.com)
+- droid — Dev-Droid assistant · [github.com/ckaznocha/devdroid](https://github.com/ckaznocha/devdroid)
 
-- Base layers: `aicage-image-base` builds `${AICAGE_BASE_REPOSITORY}` tags.
-- Final agent images: `aicage-image` consumes base layers and publishes `${AICAGE_REPOSITORY}` tags.
-- Want to build or extend the images? See `DEVELOPMENT.md` in each repo for contributor guidance.
+Your existing CLI config for each tool is mounted inside the container so you can keep using your
+preferences and credentials.
+
+## aicage options
+
+- `--dry-run` prints the composed `docker run` command without executing it.
+
+## More info
+
+More details are in [DEVELOPMENT.md](DEVELOPMENT.md).
+
+## Why cage agents? (detailed)
+
+AI coding agents read your code, run shells, install packages, and edit files. That power is useful,
+but granting it directly on the host expands your risk surface.
+
+Where built-in safety is limited:
+
+- Allow/deny lists only cover known patterns; unexpected commands or attack paths can slip through.
+- Some tools work fully only after relaxing their own safety modes, broadening what they can touch.
+- “Read-only project” features are software rules. Other projects and files still sit alongside them
+  on the same host.
+
+How aicage mitigates this:
+
+- Containers create a hard boundary: the agent can access only what you explicitly mount. Day-to-day
+  use stays familiar—just with the host kept out of reach.
