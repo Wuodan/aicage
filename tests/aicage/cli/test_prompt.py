@@ -17,6 +17,13 @@ class PromptTests(TestCase):
             with self.assertRaises(CliError):
                 cli.prompt_for_base("codex", "ubuntu", ["ubuntu"])
 
+    def test_prompt_accepts_number_and_default(self) -> None:
+        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", side_effect=["2", ""]):
+            choice = cli.prompt_for_base("codex", "ubuntu", ["alpine", "ubuntu"])
+            self.assertEqual("ubuntu", choice)
+            default_choice = cli.prompt_for_base("codex", "ubuntu", ["ubuntu"])
+            self.assertEqual("ubuntu", default_choice)
+
     def test_assemble_includes_workspace_mount(self) -> None:
         with mock.patch("aicage.runtime.run_args._resolve_user_ids", return_value=[]):
             run_args = DockerRunArgs(

@@ -92,15 +92,32 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
 
 def prompt_for_base(tool: str, default_base: str, available: List[str]) -> str:
     ensure_tty_for_prompt()
-    choices = ", ".join(available) if available else "none discovered"
-    prompt = (
-        f"Select base image for '{tool}' (pick the runtime you want inside the container) "
-        f"[{default_base}] (options: {choices}): "
-    )
+    if available:
+        print(f"Select base image for '{tool}' (pick the runtime you want inside the container):")
+        for idx, base in enumerate(available, start=1):
+            suffix = " (default)" if base == default_base else ""
+            print(f"  {idx}) {base}{suffix}")
+        prompt = f"Enter number or name [{default_base}]: "
+    else:
+        prompt = (
+            f"Select base image for '{tool}' (pick the runtime you want inside the container) "
+            f"[{default_base}]: "
+        )
+
     response = input(prompt).strip()
-    choice = response or default_base
+    if not response:
+        choice = default_base
+    elif response.isdigit() and available:
+        idx = int(response)
+        if idx < 1 or idx > len(available):
+            raise CliError(f"Invalid choice '{response}'. Pick a number between 1 and {len(available)}.")
+        choice = available[idx - 1]
+    else:
+        choice = response
+
     if available and choice not in available:
-        raise CliError(f"Invalid base '{choice}'. Valid options: {choices}")
+        options = ", ".join(available)
+        raise CliError(f"Invalid base '{choice}'. Valid options: {options}")
     return choice
 
 
