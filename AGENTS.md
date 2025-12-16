@@ -18,7 +18,7 @@ follow [DEVELOPMENT.md](DEVELOPMENT.md) for workflows.
 
 - [README.md](README.md) (users)
 - [DEVELOPMENT.md](DEVELOPMENT.md) (advanced users)
-- [Why cage agents?](README.md#why-cage-agents-detailed) (rationale).
+- [Why cage agents?](README.md#why-cage-agents) (rationale).
 - Submodules:
   - `aicage-image-base/` builds base OS layers
   - `aicage-image/` builds final agent images

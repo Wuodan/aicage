@@ -3,20 +3,45 @@ import os
 import shlex
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
-from .config import ConfigError, SettingsStore
-from .discovery import DiscoveryError, discover_base_aliases
+from aicage.config import ConfigError, SettingsStore
+from aicage.config.global_config import GlobalConfig
+from aicage.config.project_config import ProjectConfig
+from aicage.discovery import DiscoveryError, discover_base_aliases
+from aicage.errors import CliError
+from aicage.runtime.auth.mounts import (
+    build_auth_mounts,
+    load_mount_preferences,
+    store_mount_preferences,
+)
+from aicage.runtime.auth.prompts import ensure_tty_for_prompt
+from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run, merge_docker_args
+
+TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
 
 
-class CliError(Exception):
-    """Raised for user-facing CLI errors."""
+@dataclass
+class ParsedArgs:
+    dry_run: bool
+    docker_args: str
+    tool: str
+    tool_args: List[str]
 
 
-def parse_cli(argv: Sequence[str]) -> Tuple[bool, str, str, List[str]]:
+@dataclass
+class ConfigContext:
+    store: SettingsStore
+    project_path: Path
+    project_cfg: ProjectConfig
+    global_cfg: GlobalConfig
+
+
+def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     """
-    Returns (dry_run, docker_args, tool, tool_args).
+    Returns parsed CLI args.
     Docker args are a single opaque string; precedence is resolved later.
     """
     parser = argparse.ArgumentParser(add_help=False)
@@ -35,11 +60,10 @@ def parse_cli(argv: Sequence[str]) -> Tuple[bool, str, str, List[str]]:
         print(usage)
         sys.exit(0)
 
-    docker_args = ""
-    tool_args: List[str] = []
-
     if not remaining:
         raise CliError("Missing arguments. Provide a tool name (and optional docker args).")
+
+    docker_args = ""
 
     if "--" in remaining:
         sep_index = remaining.index("--")
@@ -63,12 +87,7 @@ def parse_cli(argv: Sequence[str]) -> Tuple[bool, str, str, List[str]]:
     if not tool:
         raise CliError("Tool name is required.")
 
-    return opts.dry_run, docker_args, tool, tool_args
-
-
-def ensure_tty_for_prompt() -> None:
-    if not sys.stdin.isatty():
-        raise CliError("Interactive input required but stdin is not a TTY.")
+    return ParsedArgs(opts.dry_run, docker_args, tool, tool_args)
 
 
 def prompt_for_base(tool: str, default_base: str, available: List[str]) -> str:
@@ -80,6 +99,42 @@ def prompt_for_base(tool: str, default_base: str, available: List[str]) -> str:
     if available and choice not in available:
         raise CliError(f"Invalid base '{choice}'. Valid options: {choices}")
     return choice
+
+
+def discover_available_bases(repository: str, tool: str) -> List[str]:
+    remote_bases: List[str] = []
+    local_bases: List[str] = []
+    try:
+        remote_bases = discover_base_aliases(repository, tool)
+    except DiscoveryError as exc:
+        print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
+    try:
+        local_bases = discover_local_bases(repository, tool)
+    except CliError as exc:
+        print(f"[aicage] Warning: {exc}", file=sys.stderr)
+    return sorted(set(remote_bases) | set(local_bases))
+
+
+def build_config_context() -> ConfigContext:
+    store = SettingsStore()
+    project_path = Path.cwd().resolve()
+    global_cfg = store.load_global()
+    project_cfg = store.load_project(project_path)
+    return ConfigContext(store=store, project_path=project_path, project_cfg=project_cfg, global_cfg=global_cfg)
+
+
+def resolve_base(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> Tuple[str, bool]:
+    base = tool_cfg.get("base") or context.global_cfg.tools.get(tool, {}).get("base")
+    if base:
+        return base, False
+
+    available_bases = discover_available_bases(context.global_cfg.repository, tool)
+    if not available_bases:
+        raise CliError(f"No base images found for tool '{tool}' (repository={context.global_cfg.repository}).")
+
+    base = prompt_for_base(tool, context.global_cfg.default_base, available_bases)
+    tool_cfg["base"] = base
+    return base, True
 
 
 def read_tool_label(image_ref: str, label: str) -> str:
@@ -98,51 +153,11 @@ def read_tool_label(image_ref: str, label: str) -> str:
     return value
 
 
-def resolve_user_ids() -> List[str]:
-    env_flags: List[str] = []
-    try:
-        uid = os.getuid()
-        gid = os.getgid()
-    except AttributeError:
-        uid = gid = None
-
-    user = os.environ.get("USER") or os.environ.get("USERNAME") or "aicage"
-    if uid is not None:
-        env_flags.extend(["-e", f"AICAGE_UID={uid}", "-e", f"AICAGE_GID={gid}"])
-    env_flags.extend(["-e", f"AICAGE_USER={user}"])
-    return env_flags
-
-
-def assemble_docker_run(
-    image_ref: str,
-    project_path: Path,
-    tool_config_host: Path,
-    tool_mount_container: Path,
-    merged_docker_args: str,
-    tool_args: List[str],
-    extra_env: List[str],
-) -> List[str]:
-    cmd: List[str] = ["docker", "run", "--rm", "-it"]
-    cmd.extend(resolve_user_ids())
-    if extra_env:
-        cmd.extend(extra_env)
-    cmd.extend(["-v", f"{project_path}:/workspace"])
-    cmd.extend(["-v", f"{tool_config_host}:{tool_mount_container}"])
-
-    if merged_docker_args:
-        cmd.extend(shlex.split(merged_docker_args))
-
-    cmd.append(image_ref)
-    cmd.extend(tool_args)
-    return cmd
-
-
 def pull_image(image_ref: str) -> None:
     pull_result = subprocess.run(["docker", "pull", image_ref], capture_output=True, text=True)
     if pull_result.returncode == 0:
         return
 
-    # Pull failed; if image exists locally, continue with a warning.
     inspect = subprocess.run(
         ["docker", "image", "inspect", image_ref],
         capture_output=True,
@@ -193,71 +208,54 @@ def discover_local_bases(repository: str, tool: str) -> List[str]:
 def main(argv: Sequence[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     try:
-        dry_run, cli_docker_args, tool, tool_args = parse_cli(argv)
-        store = SettingsStore()
-        global_cfg = store.load_global()
-        repository = global_cfg.repository
-        default_base = global_cfg.default_base
-        project_path = Path.cwd().resolve()
-        project_cfg = store.load_project(project_path)
-        tool_project_cfg = project_cfg.tools.get(tool, {})
-        tool_global_cfg = global_cfg.tools.get(tool, {})
+        parsed = parse_cli(argv)
+        context = build_config_context()
+        tool_cfg = context.project_cfg.tools.setdefault(parsed.tool, {})
 
-        base = tool_project_cfg.get("base") or tool_global_cfg.get("base")
-        available_bases: List[str] = []
-        if not base:
-            remote_bases: List[str] = []
-            local_bases: List[str] = []
-            try:
-                remote_bases = discover_base_aliases(repository, tool)
-            except DiscoveryError as exc:
-                print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
-            try:
-                local_bases = discover_local_bases(repository, tool)
-            except CliError as exc:
-                print(f"[aicage] Warning: {exc}", file=sys.stderr)
-
-            available_bases = sorted(set(remote_bases) | set(local_bases))
-            if not available_bases:
-                raise CliError(f"No base images found for tool '{tool}' (repository={repository}).")
-            base = prompt_for_base(tool, default_base, available_bases)
-            project_cfg.tools.setdefault(tool, {})["base"] = base
-            store.save_project(project_path, project_cfg)
-
-        image_tag = f"{tool}-{base}-latest"
-        image_ref = f"{repository}:{image_tag}"
+        base, project_dirty = resolve_base(parsed.tool, tool_cfg, context)
+        image_tag = f"{parsed.tool}-{base}-latest"
+        image_ref = f"{context.global_cfg.repository}:{image_tag}"
 
         pull_image(image_ref)
         tool_path_label = read_tool_label(image_ref, "tool_path")
         tool_config_host = Path(os.path.expanduser(tool_path_label)).resolve()
         tool_config_host.mkdir(parents=True, exist_ok=True)
 
-        tool_mount_container = Path("/aicage/tool-config")
-
-        merged_docker_args = " ".join(
-            part for part in [global_cfg.docker_args, project_cfg.docker_args, cli_docker_args] if part
-        ).strip()
-
-        extra_env = ["-e", f"AICAGE_TOOL_PATH={tool_path_label}"]
-
-        run_cmd = assemble_docker_run(
-            image_ref=image_ref,
-            project_path=project_path,
-            tool_config_host=tool_config_host,
-            tool_mount_container=tool_mount_container,
-            merged_docker_args=merged_docker_args,
-            tool_args=tool_args,
-            extra_env=extra_env,
+        merged_docker_args = merge_docker_args(
+            context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
         )
 
-        if dry_run:
+        prefs = load_mount_preferences(tool_cfg)
+        auth_mounts, auth_env, prefs_updated = build_auth_mounts(context.project_path, prefs)
+        if prefs_updated:
+            store_mount_preferences(tool_cfg, prefs)
+        project_dirty = project_dirty or prefs_updated
+
+        run_args = DockerRunArgs(
+            image_ref=image_ref,
+            project_path=context.project_path,
+            tool_config_host=tool_config_host,
+            tool_mount_container=TOOL_MOUNT_CONTAINER,
+            merged_docker_args=merged_docker_args,
+            tool_args=parsed.tool_args,
+            tool_path_label=tool_path_label,
+            env=auth_env,
+            mounts=auth_mounts,
+        )
+
+        if project_dirty:
+            context.store.save_project(context.project_path, context.project_cfg)
+
+        run_cmd = assemble_docker_run(run_args)
+
+        if parsed.dry_run:
             print(shlex.join(run_cmd))
             return 0
 
         subprocess.run(run_cmd, check=True)
         return 0
     except KeyboardInterrupt:
-        print()  # Tidy up the prompt when interrupted with Ctrl-C.
+        print()
         return 130
     except (CliError, ConfigError, DiscoveryError) as exc:
         print(f"[aicage] {exc}", file=sys.stderr)
