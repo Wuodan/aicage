@@ -3,6 +3,8 @@ from typing import Any, Dict
 
 from .errors import ConfigError
 
+__all__ = ["GlobalConfig"]
+
 
 @dataclass
 class GlobalConfig:

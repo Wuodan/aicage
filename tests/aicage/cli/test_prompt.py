@@ -1,8 +1,8 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage import cli
 from aicage.errors import CliError
+from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
 from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
 
 
@@ -10,18 +10,24 @@ class PromptTests(TestCase):
     def test_prompt_requires_tty(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=False):
             with self.assertRaises(CliError):
-                cli.prompt_for_base("codex", "ubuntu", ["ubuntu"])
+                prompt_for_base(BaseSelectionRequest(tool="codex", default_base="ubuntu", available=["ubuntu"]))
 
     def test_prompt_validates_choice(self) -> None:
-        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value="fedora"):
+        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch(
+            "aicage.runtime.prompts._supports_arrow_prompt", return_value=False
+        ), mock.patch("builtins.input", return_value="fedora"):
             with self.assertRaises(CliError):
-                cli.prompt_for_base("codex", "ubuntu", ["ubuntu"])
+                prompt_for_base(BaseSelectionRequest(tool="codex", default_base="ubuntu", available=["ubuntu"]))
 
     def test_prompt_accepts_number_and_default(self) -> None:
-        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", side_effect=["2", ""]):
-            choice = cli.prompt_for_base("codex", "ubuntu", ["alpine", "ubuntu"])
+        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch(
+            "aicage.runtime.prompts._supports_arrow_prompt", return_value=False
+        ), mock.patch("builtins.input", side_effect=["2", ""]):
+            choice = prompt_for_base(
+                BaseSelectionRequest(tool="codex", default_base="ubuntu", available=["alpine", "ubuntu"])
+            )
             self.assertEqual("ubuntu", choice)
-            default_choice = cli.prompt_for_base("codex", "ubuntu", ["ubuntu"])
+            default_choice = prompt_for_base(BaseSelectionRequest(tool="codex", default_base="ubuntu", available=["ubuntu"]))
             self.assertEqual("ubuntu", default_choice)
 
     def test_assemble_includes_workspace_mount(self) -> None:

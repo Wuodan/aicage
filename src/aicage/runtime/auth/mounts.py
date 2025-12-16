@@ -3,15 +3,18 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from aicage.runtime.run_args import MountSpec
+from aicage.runtime.prompts import prompt_yes_no
+
 from ._git_config import resolve_git_config_path
 from ._gpg import resolve_gpg_home
-from .prompts import prompt_yes_no
 from ._signing import is_commit_signing_enabled, resolve_signing_format
 from ._ssh_keys import default_ssh_dir
 
-GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
-GPG_HOME_MOUNT = Path("/aicage/host/gnupg")
-SSH_MOUNT = Path("/aicage/host/ssh")
+__all__ = ["MountPreferences", "load_mount_preferences", "store_mount_preferences", "build_auth_mounts"]
+
+_GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
+_GPG_HOME_MOUNT = Path("/aicage/host/gnupg")
+_SSH_MOUNT = Path("/aicage/host/ssh")
 
 
 @dataclass
@@ -59,7 +62,7 @@ def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> Tuple[List
             )
             updated = True
         if prefs.gitconfig:
-            mounts.append(MountSpec(host_path=git_config, container_path=GITCONFIG_MOUNT))
+            mounts.append(MountSpec(host_path=git_config, container_path=_GITCONFIG_MOUNT))
 
     if is_commit_signing_enabled(project_path):
         signing_format = resolve_signing_format(project_path)
@@ -72,7 +75,7 @@ def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> Tuple[List
                     )
                     updated = True
                 if prefs.ssh:
-                    mounts.append(MountSpec(host_path=ssh_dir, container_path=SSH_MOUNT))
+                    mounts.append(MountSpec(host_path=ssh_dir, container_path=_SSH_MOUNT))
         else:
             gpg_home = resolve_gpg_home()
             if gpg_home and gpg_home.exists():
@@ -82,6 +85,6 @@ def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> Tuple[List
                     )
                     updated = True
                 if prefs.gnupg:
-                    mounts.append(MountSpec(host_path=gpg_home, container_path=GPG_HOME_MOUNT))
+                    mounts.append(MountSpec(host_path=gpg_home, container_path=_GPG_HOME_MOUNT))
 
     return mounts, updated

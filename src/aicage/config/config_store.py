@@ -11,6 +11,8 @@ from .errors import ConfigError
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 
+__all__ = ["SettingsStore"]
+
 _CONFIG_FILENAME = "config.yaml"
 _DEFAULT_BASE_DIR = "~/.aicage"
 _PROJECTS_SUBDIR = "projects"

@@ -3,6 +3,8 @@ import urllib.parse
 import urllib.request
 from typing import List
 
+__all__ = ["DiscoveryError", "discover_base_aliases"]
+
 
 class DiscoveryError(Exception):
     """Raised when Docker Hub discovery fails."""

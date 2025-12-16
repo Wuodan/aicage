@@ -2,8 +2,8 @@ import io
 import subprocess
 from unittest import TestCase, mock
 
-from aicage import cli
 from aicage.errors import CliError
+from aicage.runtime import base_image
 
 
 class FakeCompleted:
@@ -16,23 +16,23 @@ class FakeCompleted:
 class DockerInvocationTests(TestCase):
     def test_pull_image_success_and_warning(self) -> None:
         pull_ok = FakeCompleted(returncode=0)
-        with mock.patch("aicage.cli.subprocess.run", return_value=pull_ok) as run_mock:
-            cli.pull_image("repo:tag")
+        with mock.patch("aicage.runtime.base_image.subprocess.run", return_value=pull_ok) as run_mock:
+            base_image._pull_image("repo:tag")
         run_mock.assert_called_once_with(["docker", "pull", "repo:tag"], capture_output=True, text=True)
 
         pull_fail = FakeCompleted(returncode=1, stderr="timeout")
         inspect_ok = FakeCompleted(returncode=0)
-        with mock.patch("aicage.cli.subprocess.run", side_effect=[pull_fail, inspect_ok]):
+        with mock.patch("aicage.runtime.base_image.subprocess.run", side_effect=[pull_fail, inspect_ok]):
             with mock.patch("sys.stderr", new_callable=io.StringIO) as stderr:
-                cli.pull_image("repo:tag")
+                base_image._pull_image("repo:tag")
         self.assertIn("Warning", stderr.getvalue())
 
     def test_pull_image_raises_on_missing_local(self) -> None:
         pull_fail = FakeCompleted(returncode=1, stderr="network down", stdout="")
         inspect_fail = FakeCompleted(returncode=1, stderr="missing", stdout="")
-        with mock.patch("aicage.cli.subprocess.run", side_effect=[pull_fail, inspect_fail]):
+        with mock.patch("aicage.runtime.base_image.subprocess.run", side_effect=[pull_fail, inspect_fail]):
             with self.assertRaises(CliError):
-                cli.pull_image("repo:tag")
+                base_image._pull_image("repo:tag")
 
     def test_discover_local_bases_and_errors(self) -> None:
         list_output = "\n".join(
@@ -44,16 +44,13 @@ class DockerInvocationTests(TestCase):
                 "repo:codex-<none>",
             ]
         )
-        with mock.patch(
-            "aicage.cli.subprocess.run",
-            return_value=FakeCompleted(stdout=list_output, returncode=0),
-        ):
-            aliases = cli.discover_local_bases("repo", "codex")
+        with mock.patch("aicage.runtime.base_image.subprocess.run", return_value=FakeCompleted(stdout=list_output, returncode=0)):
+            aliases = base_image._discover_local_bases("repo", "codex")
         self.assertEqual(["debian", "ubuntu"], aliases)
 
         with mock.patch(
-            "aicage.cli.subprocess.run",
+            "aicage.runtime.base_image.subprocess.run",
             side_effect=subprocess.CalledProcessError(1, "docker image ls", stderr="boom"),
         ):
             with self.assertRaises(CliError):
-                cli.discover_local_bases("repo", "codex")
+                base_image._discover_local_bases("repo", "codex")

@@ -1,26 +1,26 @@
 import argparse
-import os
 import shlex
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import List, Sequence
 
-from aicage.config import ConfigError, SettingsStore
-from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import ProjectConfig
-from aicage.discovery import DiscoveryError, discover_base_aliases
+from aicage.config import ConfigError
+from aicage.config.context import build_config_context
+from aicage.discovery import DiscoveryError
 from aicage.errors import CliError
+from aicage.runtime.base_image import BaseImageSelection, resolve_base_image
 from aicage.runtime.auth.mounts import (
     build_auth_mounts,
     load_mount_preferences,
     store_mount_preferences,
 )
-from aicage.runtime.auth.prompts import ensure_tty_for_prompt
 from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run, merge_docker_args
 
-TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
+_TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
+
+__all__ = ["ParsedArgs", "parse_cli", "main"]
 
 
 @dataclass
@@ -29,14 +29,6 @@ class ParsedArgs:
     docker_args: str
     tool: str
     tool_args: List[str]
-
-
-@dataclass
-class ConfigContext:
-    store: SettingsStore
-    project_path: Path
-    project_cfg: ProjectConfig
-    global_cfg: GlobalConfig
 
 
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
@@ -90,141 +82,6 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     return ParsedArgs(opts.dry_run, docker_args, tool, tool_args)
 
 
-def prompt_for_base(tool: str, default_base: str, available: List[str]) -> str:
-    ensure_tty_for_prompt()
-    if available:
-        print(f"Select base image for '{tool}' (pick the runtime you want inside the container):")
-        for idx, base in enumerate(available, start=1):
-            suffix = " (default)" if base == default_base else ""
-            print(f"  {idx}) {base}{suffix}")
-        prompt = f"Enter number or name [{default_base}]: "
-    else:
-        prompt = (
-            f"Select base image for '{tool}' (pick the runtime you want inside the container) "
-            f"[{default_base}]: "
-        )
-
-    response = input(prompt).strip()
-    if not response:
-        choice = default_base
-    elif response.isdigit() and available:
-        idx = int(response)
-        if idx < 1 or idx > len(available):
-            raise CliError(f"Invalid choice '{response}'. Pick a number between 1 and {len(available)}.")
-        choice = available[idx - 1]
-    else:
-        choice = response
-
-    if available and choice not in available:
-        options = ", ".join(available)
-        raise CliError(f"Invalid base '{choice}'. Valid options: {options}")
-    return choice
-
-
-def discover_available_bases(repository: str, tool: str) -> List[str]:
-    remote_bases: List[str] = []
-    local_bases: List[str] = []
-    try:
-        remote_bases = discover_base_aliases(repository, tool)
-    except DiscoveryError as exc:
-        print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
-    try:
-        local_bases = discover_local_bases(repository, tool)
-    except CliError as exc:
-        print(f"[aicage] Warning: {exc}", file=sys.stderr)
-    return sorted(set(remote_bases) | set(local_bases))
-
-
-def build_config_context() -> ConfigContext:
-    store = SettingsStore()
-    project_path = Path.cwd().resolve()
-    global_cfg = store.load_global()
-    project_cfg = store.load_project(project_path)
-    return ConfigContext(store=store, project_path=project_path, project_cfg=project_cfg, global_cfg=global_cfg)
-
-
-def resolve_base(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> Tuple[str, bool]:
-    base = tool_cfg.get("base") or context.global_cfg.tools.get(tool, {}).get("base")
-    if base:
-        return base, False
-
-    available_bases = discover_available_bases(context.global_cfg.repository, tool)
-    if not available_bases:
-        raise CliError(f"No base images found for tool '{tool}' (repository={context.global_cfg.repository}).")
-
-    base = prompt_for_base(tool, context.global_cfg.default_base, available_bases)
-    tool_cfg["base"] = base
-    return base, True
-
-
-def read_tool_label(image_ref: str, label: str) -> str:
-    try:
-        result = subprocess.run(
-            ["docker", "inspect", image_ref, "--format", f'{{{{ index .Config.Labels "{label}" }}}}'],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to inspect image {image_ref}: {exc.stderr.strip() or exc}") from exc
-    value = result.stdout.strip()
-    if not value:
-        raise CliError(f"Label '{label}' not found on image {image_ref}.")
-    return value
-
-
-def pull_image(image_ref: str) -> None:
-    pull_result = subprocess.run(["docker", "pull", image_ref], capture_output=True, text=True)
-    if pull_result.returncode == 0:
-        return
-
-    inspect = subprocess.run(
-        ["docker", "image", "inspect", image_ref],
-        capture_output=True,
-        text=True,
-    )
-    if inspect.returncode == 0:
-        msg = pull_result.stderr.strip() or f"docker pull failed for {image_ref}"
-        print(f"[aicage] Warning: {msg}. Using local image.", file=sys.stderr)
-        return
-
-    raise CliError(f"docker pull failed for {image_ref}: {pull_result.stderr.strip() or pull_result.stdout.strip()}")
-
-
-def discover_local_bases(repository: str, tool: str) -> List[str]:
-    """
-    Fallback discovery using local images when Docker Hub is unavailable.
-    """
-    try:
-        result = subprocess.run(
-            ["docker", "image", "ls", repository, "--format", "{{.Repository}}:{{.Tag}}"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to list local images for {repository}: {exc.stderr or exc}") from exc
-
-    aliases: set[str] = set()
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if not line or line.endswith(":<none>"):
-            continue
-        if ":" not in line:
-            continue
-        repo, tag = line.split(":", 1)
-        if repo != repository:
-            continue
-        prefix = f"{tool}-"
-        suffix = "-latest"
-        if tag.startswith(prefix) and tag.endswith(suffix):
-            base = tag[len(prefix) : -len(suffix)]
-            if base:
-                aliases.add(base)
-
-    return sorted(aliases)
-
-
 def main(argv: Sequence[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     try:
@@ -232,14 +89,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         context = build_config_context()
         tool_cfg = context.project_cfg.tools.setdefault(parsed.tool, {})
 
-        base, project_dirty = resolve_base(parsed.tool, tool_cfg, context)
-        image_tag = f"{parsed.tool}-{base}-latest"
-        image_ref = f"{context.global_cfg.repository}:{image_tag}"
-
-        pull_image(image_ref)
-        tool_path_label = read_tool_label(image_ref, "tool_path")
-        tool_config_host = Path(os.path.expanduser(tool_path_label)).resolve()
-        tool_config_host.mkdir(parents=True, exist_ok=True)
+        base_selection: BaseImageSelection = resolve_base_image(parsed.tool, tool_cfg, context)
 
         merged_docker_args = merge_docker_args(
             context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
@@ -249,16 +99,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         auth_mounts, prefs_updated = build_auth_mounts(context.project_path, prefs)
         if prefs_updated:
             store_mount_preferences(tool_cfg, prefs)
-        project_dirty = project_dirty or prefs_updated
+        project_dirty = base_selection.project_dirty or prefs_updated
 
         run_args = DockerRunArgs(
-            image_ref=image_ref,
+            image_ref=base_selection.image_ref,
             project_path=context.project_path,
-            tool_config_host=tool_config_host,
-            tool_mount_container=TOOL_MOUNT_CONTAINER,
+            tool_config_host=base_selection.tool_config_host,
+            tool_mount_container=_TOOL_MOUNT_CONTAINER,
             merged_docker_args=merged_docker_args,
             tool_args=parsed.tool_args,
-            tool_path_label=tool_path_label,
+            tool_path_label=base_selection.tool_path_label,
             mounts=auth_mounts,
         )
 

@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict
 
+__all__ = ["ProjectConfig"]
+
 
 @dataclass
 class ProjectConfig:
