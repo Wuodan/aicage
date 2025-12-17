@@ -1,8 +1,6 @@
-import curses
-import os
 import sys
 from dataclasses import dataclass
-from typing import Any, List, Sequence
+from typing import List
 
 from aicage.errors import CliError
 
@@ -30,62 +28,9 @@ def prompt_yes_no(question: str, default: bool = False) -> bool:
     return response in {"y", "yes"}
 
 
-def _supports_arrow_prompt() -> bool:
-    return sys.stdin.isatty() and sys.stdout.isatty() and os.environ.get("TERM") not in {None, "", "dumb"}
-
-
-def _arrow_select(title: str, options: Sequence[str], default: str) -> str:
-    default_idx = options.index(default) if default in options else 0
-
-    def _ui(stdscr: Any) -> str:
-        curses.curs_set(0)
-        selected = default_idx
-        typed: List[str] = []
-        instructions = "Use arrow keys to choose, type to enter a name, Enter to confirm."
-        while True:
-            stdscr.clear()
-            stdscr.addstr(0, 0, title)
-            stdscr.addstr(1, 0, instructions)
-            for idx, option in enumerate(options):
-                prefix = ">" if idx == selected else " "
-                suffix = " (default)" if option == default else ""
-                stdscr.addstr(idx + 3, 0, f"{prefix} {option}{suffix}")
-            manual = "".join(typed)
-            stdscr.addstr(len(options) + 4, 0, f"Manual entry: {manual}")
-            key = stdscr.get_wch()
-            if isinstance(key, str):
-                if key in {"\n", "\r"}:
-                    return manual.strip() if manual else options[selected]
-                if key in {"\b", "\x7f"}:
-                    if typed:
-                        typed.pop()
-                    continue
-                if key == "\x1b":  # escape clears typed input and returns default
-                    typed.clear()
-                    selected = default_idx
-                    continue
-                if key.isprintable():
-                    typed.append(key)
-                    continue
-            if key == curses.KEY_UP:
-                selected = (selected - 1) % len(options)
-            elif key == curses.KEY_DOWN:
-                selected = (selected + 1) % len(options)
-
-        return default
-
-    return curses.wrapper(_ui)
-
-
 def prompt_for_base(request: BaseSelectionRequest) -> str:
     ensure_tty_for_prompt()
     title = f"Select base image for '{request.tool}' (runtime to use inside the container):"
-    if request.available and _supports_arrow_prompt():
-        try:
-            return _arrow_select(title, request.available, request.default_base)
-        except Exception:
-            # Fall back to numeric/text input on any terminal/curses issue.
-            pass
 
     if request.available:
         print(title)
