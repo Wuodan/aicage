@@ -20,12 +20,6 @@ See pipeines in https://github.com/Wuodan/factoryai-droid-docker:
 
 `droid` here is actually complicated (wget script, parse version) while other tools can be queried with npm or pipx.
 
-## Git support
-
-When agents commit in aicage containers, they lack the Git Config. And for commit signing the signing keys.
-
-See [details/git-signing.md](details/git-signing.md) for details.
-
 ## Read image metadata from remote images
 
 Now we use hub.docker API to read all image tags, then parse the image tags to get available images for a given tool:
@@ -101,3 +95,15 @@ https://github.com/toolstud-io/LlmBrains
 - **Qodo**
 - **VT Code**
 - **Warp CLI** (terminal with agent features, not a pure coding agent)
+
+## Rename user in Ubuntu
+
+Normally we use the user name from the host. But on `ubuntu` there already is a user with UID 1000 and we don't touch 
+it. I heard in this case renaming user (same UID) is safe.
+
+## Change working dir in image
+
+Now we mount the project into `/workspace` and sometimes this might not feel "like on the host".  
+At the minimum, work in a subfolder of `/workspace` with same dir name as on host.  
+This does NOT require a new ENV var to the container as there will be only ONE subfolder to /workspace and the 
+entrypoint.sh can simply `cd` into that.
