@@ -59,15 +59,6 @@ new local image is built.
 This might also be helpful or fulfill most custom image use-cases.
 
 
-## More packages in base images
-
-Now the base iamges are useful for Python and possibly Node development. But for Java, C, C++, C#, Rust, .NET ... 
-we need more packages pre-installed.
-
-See [details/polyglot_agentic_coding_base_image_debian.md](details/polyglot_agentic_coding_base_image_debian.md).
-
-Sadly the images will grow in size.
-
 ## More CLI Coding Agents – Landscape Snapshot
 
 Reference list and inspiration:
