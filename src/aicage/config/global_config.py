@@ -8,8 +8,11 @@ __all__ = ["GlobalConfig"]
 
 @dataclass
 class GlobalConfig:
-    repository: str
-    default_base: str
+    image_registry: str
+    image_registry_api_url: str
+    image_registry_api_token_url: str
+    image_repository: str
+    default_image_base: str
     docker_args: str = ""
     tools: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
@@ -18,16 +21,22 @@ class GlobalConfig:
         if "image_repository" not in data or "default_image_base" not in data:
             raise ConfigError("image_repository and default_image_base are required in config.yaml.")
         return cls(
-            repository=data["image_repository"],
-            default_base=data["default_image_base"],
+            image_registry=data["image_registry"],
+            image_registry_api_url=data["image_registry_api_url"],
+            image_registry_api_token_url=data["image_registry_api_token_url"],
+            image_repository=data["image_repository"],
+            default_image_base=data["default_image_base"],
             docker_args=data.get("docker_args", ""),
             tools=data.get("tools", {}) or {},
         )
 
     def to_mapping(self) -> Dict[str, Any]:
         return {
-            "image_repository": self.repository,
-            "default_image_base": self.default_base,
+            "image_registry": self.image_registry,
+            "image_registry_api_url": self.image_registry_api_url,
+            "image_registry_api_token_url": self.image_registry_api_token_url,
+            "image_repository": self.image_repository,
+            "default_image_base": self.default_image_base,
             "docker_args": self.docker_args,
             "tools": self.tools,
         }

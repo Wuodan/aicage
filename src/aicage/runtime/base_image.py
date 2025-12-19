@@ -108,17 +108,17 @@ def resolve_base_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigConte
     project_dirty = False
 
     if not base:
-        available_bases = _discover_available_bases(context.global_cfg.repository, tool)
+        available_bases = _discover_available_bases(context.global_cfg.image_repository, tool)
         if not available_bases:
-            raise CliError(f"No base images found for tool '{tool}' (repository={context.global_cfg.repository}).")
+            raise CliError(f"No base images found for tool '{tool}' (repository={context.global_cfg.image_repository}).")
 
-        request = BaseSelectionRequest(tool=tool, default_base=context.global_cfg.default_base, available=available_bases)
+        request = BaseSelectionRequest(tool=tool, default_base=context.global_cfg.default_image_base, available=available_bases)
         base = prompt_for_base(request)
         tool_cfg["base"] = base
         project_dirty = True
 
     image_tag = f"{tool}-{base}-latest"
-    image_ref = f"{context.global_cfg.repository}:{image_tag}"
+    image_ref = f"{context.global_cfg.image_repository}:{image_tag}"
 
     _pull_image(image_ref)
     tool_path_label = _read_tool_label(image_ref, "tool_path")

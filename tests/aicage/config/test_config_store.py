@@ -18,8 +18,8 @@ class ConfigStoreTests(TestCase):
             self.assertEqual("aicage/aicage", global_data["image_repository"])
 
             global_cfg = store.load_global()
-            self.assertEqual("aicage/aicage", global_cfg.repository)
-            self.assertEqual("ubuntu", global_cfg.default_base)
+            self.assertEqual("aicage/aicage", global_cfg.image_repository)
+            self.assertEqual("ubuntu", global_cfg.default_image_base)
             self.assertEqual("", global_cfg.docker_args)
             self.assertEqual({}, global_cfg.tools)
 

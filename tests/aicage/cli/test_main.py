@@ -15,8 +15,8 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
-                repository="aicage/aicage",
-                default_base="ubuntu",
+                image_repository="aicage/aicage",
+                default_image_base="ubuntu",
                 docker_args="--global",
                 tools={"codex": {"base": "fedora"}},
             )
@@ -75,8 +75,8 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
-                repository="aicage/aicage",
-                default_base="ubuntu",
+                image_repository="aicage/aicage",
+                default_image_base="ubuntu",
                 docker_args="--global",
                 tools={},
             )
@@ -135,8 +135,8 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
-                repository="aicage/aicage",
-                default_base="ubuntu",
+                image_repository="aicage/aicage",
+                default_image_base="ubuntu",
                 docker_args="",
                 tools={},
             )
