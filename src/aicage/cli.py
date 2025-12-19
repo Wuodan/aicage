@@ -16,6 +16,7 @@ from aicage.runtime.auth.mounts import (
     store_mount_preferences,
 )
 from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run, merge_docker_args
+from aicage.runtime.tool_config import resolve_tool_config
 
 _TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
 
@@ -88,6 +89,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         context = build_config_context()
         base_selection: ImageSelection = resolve_tool_image(parsed.tool, context)
         tool_cfg = context.project_cfg.tools[parsed.tool]
+        tool_config = resolve_tool_config(base_selection.image_ref)
 
         merged_docker_args = merge_docker_args(
             context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
@@ -102,11 +104,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         run_args = DockerRunArgs(
             image_ref=base_selection.image_ref,
             project_path=context.project_path,
-            tool_config_host=base_selection.tool_config_host,
+            tool_config_host=tool_config.tool_config_host,
             tool_mount_container=_TOOL_MOUNT_CONTAINER,
             merged_docker_args=merged_docker_args,
             tool_args=parsed.tool_args,
-            tool_path_label=base_selection.tool_path_label,
+            tool_path=tool_config.tool_path,
             mounts=auth_mounts,
         )
 

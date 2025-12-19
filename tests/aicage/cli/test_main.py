@@ -53,14 +53,17 @@ class MainFlowTests(TestCase):
             )
             selection = ImageSelection(
                 image_ref="ghcr.io/aicage/aicage:codex-debian-latest",
-                tool_path_label=str(project_path / ".codex"),
-                tool_config_host=project_path / ".codex",
                 project_dirty=False,
+            )
+            tool_config = mock.Mock(
+                tool_path=str(project_path / ".codex"),
+                tool_config_host=project_path / ".codex",
             )
             with (
                 mock.patch("aicage.cli.parse_cli", return_value=cli.ParsedArgs(False, "--cli", "codex", ["--flag"])),
                 mock.patch("aicage.cli.build_config_context", return_value=context),
                 mock.patch("aicage.cli.resolve_tool_image", return_value=selection),
+                mock.patch("aicage.cli.resolve_tool_config", return_value=tool_config),
                 mock.patch(
                     "aicage.cli.assemble_docker_run",
                     return_value=["docker", "run", "--flag"],
@@ -109,9 +112,11 @@ class MainFlowTests(TestCase):
             store = FakeStore(global_cfg, project_cfg)
             selection = ImageSelection(
                 image_ref="ghcr.io/aicage/aicage:codex-alpine-latest",
-                tool_path_label=str(project_path / ".codex"),
-                tool_config_host=project_path / ".codex",
                 project_dirty=True,
+            )
+            tool_config = mock.Mock(
+                tool_path=str(project_path / ".codex"),
+                tool_config_host=project_path / ".codex",
             )
             context = ConfigContext(
                 store=store,
@@ -123,6 +128,7 @@ class MainFlowTests(TestCase):
                 mock.patch("aicage.cli.parse_cli", return_value=cli.ParsedArgs(True, "--cli", "codex", ["--flag"])),
                 mock.patch("aicage.cli.build_config_context", return_value=context),
                 mock.patch("aicage.cli.resolve_tool_image", return_value=selection),
+                mock.patch("aicage.cli.resolve_tool_config", return_value=tool_config),
                 mock.patch("aicage.cli.assemble_docker_run", return_value=["docker", "run", "cmd"]),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,

@@ -1,9 +1,6 @@
-import os
 import subprocess
 import sys
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict
 
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
@@ -14,8 +11,6 @@ from .discovery.catalog import discover_tool_bases
 @dataclass
 class ImageSelection:
     image_ref: str
-    tool_path_label: str
-    tool_config_host: Path
     project_dirty: bool
 
 __all__ = ["ImageSelection", "resolve_tool_image"]
@@ -39,22 +34,6 @@ def _pull_image(image_ref: str) -> None:
     raise CliError(
         f"docker pull failed for {image_ref}: {pull_result.stderr.strip() or pull_result.stdout.strip()}"
     )
-
-
-def _read_tool_label(image_ref: str, label: str) -> str:
-    try:
-        result = subprocess.run(
-            ["docker", "inspect", image_ref, "--format", f'{{{{ index .Config.Labels "{label}" }}}}'],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to inspect image {image_ref}: {exc.stderr.strip() or exc}") from exc
-    value = result.stdout.strip()
-    if not value:
-        raise CliError(f"Label '{label}' not found on image {image_ref}.")
-    return value
 
 
 def resolve_tool_image(tool: str, context: ConfigContext) -> ImageSelection:
@@ -81,13 +60,8 @@ def resolve_tool_image(tool: str, context: ConfigContext) -> ImageSelection:
     image_ref = f"{repository_ref}:{image_tag}"
 
     _pull_image(image_ref)
-    tool_path_label = _read_tool_label(image_ref, "tool_path")
-    tool_config_host = Path(os.path.expanduser(tool_path_label)).resolve()
-    tool_config_host.mkdir(parents=True, exist_ok=True)
 
     return ImageSelection(
         image_ref=image_ref,
-        tool_path_label=tool_path_label,
-        tool_config_host=tool_config_host,
         project_dirty=project_dirty,
     )

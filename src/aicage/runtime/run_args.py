@@ -29,7 +29,7 @@ class DockerRunArgs:
     tool_mount_container: Path
     merged_docker_args: str
     tool_args: List[str]
-    tool_path_label: str | None = None
+    tool_path: str | None = None
     env: List[str] = field(default_factory=list)
     mounts: List[MountSpec] = field(default_factory=list)
 
@@ -56,8 +56,8 @@ def _resolve_user_ids() -> List[str]:
 def assemble_docker_run(args: DockerRunArgs) -> List[str]:
     cmd: List[str] = ["docker", "run", "--rm", "-it"]
     cmd.extend(_resolve_user_ids())
-    if args.tool_path_label:
-        cmd.extend(["-e", f"{AICAGE_TOOL_PATH}={args.tool_path_label}"])
+    if args.tool_path:
+        cmd.extend(["-e", f"{AICAGE_TOOL_PATH}={args.tool_path}"])
     for env in args.env:
         cmd.extend(["-e", env])
     cmd.extend(["-v", f"{args.project_path}:/workspace"])

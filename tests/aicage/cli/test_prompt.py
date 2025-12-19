@@ -37,7 +37,7 @@ class PromptTests(TestCase):
                 tool_mount_container=Path("/aicage/tool-config"),
                 merged_docker_args="--network=host",
                 tool_args=["--flag"],
-                env=["AICAGE_TOOL_PATH=~/.codex"],
+                tool_path="~/.codex",
             )
             cmd = assemble_docker_run(run_args)
         self.assertEqual(

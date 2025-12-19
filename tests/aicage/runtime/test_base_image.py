@@ -14,7 +14,6 @@ class BaseImageResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
-            tool_dir = Path(tmp_dir) / ".codex"
             context = ConfigContext(
                 store=mock.Mock(),
                 project_path=project_path,
@@ -29,22 +28,18 @@ class BaseImageResolutionTests(TestCase):
                     tools={},
                 ),
             )
-            with mock.patch("aicage.registry.image_selection._pull_image"), mock.patch(
-                "aicage.registry.image_selection._read_tool_label", return_value=str(tool_dir)
-            ):
+            with mock.patch("aicage.registry.image_selection._pull_image"):
                 context.project_cfg.tools["codex"] = {"base": "debian"}
                 selection = image_selection.resolve_tool_image("codex", context)
 
             self.assertIsInstance(selection, ImageSelection)
             self.assertFalse(selection.project_dirty)
             self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection.image_ref)
-            self.assertEqual(tool_dir, selection.tool_config_host)
 
     def test_resolve_prompts_and_marks_dirty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
-            tool_dir = Path(tmp_dir) / ".codex"
             context = ConfigContext(
                 store=mock.Mock(),
                 project_path=project_path,
@@ -64,15 +59,12 @@ class BaseImageResolutionTests(TestCase):
             ), mock.patch(
                 "aicage.registry.image_selection._pull_image"
             ), mock.patch(
-                "aicage.registry.image_selection._read_tool_label", return_value=str(tool_dir)
-            ), mock.patch(
                 "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
                 selection = image_selection.resolve_tool_image("codex", context)
 
             self.assertTrue(selection.project_dirty)
             self.assertEqual("alpine", context.project_cfg.tools["codex"]["base"])
-            self.assertEqual(tool_dir, selection.tool_config_host)
 
     def test_resolve_raises_without_bases(self) -> None:
         context = ConfigContext(
