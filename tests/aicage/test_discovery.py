@@ -1,7 +1,7 @@
 import json
 from unittest import TestCase, mock
 
-from aicage.registry.discovery import RegistryDiscoveryError, discover_base_aliases
+from aicage.registry.discovery import catalog
 
 
 class DiscoveryTests(TestCase):
@@ -37,9 +37,13 @@ class DiscoveryTests(TestCase):
                 return FakeResponse(payload)
             raise AssertionError(f"Unexpected URL {url}")
 
-        with mock.patch("urllib.request.urlopen", fake_urlopen):
-            aliases = discover_base_aliases(
+        with (
+            mock.patch("urllib.request.urlopen", fake_urlopen),
+            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+        ):
+            aliases = catalog.discover_tool_bases(
                 "aicage/aicage",
+                "ghcr.io/aicage/aicage",
                 "https://ghcr.io/v2",
                 "https://ghcr.io/token?service=ghcr.io&scope=repository",
                 "codex",
@@ -51,14 +55,18 @@ class DiscoveryTests(TestCase):
         def fake_urlopen(url: str):  # pylint: disable=unused-argument
             raise OSError("network down")
 
-        with mock.patch("urllib.request.urlopen", fake_urlopen):
-            with self.assertRaises(RegistryDiscoveryError):
-                discover_base_aliases(
-                    "aicage/aicage",
-                    "https://ghcr.io/v2",
-                    "https://ghcr.io/token?service=ghcr.io&scope=repository",
-                    "codex",
-                )
+        with (
+            mock.patch("urllib.request.urlopen", fake_urlopen),
+            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+        ):
+            aliases = catalog.discover_tool_bases(
+                "aicage/aicage",
+                "ghcr.io/aicage/aicage",
+                "https://ghcr.io/v2",
+                "https://ghcr.io/token?service=ghcr.io&scope=repository",
+                "codex",
+            )
+        self.assertEqual([], aliases)
 
     def test_discover_base_aliases_invalid_json(self) -> None:
         class FakeResponse:
@@ -76,11 +84,15 @@ class DiscoveryTests(TestCase):
         def fake_urlopen(request):  # pylint: disable=unused-argument
             return FakeResponse()
 
-        with mock.patch("urllib.request.urlopen", fake_urlopen):
-            with self.assertRaises(RegistryDiscoveryError):
-                discover_base_aliases(
-                    "aicage/aicage",
-                    "https://ghcr.io/v2",
-                    "https://ghcr.io/token?service=ghcr.io&scope=repository",
-                    "codex",
-                )
+        with (
+            mock.patch("urllib.request.urlopen", fake_urlopen),
+            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+        ):
+            aliases = catalog.discover_tool_bases(
+                "aicage/aicage",
+                "ghcr.io/aicage/aicage",
+                "https://ghcr.io/v2",
+                "https://ghcr.io/token?service=ghcr.io&scope=repository",
+                "codex",
+            )
+        self.assertEqual([], aliases)

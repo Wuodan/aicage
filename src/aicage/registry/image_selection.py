@@ -3,76 +3,22 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
-from .discovery import RegistryDiscoveryError, discover_base_aliases
+from .discovery.catalog import discover_tool_bases
 
 
 @dataclass
-class BaseImageSelection:
+class ImageSelection:
     image_ref: str
     tool_path_label: str
     tool_config_host: Path
     project_dirty: bool
 
-__all__ = ["BaseImageSelection", "resolve_base_image"]
-
-
-def _discover_local_bases(repository_ref: str, tool: str) -> List[str]:
-    """
-    Fallback discovery using local images when the registry is unavailable.
-    """
-    try:
-        result = subprocess.run(
-            ["docker", "image", "ls", repository_ref, "--format", "{{.Repository}}:{{.Tag}}"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to list local images for {repository_ref}: {exc.stderr or exc}") from exc
-
-    aliases: set[str] = set()
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if not line or line.endswith(":<none>"):
-            continue
-        if ":" not in line:
-            continue
-        repo, tag = line.split(":", 1)
-        if repo != repository_ref:
-            continue
-        prefix = f"{tool}-"
-        suffix = "-latest"
-        if tag.startswith(prefix) and tag.endswith(suffix):
-            base = tag[len(prefix) : -len(suffix)]
-            if base:
-                aliases.add(base)
-
-    return sorted(aliases)
-
-
-def _discover_available_bases(
-    repository: str,
-    repository_ref: str,
-    registry_api_url: str,
-    registry_token_url: str,
-    tool: str,
-) -> List[str]:
-    remote_bases: List[str] = []
-    local_bases: List[str] = []
-    try:
-        remote_bases = discover_base_aliases(repository, registry_api_url, registry_token_url, tool)
-    except RegistryDiscoveryError as exc:
-        print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
-    try:
-        local_bases = _discover_local_bases(repository_ref, tool)
-    except CliError as exc:
-        print(f"[aicage] Warning: {exc}", file=sys.stderr)
-    return sorted(set(remote_bases) | set(local_bases))
+__all__ = ["ImageSelection", "resolve_tool_image"]
 
 
 def _pull_image(image_ref: str) -> None:
@@ -111,13 +57,13 @@ def _read_tool_label(image_ref: str, label: str) -> str:
     return value
 
 
-def resolve_base_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> BaseImageSelection:
+def resolve_tool_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> ImageSelection:
     base = tool_cfg.get("base") or context.global_cfg.tools.get(tool, {}).get("base")
     project_dirty = False
     repository_ref = f"{context.global_cfg.image_registry}/{context.global_cfg.image_repository}"
 
     if not base:
-        available_bases = _discover_available_bases(
+        available_bases = discover_tool_bases(
             context.global_cfg.image_repository,
             repository_ref,
             context.global_cfg.image_registry_api_url,
@@ -144,7 +90,7 @@ def resolve_base_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigConte
     tool_config_host = Path(os.path.expanduser(tool_path_label)).resolve()
     tool_config_host.mkdir(parents=True, exist_ok=True)
 
-    return BaseImageSelection(
+    return ImageSelection(
         image_ref=image_ref,
         tool_path_label=tool_path_label,
         tool_config_host=tool_config_host,

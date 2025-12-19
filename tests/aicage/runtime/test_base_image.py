@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
-from aicage.registry import base_image
-from aicage.registry.base_image import BaseImageSelection
+from aicage.registry import image_selection
+from aicage.registry.image_selection import ImageSelection
 
 
 class BaseImageResolutionTests(TestCase):
@@ -30,12 +30,12 @@ class BaseImageResolutionTests(TestCase):
                 ),
             )
             tool_cfg = {"base": "debian"}
-            with mock.patch("aicage.registry.base_image._pull_image"), mock.patch(
-                "aicage.registry.base_image._read_tool_label", return_value=str(tool_dir)
+            with mock.patch("aicage.registry.image_selection._pull_image"), mock.patch(
+                "aicage.registry.image_selection._read_tool_label", return_value=str(tool_dir)
             ):
-                selection = base_image.resolve_base_image("codex", tool_cfg, context)
+                selection = image_selection.resolve_tool_image("codex", tool_cfg, context)
 
-            self.assertIsInstance(selection, BaseImageSelection)
+            self.assertIsInstance(selection, ImageSelection)
             self.assertFalse(selection.project_dirty)
             self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection.image_ref)
             self.assertEqual(tool_dir, selection.tool_config_host)
@@ -61,15 +61,15 @@ class BaseImageResolutionTests(TestCase):
             )
             tool_cfg: dict = {}
             with mock.patch(
-                "aicage.registry.base_image._discover_available_bases", return_value=["alpine", "ubuntu"]
+                "aicage.registry.discovery.catalog.discover_tool_bases", return_value=["alpine", "ubuntu"]
             ), mock.patch(
-                "aicage.registry.base_image._pull_image"
+                "aicage.registry.image_selection._pull_image"
             ), mock.patch(
-                "aicage.registry.base_image._read_tool_label", return_value=str(tool_dir)
+                "aicage.registry.image_selection._read_tool_label", return_value=str(tool_dir)
             ), mock.patch(
-                "aicage.registry.base_image.prompt_for_base", return_value="alpine"
+                "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
-                selection = base_image.resolve_base_image("codex", tool_cfg, context)
+                selection = image_selection.resolve_tool_image("codex", tool_cfg, context)
 
             self.assertTrue(selection.project_dirty)
             self.assertEqual("alpine", tool_cfg["base"])
@@ -91,6 +91,6 @@ class BaseImageResolutionTests(TestCase):
             ),
         )
         tool_cfg: dict = {}
-        with mock.patch("aicage.registry.base_image._discover_available_bases", return_value=[]):
+        with mock.patch("aicage.registry.discovery.catalog.discover_tool_bases", return_value=[]):
             with self.assertRaises(CliError):
-                base_image.resolve_base_image("codex", tool_cfg, context)
+                image_selection.resolve_tool_image("codex", tool_cfg, context)

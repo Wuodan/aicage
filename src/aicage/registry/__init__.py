@@ -1,3 +1,3 @@
-from .base_image import BaseImageSelection, resolve_base_image
+from .image_selection import ImageSelection, resolve_tool_image
 
-__all__ = ["BaseImageSelection", "resolve_base_image"]
+__all__ = ["ImageSelection", "resolve_tool_image"]

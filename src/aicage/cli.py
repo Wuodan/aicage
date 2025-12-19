@@ -9,7 +9,7 @@ from typing import List, Sequence
 from aicage.config import ConfigError
 from aicage.config.context import build_config_context
 from aicage.errors import CliError
-from aicage.registry import BaseImageSelection, resolve_base_image
+from aicage.registry import ImageSelection, resolve_tool_image
 from aicage.runtime.auth.mounts import (
     build_auth_mounts,
     load_mount_preferences,
@@ -88,7 +88,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         context = build_config_context()
         tool_cfg = context.project_cfg.tools.setdefault(parsed.tool, {})
 
-        base_selection: BaseImageSelection = resolve_base_image(parsed.tool, tool_cfg, context)
+        base_selection: ImageSelection = resolve_tool_image(parsed.tool, tool_cfg, context)
 
         merged_docker_args = merge_docker_args(
             context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
