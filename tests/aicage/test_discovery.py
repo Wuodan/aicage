@@ -5,6 +5,18 @@ from aicage.registry.discovery import catalog
 
 
 class DiscoveryTests(TestCase):
+    @staticmethod
+    def _fake_context() -> mock.Mock:
+        return mock.Mock(
+            global_cfg=mock.Mock(
+                image_registry="ghcr.io",
+                image_repository="aicage/aicage",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+            ),
+            image_repository_ref=lambda: "ghcr.io/aicage/aicage",
+        )
+
     def test_discover_base_aliases_parses_latest(self) -> None:
         class FakeResponse:
             def __init__(self, payload: dict, headers: dict | None = None) -> None:
@@ -39,15 +51,9 @@ class DiscoveryTests(TestCase):
 
         with (
             mock.patch("urllib.request.urlopen", fake_urlopen),
-            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+            mock.patch("aicage.registry.discovery.catalog.discover_local_bases", return_value=[]),
         ):
-            aliases = catalog.discover_tool_bases(
-                "aicage/aicage",
-                "ghcr.io/aicage/aicage",
-                "https://ghcr.io/v2",
-                "https://ghcr.io/token?service=ghcr.io&scope=repository",
-                "codex",
-            )
+            aliases = catalog.discover_tool_bases(self._fake_context(), "codex")
 
         self.assertEqual(["debian", "ubuntu"], aliases)
 
@@ -57,15 +63,9 @@ class DiscoveryTests(TestCase):
 
         with (
             mock.patch("urllib.request.urlopen", fake_urlopen),
-            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+            mock.patch("aicage.registry.discovery.catalog.discover_local_bases", return_value=[]),
         ):
-            aliases = catalog.discover_tool_bases(
-                "aicage/aicage",
-                "ghcr.io/aicage/aicage",
-                "https://ghcr.io/v2",
-                "https://ghcr.io/token?service=ghcr.io&scope=repository",
-                "codex",
-            )
+            aliases = catalog.discover_tool_bases(self._fake_context(), "codex")
         self.assertEqual([], aliases)
 
     def test_discover_base_aliases_invalid_json(self) -> None:
@@ -86,13 +86,7 @@ class DiscoveryTests(TestCase):
 
         with (
             mock.patch("urllib.request.urlopen", fake_urlopen),
-            mock.patch("aicage.registry.discovery._local.discover_local_bases", return_value=[]),
+            mock.patch("aicage.registry.discovery.catalog.discover_local_bases", return_value=[]),
         ):
-            aliases = catalog.discover_tool_bases(
-                "aicage/aicage",
-                "ghcr.io/aicage/aicage",
-                "https://ghcr.io/v2",
-                "https://ghcr.io/token?service=ghcr.io&scope=repository",
-                "codex",
-            )
+            aliases = catalog.discover_tool_bases(self._fake_context(), "codex")
         self.assertEqual([], aliases)

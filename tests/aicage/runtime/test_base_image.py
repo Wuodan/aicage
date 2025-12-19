@@ -29,11 +29,11 @@ class BaseImageResolutionTests(TestCase):
                     tools={},
                 ),
             )
-            tool_cfg = {"base": "debian"}
             with mock.patch("aicage.registry.image_selection._pull_image"), mock.patch(
                 "aicage.registry.image_selection._read_tool_label", return_value=str(tool_dir)
             ):
-                selection = image_selection.resolve_tool_image("codex", tool_cfg, context)
+                context.project_cfg.tools["codex"] = {"base": "debian"}
+                selection = image_selection.resolve_tool_image("codex", context)
 
             self.assertIsInstance(selection, ImageSelection)
             self.assertFalse(selection.project_dirty)
@@ -59,7 +59,6 @@ class BaseImageResolutionTests(TestCase):
                     tools={},
                 ),
             )
-            tool_cfg: dict = {}
             with mock.patch(
                 "aicage.registry.discovery.catalog.discover_tool_bases", return_value=["alpine", "ubuntu"]
             ), mock.patch(
@@ -69,10 +68,10 @@ class BaseImageResolutionTests(TestCase):
             ), mock.patch(
                 "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
-                selection = image_selection.resolve_tool_image("codex", tool_cfg, context)
+                selection = image_selection.resolve_tool_image("codex", context)
 
             self.assertTrue(selection.project_dirty)
-            self.assertEqual("alpine", tool_cfg["base"])
+            self.assertEqual("alpine", context.project_cfg.tools["codex"]["base"])
             self.assertEqual(tool_dir, selection.tool_config_host)
 
     def test_resolve_raises_without_bases(self) -> None:
@@ -90,7 +89,6 @@ class BaseImageResolutionTests(TestCase):
                 tools={},
             ),
         )
-        tool_cfg: dict = {}
         with mock.patch("aicage.registry.discovery.catalog.discover_tool_bases", return_value=[]):
             with self.assertRaises(CliError):
-                image_selection.resolve_tool_image("codex", tool_cfg, context)
+                image_selection.resolve_tool_image("codex", context)

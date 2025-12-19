@@ -86,9 +86,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         parsed = parse_cli(argv)
         context = build_config_context()
-        tool_cfg = context.project_cfg.tools.setdefault(parsed.tool, {})
-
-        base_selection: ImageSelection = resolve_tool_image(parsed.tool, tool_cfg, context)
+        base_selection: ImageSelection = resolve_tool_image(parsed.tool, context)
+        tool_cfg = context.project_cfg.tools[parsed.tool]
 
         merged_docker_args = merge_docker_args(
             context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args

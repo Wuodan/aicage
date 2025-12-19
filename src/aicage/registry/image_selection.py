@@ -57,19 +57,14 @@ def _read_tool_label(image_ref: str, label: str) -> str:
     return value
 
 
-def resolve_tool_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> ImageSelection:
+def resolve_tool_image(tool: str, context: ConfigContext) -> ImageSelection:
+    tool_cfg = context.project_cfg.tools.setdefault(tool, {})
     base = tool_cfg.get("base") or context.global_cfg.tools.get(tool, {}).get("base")
     project_dirty = False
-    repository_ref = f"{context.global_cfg.image_registry}/{context.global_cfg.image_repository}"
+    repository_ref = context.image_repository_ref()
 
     if not base:
-        available_bases = discover_tool_bases(
-            context.global_cfg.image_repository,
-            repository_ref,
-            context.global_cfg.image_registry_api_url,
-            context.global_cfg.image_registry_api_token_url,
-            tool,
-        )
+        available_bases = discover_tool_bases(context, tool)
         if not available_bases:
             raise CliError(f"No base images found for tool '{tool}' (repository={repository_ref}).")
 

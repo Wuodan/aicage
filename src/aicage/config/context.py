@@ -13,6 +13,9 @@ class ConfigContext:
     project_cfg: ProjectConfig
     global_cfg: GlobalConfig
 
+    def image_repository_ref(self) -> str:
+        return f"{self.global_cfg.image_registry}/{self.global_cfg.image_repository}"
+
 
 def build_config_context() -> ConfigContext:
     store = SettingsStore()
