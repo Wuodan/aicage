@@ -8,9 +8,8 @@ from typing import List, Sequence
 
 from aicage.config import ConfigError
 from aicage.config.context import build_config_context
-from aicage.discovery import DiscoveryError
 from aicage.errors import CliError
-from aicage.runtime.base_image import BaseImageSelection, resolve_base_image
+from aicage.registry import BaseImageSelection, resolve_base_image
 from aicage.runtime.auth.mounts import (
     build_auth_mounts,
     load_mount_preferences,
@@ -126,7 +125,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except KeyboardInterrupt:
         print()
         return 130
-    except (CliError, ConfigError, DiscoveryError) as exc:
+    except (CliError, ConfigError) as exc:
         print(f"[aicage] {exc}", file=sys.stderr)
         return 1
 

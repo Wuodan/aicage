@@ -7,7 +7,7 @@ from aicage import cli
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
-from aicage.runtime.base_image import BaseImageSelection
+from aicage.registry import BaseImageSelection
 
 
 class MainFlowTests(TestCase):
@@ -15,6 +15,9 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
                 docker_args="--global",
@@ -49,7 +52,7 @@ class MainFlowTests(TestCase):
                 global_cfg=global_cfg,
             )
             selection = BaseImageSelection(
-                image_ref="aicage/aicage:codex-debian-latest",
+                image_ref="ghcr.io/aicage/aicage:codex-debian-latest",
                 tool_path_label=str(project_path / ".codex"),
                 tool_config_host=project_path / ".codex",
                 project_dirty=False,
@@ -75,6 +78,9 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
                 docker_args="--global",
@@ -102,7 +108,7 @@ class MainFlowTests(TestCase):
 
             store = FakeStore(global_cfg, project_cfg)
             selection = BaseImageSelection(
-                image_ref="aicage/aicage:codex-alpine-latest",
+                image_ref="ghcr.io/aicage/aicage:codex-alpine-latest",
                 tool_path_label=str(project_path / ".codex"),
                 tool_config_host=project_path / ".codex",
                 project_dirty=True,
@@ -135,6 +141,9 @@ class MainFlowTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir)
             global_cfg = GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
                 docker_args="",

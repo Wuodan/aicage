@@ -18,8 +18,16 @@ class GlobalConfig:
 
     @classmethod
     def from_mapping(cls, data: Dict[str, Any]) -> "GlobalConfig":
-        if "image_repository" not in data or "default_image_base" not in data:
-            raise ConfigError("image_repository and default_image_base are required in config.yaml.")
+        required = (
+            "image_registry",
+            "image_registry_api_url",
+            "image_registry_api_token_url",
+            "image_repository",
+            "default_image_base",
+        )
+        missing = [key for key in required if key not in data]
+        if missing:
+            raise ConfigError(f"Missing required config values: {', '.join(missing)}.")
         return cls(
             image_registry=data["image_registry"],
             image_registry_api_url=data["image_registry_api_url"],

@@ -7,8 +7,8 @@ We can use the version of an agent to:
 ### Tag aicage final images
 
 Like:
-  - aicage/aicage:codex-fedora-0.72.0 (codex version = 0.72.0)
-  - aicage/aicage:codex-fedora-latest (existing)
+  - ghcr.io/aicage/aicage:codex-fedora-0.72.0 (codex version = 0.72.0)
+  - ghcr.io/aicage/aicage:codex-fedora-latest (existing)
 
 The '-latest' tag can remain as it makes handling much easier.
 

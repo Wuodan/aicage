@@ -1,25 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Count and sanity-check Docker Hub tags for aicage/aicage against your expected base/tool matrix.
+# Count and sanity-check GHCR tags for ghcr.io/aicage/aicage against your expected base/tool matrix.
 # Assumptions:
 # - Tag names contain BOTH the tool token and the base token somewhere in the tag name
 #   (e.g. "codex-ubuntu-latest", "cline-debian-0.0.1", etc.)
 # - If your tag scheme differs, adjust match_tag() below.
 
+registry_api_url="https://ghcr.io/v2"
+registry_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository"
 repo="aicage/aicage"
-page_size=100
 
 bases=(act ubuntu fedora node alpine debian)
 tools=(claude copilot cline codex qwen droid opencode goose gemini)
 
-fetch_all_tags() {
-  local url="https://hub.docker.com/v2/repositories/${repo}/tags/?page_size=${page_size}"
-  while [[ -n "$url" && "$url" != "null" ]]; do
-    local json
-    json="$(curl -fsSL "$url")"
-    echo "$json" | jq -r '.results[].name'
-    url="$(echo "$json" | jq -r '.next')"
+ghcr_pull_token() {
+  local repo="$1"
+  curl -fsSL \
+    "${registry_token_url}:${repo}:pull" \
+    | jq -r '.token'
+}
+
+ghcr_list_all_tags() {
+  local repo="$1"
+  local url="${registry_api_url}/${repo}/tags/list?n=1000"
+  local token resp body next
+  token="$(ghcr_pull_token "$repo")"
+
+  while [[ -n "$url" ]]; do
+    resp="$(
+      curl -fsSL -i \
+        -H "Authorization: Bearer ${token}" \
+        "$url"
+    )"
+
+    body="$(sed '1,/^\r\{0,1\}$/d' <<<"$resp")"
+    echo "$body" | jq -r '.tags[]?'
+
+    next="$(sed -n 's/.*<\([^>]*\)>;[[:space:]]*rel="next".*/\1/pI' <<<"$resp")"
+    url="$next"
   done
 }
 
@@ -51,7 +70,7 @@ match_tag() {
 }
 
 main() {
-  mapfile -t tags < <(fetch_all_tags | sort -u)
+  mapfile -t tags < <(ghcr_list_all_tags "$repo" | sort -u)
   echo "Remote unique tag count: ${#tags[@]}"
   echo
 

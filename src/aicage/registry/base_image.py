@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from aicage.config.context import ConfigContext
-from aicage.discovery import DiscoveryError, discover_base_aliases
 from aicage.errors import CliError
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
+from .discovery import _RegistryDiscoveryError, _discover_base_aliases
 
 
 @dataclass
@@ -21,19 +21,19 @@ class BaseImageSelection:
 __all__ = ["BaseImageSelection", "resolve_base_image"]
 
 
-def _discover_local_bases(repository: str, tool: str) -> List[str]:
+def _discover_local_bases(repository_ref: str, tool: str) -> List[str]:
     """
-    Fallback discovery using local images when Docker Hub is unavailable.
+    Fallback discovery using local images when the registry is unavailable.
     """
     try:
         result = subprocess.run(
-            ["docker", "image", "ls", repository, "--format", "{{.Repository}}:{{.Tag}}"],
+            ["docker", "image", "ls", repository_ref, "--format", "{{.Repository}}:{{.Tag}}"],
             check=True,
             capture_output=True,
             text=True,
         )
     except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to list local images for {repository}: {exc.stderr or exc}") from exc
+        raise CliError(f"Failed to list local images for {repository_ref}: {exc.stderr or exc}") from exc
 
     aliases: set[str] = set()
     for line in result.stdout.splitlines():
@@ -43,7 +43,7 @@ def _discover_local_bases(repository: str, tool: str) -> List[str]:
         if ":" not in line:
             continue
         repo, tag = line.split(":", 1)
-        if repo != repository:
+        if repo != repository_ref:
             continue
         prefix = f"{tool}-"
         suffix = "-latest"
@@ -55,15 +55,21 @@ def _discover_local_bases(repository: str, tool: str) -> List[str]:
     return sorted(aliases)
 
 
-def _discover_available_bases(repository: str, tool: str) -> List[str]:
+def _discover_available_bases(
+    repository: str,
+    repository_ref: str,
+    registry_api_url: str,
+    registry_token_url: str,
+    tool: str,
+) -> List[str]:
     remote_bases: List[str] = []
     local_bases: List[str] = []
     try:
-        remote_bases = discover_base_aliases(repository, tool)
-    except DiscoveryError as exc:
+        remote_bases = _discover_base_aliases(repository, registry_api_url, registry_token_url, tool)
+    except _RegistryDiscoveryError as exc:
         print(f"[aicage] Warning: {exc}. Continuing with local images.", file=sys.stderr)
     try:
-        local_bases = _discover_local_bases(repository, tool)
+        local_bases = _discover_local_bases(repository_ref, tool)
     except CliError as exc:
         print(f"[aicage] Warning: {exc}", file=sys.stderr)
     return sorted(set(remote_bases) | set(local_bases))
@@ -84,7 +90,9 @@ def _pull_image(image_ref: str) -> None:
         print(f"[aicage] Warning: {msg}. Using local image.", file=sys.stderr)
         return
 
-    raise CliError(f"docker pull failed for {image_ref}: {pull_result.stderr.strip() or pull_result.stdout.strip()}")
+    raise CliError(
+        f"docker pull failed for {image_ref}: {pull_result.stderr.strip() or pull_result.stdout.strip()}"
+    )
 
 
 def _read_tool_label(image_ref: str, label: str) -> str:
@@ -106,19 +114,30 @@ def _read_tool_label(image_ref: str, label: str) -> str:
 def resolve_base_image(tool: str, tool_cfg: Dict[str, Any], context: ConfigContext) -> BaseImageSelection:
     base = tool_cfg.get("base") or context.global_cfg.tools.get(tool, {}).get("base")
     project_dirty = False
+    repository_ref = f"{context.global_cfg.image_registry}/{context.global_cfg.image_repository}"
 
     if not base:
-        available_bases = _discover_available_bases(context.global_cfg.image_repository, tool)
+        available_bases = _discover_available_bases(
+            context.global_cfg.image_repository,
+            repository_ref,
+            context.global_cfg.image_registry_api_url,
+            context.global_cfg.image_registry_api_token_url,
+            tool,
+        )
         if not available_bases:
-            raise CliError(f"No base images found for tool '{tool}' (repository={context.global_cfg.image_repository}).")
+            raise CliError(f"No base images found for tool '{tool}' (repository={repository_ref}).")
 
-        request = BaseSelectionRequest(tool=tool, default_base=context.global_cfg.default_image_base, available=available_bases)
+        request = BaseSelectionRequest(
+            tool=tool,
+            default_base=context.global_cfg.default_image_base,
+            available=available_bases,
+        )
         base = prompt_for_base(request)
         tool_cfg["base"] = base
         project_dirty = True
 
     image_tag = f"{tool}-{base}-latest"
-    image_ref = f"{context.global_cfg.image_repository}:{image_tag}"
+    image_ref = f"{repository_ref}:{image_tag}"
 
     _pull_image(image_ref)
     tool_path_label = _read_tool_label(image_ref, "tool_path")

@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
-from aicage.runtime import base_image
-from aicage.runtime.base_image import BaseImageSelection
+from aicage.registry import base_image
+from aicage.registry.base_image import BaseImageSelection
 
 
 class BaseImageResolutionTests(TestCase):
@@ -19,17 +19,25 @@ class BaseImageResolutionTests(TestCase):
                 store=mock.Mock(),
                 project_path=project_path,
                 project_cfg=ProjectConfig(path=str(project_path), docker_args="", tools={}),
-                global_cfg=GlobalConfig(image_repository="aicage/aicage", default_image_base="ubuntu", docker_args="", tools={}),
+                global_cfg=GlobalConfig(
+                    image_registry="ghcr.io",
+                    image_registry_api_url="https://ghcr.io/v2",
+                    image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+                    image_repository="aicage/aicage",
+                    default_image_base="ubuntu",
+                    docker_args="",
+                    tools={},
+                ),
             )
             tool_cfg = {"base": "debian"}
-            with mock.patch("aicage.runtime.base_image._pull_image"), mock.patch(
-                "aicage.runtime.base_image._read_tool_label", return_value=str(tool_dir)
+            with mock.patch("aicage.registry.base_image._pull_image"), mock.patch(
+                "aicage.registry.base_image._read_tool_label", return_value=str(tool_dir)
             ):
                 selection = base_image.resolve_base_image("codex", tool_cfg, context)
 
             self.assertIsInstance(selection, BaseImageSelection)
             self.assertFalse(selection.project_dirty)
-            self.assertEqual("aicage/aicage:codex-debian-latest", selection.image_ref)
+            self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection.image_ref)
             self.assertEqual(tool_dir, selection.tool_config_host)
 
     def test_resolve_prompts_and_marks_dirty(self) -> None:
@@ -41,17 +49,25 @@ class BaseImageResolutionTests(TestCase):
                 store=mock.Mock(),
                 project_path=project_path,
                 project_cfg=ProjectConfig(path=str(project_path), docker_args="", tools={}),
-                global_cfg=GlobalConfig(image_repository="aicage/aicage", default_image_base="ubuntu", docker_args="", tools={}),
+                global_cfg=GlobalConfig(
+                    image_registry="ghcr.io",
+                    image_registry_api_url="https://ghcr.io/v2",
+                    image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+                    image_repository="aicage/aicage",
+                    default_image_base="ubuntu",
+                    docker_args="",
+                    tools={},
+                ),
             )
             tool_cfg: dict = {}
             with mock.patch(
-                "aicage.runtime.base_image._discover_available_bases", return_value=["alpine", "ubuntu"]
+                "aicage.registry.base_image._discover_available_bases", return_value=["alpine", "ubuntu"]
             ), mock.patch(
-                "aicage.runtime.base_image._pull_image"
+                "aicage.registry.base_image._pull_image"
             ), mock.patch(
-                "aicage.runtime.base_image._read_tool_label", return_value=str(tool_dir)
+                "aicage.registry.base_image._read_tool_label", return_value=str(tool_dir)
             ), mock.patch(
-                "aicage.runtime.base_image.prompt_for_base", return_value="alpine"
+                "aicage.registry.base_image.prompt_for_base", return_value="alpine"
             ):
                 selection = base_image.resolve_base_image("codex", tool_cfg, context)
 
@@ -64,9 +80,17 @@ class BaseImageResolutionTests(TestCase):
             store=mock.Mock(),
             project_path=Path("/tmp/project"),
             project_cfg=ProjectConfig(path="/tmp/project", docker_args="", tools={}),
-            global_cfg=GlobalConfig(image_repository="aicage/aicage", default_image_base="ubuntu", docker_args="", tools={}),
+            global_cfg=GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+                image_repository="aicage/aicage",
+                default_image_base="ubuntu",
+                docker_args="",
+                tools={},
+            ),
         )
         tool_cfg: dict = {}
-        with mock.patch("aicage.runtime.base_image._discover_available_bases", return_value=[]):
+        with mock.patch("aicage.registry.base_image._discover_available_bases", return_value=[]):
             with self.assertRaises(CliError):
                 base_image.resolve_base_image("codex", tool_cfg, context)
