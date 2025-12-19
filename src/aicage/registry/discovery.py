@@ -20,6 +20,8 @@ def discover_base_aliases(
     while page_url:
         data, headers = _fetch_json(page_url, {"Authorization": f"Bearer {token}"})
         for name in data.get("tags", []) or []:
+            if name.endswith(("-amd64-latest", "-arm64-latest", "-arch64-latest")):
+                continue
             expected_prefix = f"{tool}-"
             if name.startswith(expected_prefix) and name.endswith("-latest"):
                 base = name[len(expected_prefix) : -len("-latest")]

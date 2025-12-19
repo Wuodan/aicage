@@ -29,11 +29,11 @@ class DiscoveryTests(TestCase):
             if url == token_url:
                 return FakeResponse({"token": "abc"})
             if url == first_tags_url:
-                payload = {"tags": ["codex-ubuntu-latest", "codex-fedora-1.0"]}
+                payload = {"tags": ["codex-ubuntu-latest", "codex-ubuntu-amd64-latest", "codex-fedora-1.0"]}
                 headers = {"Link": f'<{next_tags_url}>; rel="next"'}
                 return FakeResponse(payload, headers)
             if url == next_tags_url:
-                payload = {"tags": ["codex-debian-latest", "cline-ubuntu-latest"]}
+                payload = {"tags": ["codex-debian-latest", "codex-debian-arm64-latest", "cline-ubuntu-latest"]}
                 return FakeResponse(payload)
             raise AssertionError(f"Unexpected URL {url}")
 
