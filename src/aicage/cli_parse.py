@@ -1,11 +1,13 @@
 import argparse
 import sys
-from typing import List, Sequence
+from collections.abc import Sequence
 
 from aicage.cli_types import ParsedArgs
 from aicage.errors import CliError
 
 __all__ = ["parse_cli"]
+
+MIN_REMAINING_FOR_DOCKER_ARGS = 2
 
 
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
@@ -17,7 +19,7 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit.")
     opts: argparse.Namespace
-    remaining: List[str]
+    remaining: list[str]
     opts, remaining = parser.parse_known_args(argv)
 
     if opts.help:
@@ -38,16 +40,16 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
 
     if "--" in remaining:
         sep_index: int = remaining.index("--")
-        pre: List[str] = remaining[:sep_index]
-        post: List[str] = remaining[sep_index + 1 :]
+        pre: list[str] = remaining[:sep_index]
+        post: list[str] = remaining[sep_index + 1 :]
         if not post:
             raise CliError("Missing tool after '--'.")
         docker_args = " ".join(pre).strip()
         tool: str = post[0]
-        tool_args: List[str] = post[1:]
+        tool_args: list[str] = post[1:]
     else:
         first: str = remaining[0]
-        if len(remaining) >= 2 and (first.startswith("-") or "=" in first):
+        if len(remaining) >= MIN_REMAINING_FOR_DOCKER_ARGS and (first.startswith("-") or "=" in first):
             docker_args = first
             tool = remaining[1]
             tool_args = remaining[2:]

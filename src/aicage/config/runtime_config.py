@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
@@ -33,7 +32,7 @@ class RunConfig:
     image_ref: str
     global_docker_args: str
     project_docker_args: str
-    mounts: List[MountSpec]
+    mounts: list[MountSpec]
     mount_preferences: MountPreferencesSnapshot
 
 

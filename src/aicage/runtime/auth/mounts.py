@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
+
 from ._git_config import resolve_git_config_path
 from ._gpg import resolve_gpg_home
 from ._signing import is_commit_signing_enabled, resolve_signing_format
@@ -23,15 +24,15 @@ class MountPreferences:
     ssh: bool | None = None
 
     @classmethod
-    def from_mapping(cls, data: Dict[str, Any]) -> "MountPreferences":
+    def from_mapping(cls, data: dict[str, Any]) -> "MountPreferences":
         return cls(
             gitconfig=data.get("gitconfig"),
             gnupg=data.get("gnupg"),
             ssh=data.get("ssh"),
         )
 
-    def to_mapping(self) -> Dict[str, bool]:
-        payload: Dict[str, bool] = {}
+    def to_mapping(self) -> dict[str, bool]:
+        payload: dict[str, bool] = {}
         if self.gitconfig is not None:
             payload["gitconfig"] = self.gitconfig
         if self.gnupg is not None:
@@ -41,16 +42,16 @@ class MountPreferences:
         return payload
 
 
-def load_mount_preferences(tool_cfg: Dict[str, Any]) -> MountPreferences:
+def load_mount_preferences(tool_cfg: dict[str, Any]) -> MountPreferences:
     return MountPreferences.from_mapping(tool_cfg.get("mounts", {}))
 
 
-def store_mount_preferences(tool_cfg: Dict[str, Any], prefs: MountPreferences) -> None:
+def store_mount_preferences(tool_cfg: dict[str, Any], prefs: MountPreferences) -> None:
     tool_cfg["mounts"] = prefs.to_mapping()
 
 
-def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> Tuple[List[MountSpec], bool]:
-    mounts: List[MountSpec] = []
+def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> tuple[list[MountSpec], bool]:
+    mounts: list[MountSpec] = []
     updated = False
 
     git_config = resolve_git_config_path()

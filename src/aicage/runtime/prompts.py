@@ -1,6 +1,5 @@
 import sys
 from dataclasses import dataclass
-from typing import List
 
 from aicage.errors import CliError
 
@@ -11,7 +10,7 @@ __all__ = ["BaseSelectionRequest", "ensure_tty_for_prompt", "prompt_yes_no", "pr
 class BaseSelectionRequest:
     tool: str
     default_base: str
-    available: List[str]
+    available: list[str]
 
 
 def ensure_tty_for_prompt() -> None:

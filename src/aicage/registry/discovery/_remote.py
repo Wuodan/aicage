@@ -1,15 +1,17 @@
 import json
 import re
 import urllib.request
-from typing import Any, Dict, List, Mapping, Tuple
+from collections.abc import Mapping
+from typing import Any
 
 from aicage.config.context import ConfigContext
+
 
 class RegistryDiscoveryError(Exception):
     """Raised when registry discovery fails."""
 
 
-def discover_base_aliases(context: ConfigContext, tool: str) -> List[str]:
+def discover_base_aliases(context: ConfigContext, tool: str) -> list[str]:
     aliases: set[str] = set()
     token = _fetch_pull_token(context.global_cfg.image_registry_api_token_url, context.global_cfg.image_repository)
     page_url = f"{context.global_cfg.image_registry_api_url}/{context.global_cfg.image_repository}/tags/list?n=1000"
@@ -38,7 +40,7 @@ def _fetch_pull_token(registry_token_url: str, repository: str) -> str:
     return token
 
 
-def _fetch_json(url: str, headers: Dict[str, str] | None) -> Tuple[Dict[str, Any], Mapping[str, str]]:
+def _fetch_json(url: str, headers: dict[str, str] | None) -> tuple[dict[str, Any], Mapping[str, str]]:
     request = urllib.request.Request(url, headers=headers or {})
     try:
         with urllib.request.urlopen(request) as response:

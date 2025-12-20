@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 __all__ = ["ParsedArgs"]
 
@@ -9,4 +8,4 @@ class ParsedArgs:
     dry_run: bool
     docker_args: str
     tool: str
-    tool_args: List[str]
+    tool_args: list[str]

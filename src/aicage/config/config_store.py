@@ -5,7 +5,7 @@ import os
 import shutil
 from importlib import resources
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
@@ -35,7 +35,7 @@ class SettingsStore:
             self._ensure_global_config()
 
     @staticmethod
-    def _load_yaml(path: Path) -> Dict[str, Any]:
+    def _load_yaml(path: Path) -> dict[str, Any]:
         if not path.exists():
             return {}
         try:
@@ -46,7 +46,7 @@ class SettingsStore:
             raise ConfigError(f"Failed to parse YAML config at {path}: {exc}") from exc
 
     @staticmethod
-    def _save_yaml(path: Path, data: Dict[str, Any]) -> None:
+    def _save_yaml(path: Path, data: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as handle:
             yaml.safe_dump(data, handle, sort_keys=True)

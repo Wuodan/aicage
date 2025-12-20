@@ -2,13 +2,12 @@ import os
 import shlex
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
 
 from ._env_vars import (
     AICAGE_GID,
+    AICAGE_TOOL_PATH,
     AICAGE_UID,
     AICAGE_USER,
-    AICAGE_TOOL_PATH,
 )
 
 __all__ = ["MountSpec", "DockerRunArgs", "merge_docker_args", "assemble_docker_run"]
@@ -28,18 +27,18 @@ class DockerRunArgs:
     tool_config_host: Path
     tool_mount_container: Path
     merged_docker_args: str
-    tool_args: List[str]
+    tool_args: list[str]
     tool_path: str | None = None
-    env: List[str] = field(default_factory=list)
-    mounts: List[MountSpec] = field(default_factory=list)
+    env: list[str] = field(default_factory=list)
+    mounts: list[MountSpec] = field(default_factory=list)
 
 
 def merge_docker_args(*args: str) -> str:
     return " ".join(part for part in args if part).strip()
 
 
-def _resolve_user_ids() -> List[str]:
-    env_flags: List[str] = []
+def _resolve_user_ids() -> list[str]:
+    env_flags: list[str] = []
     try:
         uid = os.getuid()
         gid = os.getgid()
@@ -53,8 +52,8 @@ def _resolve_user_ids() -> List[str]:
     return env_flags
 
 
-def assemble_docker_run(args: DockerRunArgs) -> List[str]:
-    cmd: List[str] = ["docker", "run", "--rm", "-it"]
+def assemble_docker_run(args: DockerRunArgs) -> list[str]:
+    cmd: list[str] = ["docker", "run", "--rm", "-it"]
     cmd.extend(_resolve_user_ids())
     if args.tool_path:
         cmd.extend(["-e", f"{AICAGE_TOOL_PATH}={args.tool_path}"])

@@ -1,20 +1,28 @@
 import subprocess
 import sys
+
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
+
 from .discovery.catalog import discover_tool_bases
 
 __all__ = ["pull_image", "select_tool_image"]
 
 
 def pull_image(image_ref: str) -> None:
-    pull_result = subprocess.run(["docker", "pull", image_ref], capture_output=True, text=True)
+    pull_result = subprocess.run(
+        ["docker", "pull", image_ref],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
     if pull_result.returncode == 0:
         return
 
     inspect = subprocess.run(
         ["docker", "image", "inspect", image_ref],
+        check=False,
         capture_output=True,
         text=True,
     )

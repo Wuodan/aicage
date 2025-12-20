@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any
 
 from .errors import ConfigError
 
@@ -14,10 +14,10 @@ class GlobalConfig:
     image_repository: str
     default_image_base: str
     docker_args: str = ""
-    tools: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    tools: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
-    def from_mapping(cls, data: Dict[str, Any]) -> "GlobalConfig":
+    def from_mapping(cls, data: dict[str, Any]) -> "GlobalConfig":
         required = (
             "image_registry",
             "image_registry_api_url",
@@ -38,7 +38,7 @@ class GlobalConfig:
             tools=data.get("tools", {}) or {},
         )
 
-    def to_mapping(self) -> Dict[str, Any]:
+    def to_mapping(self) -> dict[str, Any]:
         return {
             "image_registry": self.image_registry,
             "image_registry_api_url": self.image_registry_api_url,

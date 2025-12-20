@@ -24,3 +24,14 @@ source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/aicage/_version.py"
+
+[tool.ruff]
+line-length = 120
+[tool.ruff.lint]
+select = [
+  "E", "F",        # correctness
+  "I",             # imports
+  "UP",            # pyupgrade
+  "B",             # bugbear
+  "PL",            # pylint rules (incl. protected access)
+]

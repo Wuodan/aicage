@@ -1,16 +1,15 @@
 import sys
-from typing import List
 
-from aicage.errors import CliError
 from aicage.config.context import ConfigContext
+from aicage.errors import CliError
 
 from ._local import discover_local_bases
 from ._remote import RegistryDiscoveryError, discover_base_aliases
 
 
-def discover_tool_bases(context: ConfigContext, tool: str) -> List[str]:
-    remote_bases: List[str] = []
-    local_bases: List[str] = []
+def discover_tool_bases(context: ConfigContext, tool: str) -> list[str]:
+    remote_bases: list[str] = []
+    local_bases: list[str] = []
     try:
         remote_bases = discover_base_aliases(context, tool)
     except RegistryDiscoveryError as exc:

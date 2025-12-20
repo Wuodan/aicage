@@ -1,10 +1,9 @@
 import subprocess
-from typing import List
 
 from aicage.errors import CliError
 
 
-def discover_local_bases(repository_ref: str, tool: str) -> List[str]:
+def discover_local_bases(repository_ref: str, tool: str) -> list[str]:
     """
     Fallback discovery using local images when the registry is unavailable.
     """
@@ -20,12 +19,12 @@ def discover_local_bases(repository_ref: str, tool: str) -> List[str]:
 
     aliases: set[str] = set()
     for line in result.stdout.splitlines():
-        line = line.strip()
-        if not line or line.endswith(":<none>"):
+        stripped_line = line.strip()
+        if not stripped_line or stripped_line.endswith(":<none>"):
             continue
-        if ":" not in line:
+        if ":" not in stripped_line:
             continue
-        repo, tag = line.split(":", 1)
+        repo, tag = stripped_line.split(":", 1)
         if repo != repository_ref:
             continue
         prefix = f"{tool}-"

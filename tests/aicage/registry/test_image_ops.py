@@ -19,7 +19,12 @@ class DockerInvocationTests(TestCase):
         pull_ok = FakeCompleted(returncode=0)
         with mock.patch("aicage.registry.image_selection.subprocess.run", return_value=pull_ok) as run_mock:
             image_selection.pull_image("repo:tag")
-        run_mock.assert_called_once_with(["docker", "pull", "repo:tag"], capture_output=True, text=True)
+        run_mock.assert_called_once_with(
+            ["docker", "pull", "repo:tag"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
 
         pull_fail = FakeCompleted(returncode=1, stderr="timeout")
         inspect_ok = FakeCompleted(returncode=0)
