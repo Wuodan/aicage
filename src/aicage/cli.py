@@ -4,19 +4,20 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Sequence
+from typing import Any, Dict, List, Sequence
 
 from aicage.config import ConfigError
-from aicage.config.context import build_config_context
+from aicage.config.context import ConfigContext, build_config_context
 from aicage.errors import CliError
 from aicage.registry import ImageSelection, resolve_tool_image
 from aicage.runtime.auth.mounts import (
+    MountPreferences,
     build_auth_mounts,
     load_mount_preferences,
     store_mount_preferences,
 )
-from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run, merge_docker_args
-from aicage.runtime.tool_config import resolve_tool_config
+from aicage.runtime.run_args import DockerRunArgs, MountSpec, assemble_docker_run, merge_docker_args
+from aicage.runtime.tool_config import ToolConfig, resolve_tool_config
 
 _TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
 
@@ -39,10 +40,12 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit.")
+    opts: argparse.Namespace
+    remaining: List[str]
     opts, remaining = parser.parse_known_args(argv)
 
     if opts.help:
-        usage = (
+        usage: str = (
             "Usage:\n"
             "  aicage [--dry-run] [<docker-args>] <tool> [-- <tool-args>]\n"
             "  aicage [--dry-run] [<docker-args>] -- <tool> <tool-args>\n\n"
@@ -55,19 +58,19 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     if not remaining:
         raise CliError("Missing arguments. Provide a tool name (and optional docker args).")
 
-    docker_args = ""
+    docker_args: str = ""
 
     if "--" in remaining:
-        sep_index = remaining.index("--")
-        pre = remaining[:sep_index]
-        post = remaining[sep_index + 1 :]
+        sep_index: int = remaining.index("--")
+        pre: List[str] = remaining[:sep_index]
+        post: List[str] = remaining[sep_index + 1 :]
         if not post:
             raise CliError("Missing tool after '--'.")
         docker_args = " ".join(pre).strip()
-        tool = post[0]
-        tool_args = post[1:]
+        tool: str = post[0]
+        tool_args: List[str] = post[1:]
     else:
-        first = remaining[0]
+        first: str = remaining[0]
         if len(remaining) >= 2 and (first.startswith("-") or "=" in first):
             docker_args = first
             tool = remaining[1]
@@ -83,25 +86,27 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    argv = argv if argv is not None else sys.argv[1:]
+    parsed_argv: Sequence[str] = argv if argv is not None else sys.argv[1:]
     try:
-        parsed = parse_cli(argv)
-        context = build_config_context()
+        parsed: ParsedArgs = parse_cli(parsed_argv)
+        context: ConfigContext = build_config_context()
         base_selection: ImageSelection = resolve_tool_image(parsed.tool, context)
-        tool_cfg = context.project_cfg.tools[parsed.tool]
-        tool_config = resolve_tool_config(base_selection.image_ref)
+        tool_cfg: Dict[str, Any] = context.project_cfg.tools[parsed.tool]
+        tool_config: ToolConfig = resolve_tool_config(base_selection.image_ref)
 
-        merged_docker_args = merge_docker_args(
+        merged_docker_args: str = merge_docker_args(
             context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
         )
 
-        prefs = load_mount_preferences(tool_cfg)
+        prefs: MountPreferences = load_mount_preferences(tool_cfg)
+        auth_mounts: List[MountSpec]
+        prefs_updated: bool
         auth_mounts, prefs_updated = build_auth_mounts(context.project_path, prefs)
         if prefs_updated:
             store_mount_preferences(tool_cfg, prefs)
-        project_dirty = base_selection.project_dirty or prefs_updated
+        project_dirty: bool = base_selection.project_dirty or prefs_updated
 
-        run_args = DockerRunArgs(
+        run_args: DockerRunArgs = DockerRunArgs(
             image_ref=base_selection.image_ref,
             project_path=context.project_path,
             tool_config_host=tool_config.tool_config_host,
@@ -115,7 +120,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if project_dirty:
             context.store.save_project(context.project_path, context.project_cfg)
 
-        run_cmd = assemble_docker_run(run_args)
+        run_cmd: List[str] = assemble_docker_run(run_args)
 
         if parsed.dry_run:
             print(shlex.join(run_cmd))
