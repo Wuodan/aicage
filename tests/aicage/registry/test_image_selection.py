@@ -8,7 +8,7 @@ from aicage.errors import CliError
 from aicage.registry import image_selection
 
 
-class BaseImageResolutionTests(TestCase):
+class ImageSelectionTests(TestCase):
     def test_resolve_uses_existing_base(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
