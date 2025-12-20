@@ -6,7 +6,6 @@ from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.registry import image_selection
-from aicage.registry.image_selection import ImageSelection
 
 
 class BaseImageResolutionTests(TestCase):
@@ -14,10 +13,11 @@ class BaseImageResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
+            store = mock.Mock()
             context = ConfigContext(
-                store=mock.Mock(),
+                store=store,
                 project_path=project_path,
-                project_cfg=ProjectConfig(path=str(project_path), docker_args="", tools={}),
+                project_cfg=ProjectConfig(path=str(project_path), tools={}),
                 global_cfg=GlobalConfig(
                     image_registry="ghcr.io",
                     image_registry_api_url="https://ghcr.io/v2",
@@ -32,18 +32,19 @@ class BaseImageResolutionTests(TestCase):
                 context.project_cfg.tools["codex"] = {"base": "debian"}
                 selection = image_selection.resolve_tool_image("codex", context)
 
-            self.assertIsInstance(selection, ImageSelection)
-            self.assertFalse(selection.project_dirty)
-            self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection.image_ref)
+            self.assertIsInstance(selection, str)
+            self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection)
+            store.save_project.assert_not_called()
 
     def test_resolve_prompts_and_marks_dirty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
+            store = mock.Mock()
             context = ConfigContext(
-                store=mock.Mock(),
+                store=store,
                 project_path=project_path,
-                project_cfg=ProjectConfig(path=str(project_path), docker_args="", tools={}),
+                project_cfg=ProjectConfig(path=str(project_path), tools={}),
                 global_cfg=GlobalConfig(
                     image_registry="ghcr.io",
                     image_registry_api_url="https://ghcr.io/v2",
@@ -61,16 +62,16 @@ class BaseImageResolutionTests(TestCase):
             ), mock.patch(
                 "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
-                selection = image_selection.resolve_tool_image("codex", context)
+                image_selection.resolve_tool_image("codex", context)
 
-            self.assertTrue(selection.project_dirty)
             self.assertEqual("alpine", context.project_cfg.tools["codex"]["base"])
+            store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_raises_without_bases(self) -> None:
         context = ConfigContext(
             store=mock.Mock(),
             project_path=Path("/tmp/project"),
-            project_cfg=ProjectConfig(path="/tmp/project", docker_args="", tools={}),
+            project_cfg=ProjectConfig(path="/tmp/project", tools={}),
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",
                 image_registry_api_url="https://ghcr.io/v2",

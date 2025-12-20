@@ -7,7 +7,7 @@ from aicage import cli
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
-from aicage.registry import ImageSelection
+from aicage.runtime.run_args import DockerRunArgs
 
 
 class MainFlowTests(TestCase):
@@ -25,8 +25,7 @@ class MainFlowTests(TestCase):
             )
             project_cfg = ProjectConfig(
                 path=str(project_path),
-                docker_args="--project",
-                tools={"codex": {"base": "debian"}},
+                tools={"codex": {"base": "debian", "docker_args": "--project"}},
             )
 
             class FakeStore:
@@ -51,24 +50,23 @@ class MainFlowTests(TestCase):
                 project_cfg=project_cfg,
                 global_cfg=global_cfg,
             )
-            selection = ImageSelection(
+            run_args = DockerRunArgs(
                 image_ref="ghcr.io/aicage/aicage:codex-debian-latest",
-                project_dirty=False,
-            )
-            tool_config = mock.Mock(
-                tool_path=str(project_path / ".codex"),
+                project_path=project_path,
                 tool_config_host=project_path / ".codex",
+                tool_mount_container=Path("/aicage/tool-config"),
+                merged_docker_args="--global --project --cli",
+                tool_args=["--flag"],
+                tool_path=str(project_path / ".codex"),
             )
             with (
                 mock.patch("aicage.cli.parse_cli", return_value=cli.ParsedArgs(False, "--cli", "codex", ["--flag"])),
                 mock.patch("aicage.cli.build_config_context", return_value=context),
-                mock.patch("aicage.cli.resolve_tool_image", return_value=selection),
-                mock.patch("aicage.cli.resolve_tool_config", return_value=tool_config),
+                mock.patch("aicage.cli.build_run_args", return_value=run_args),
                 mock.patch(
                     "aicage.cli.assemble_docker_run",
                     return_value=["docker", "run", "--flag"],
                 ) as assemble_mock,
-                mock.patch("aicage.cli.build_auth_mounts", return_value=([], False)),
                 mock.patch("aicage.cli.subprocess.run") as run_mock,
             ):
                 exit_code = cli.main([])
@@ -90,7 +88,7 @@ class MainFlowTests(TestCase):
                 tools={},
             )
             project_cfg = ProjectConfig(
-                path=str(project_path), docker_args="--project", tools={"codex": {"base": "alpine"}}
+                path=str(project_path), tools={"codex": {"base": "alpine", "docker_args": "--project"}}
             )
 
             class FakeStore:
@@ -110,13 +108,14 @@ class MainFlowTests(TestCase):
                     self.saved = (project_realpath, config)
 
             store = FakeStore(global_cfg, project_cfg)
-            selection = ImageSelection(
+            run_args = DockerRunArgs(
                 image_ref="ghcr.io/aicage/aicage:codex-alpine-latest",
-                project_dirty=True,
-            )
-            tool_config = mock.Mock(
-                tool_path=str(project_path / ".codex"),
+                project_path=project_path,
                 tool_config_host=project_path / ".codex",
+                tool_mount_container=Path("/aicage/tool-config"),
+                merged_docker_args="--global --project --cli",
+                tool_args=["--flag"],
+                tool_path=str(project_path / ".codex"),
             )
             context = ConfigContext(
                 store=store,
@@ -127,20 +126,16 @@ class MainFlowTests(TestCase):
             with (
                 mock.patch("aicage.cli.parse_cli", return_value=cli.ParsedArgs(True, "--cli", "codex", ["--flag"])),
                 mock.patch("aicage.cli.build_config_context", return_value=context),
-                mock.patch("aicage.cli.resolve_tool_image", return_value=selection),
-                mock.patch("aicage.cli.resolve_tool_config", return_value=tool_config),
+                mock.patch("aicage.cli.build_run_args", return_value=run_args),
                 mock.patch("aicage.cli.assemble_docker_run", return_value=["docker", "run", "cmd"]),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-                mock.patch("aicage.cli.build_auth_mounts", return_value=([], False)),
             ):
                 exit_code = cli.main([])
 
             self.assertEqual(0, exit_code)
             self.assertIn("docker run cmd", stdout.getvalue())
-            self.assertIsNotNone(store.saved)
-            saved_cfg = store.saved[1]
-            self.assertEqual("alpine", saved_cfg.tools["codex"]["base"])
+            self.assertIsNone(store.saved)
             self.assertEqual("", stderr.getvalue())
 
     def test_main_handles_no_available_bases(self) -> None:
@@ -155,7 +150,7 @@ class MainFlowTests(TestCase):
                 docker_args="",
                 tools={},
             )
-            project_cfg = ProjectConfig(path=str(project_path), docker_args="", tools={})
+            project_cfg = ProjectConfig(path=str(project_path), tools={})
 
             class FakeStore:
                 def __init__(self, global_cfg: GlobalConfig, project_cfg: ProjectConfig) -> None:
@@ -181,7 +176,7 @@ class MainFlowTests(TestCase):
             with (
                 mock.patch("aicage.cli.parse_cli", return_value=cli.ParsedArgs(True, "", "codex", [])),
                 mock.patch("aicage.cli.build_config_context", return_value=context),
-                mock.patch("aicage.cli.resolve_tool_image", side_effect=CliError("No base images found")),
+                mock.patch("aicage.cli.build_run_args", side_effect=CliError("No base images found")),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
             ):
                 exit_code = cli.main([])

@@ -2,34 +2,16 @@ import argparse
 import shlex
 import subprocess
 import sys
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import List, Sequence
 
 from aicage.config import ConfigError
 from aicage.config.context import ConfigContext, build_config_context
+from aicage.cli_types import ParsedArgs
 from aicage.errors import CliError
-from aicage.registry import ImageSelection, resolve_tool_image
-from aicage.runtime.auth.mounts import (
-    MountPreferences,
-    build_auth_mounts,
-    load_mount_preferences,
-    store_mount_preferences,
-)
-from aicage.runtime.run_args import DockerRunArgs, MountSpec, assemble_docker_run, merge_docker_args
-from aicage.runtime.tool_config import ToolConfig, resolve_tool_config
-
-_TOOL_MOUNT_CONTAINER = Path("/aicage/tool-config")
+from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
+from aicage.runtime.run_plan import build_run_args
 
 __all__ = ["ParsedArgs", "parse_cli", "main"]
-
-
-@dataclass
-class ParsedArgs:
-    dry_run: bool
-    docker_args: str
-    tool: str
-    tool_args: List[str]
 
 
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
@@ -90,35 +72,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         parsed: ParsedArgs = parse_cli(parsed_argv)
         context: ConfigContext = build_config_context()
-        base_selection: ImageSelection = resolve_tool_image(parsed.tool, context)
-        tool_cfg: Dict[str, Any] = context.project_cfg.tools[parsed.tool]
-        tool_config: ToolConfig = resolve_tool_config(base_selection.image_ref)
-
-        merged_docker_args: str = merge_docker_args(
-            context.global_cfg.docker_args, context.project_cfg.docker_args, parsed.docker_args
-        )
-
-        prefs: MountPreferences = load_mount_preferences(tool_cfg)
-        auth_mounts: List[MountSpec]
-        prefs_updated: bool
-        auth_mounts, prefs_updated = build_auth_mounts(context.project_path, prefs)
-        if prefs_updated:
-            store_mount_preferences(tool_cfg, prefs)
-        project_dirty: bool = base_selection.project_dirty or prefs_updated
-
-        run_args: DockerRunArgs = DockerRunArgs(
-            image_ref=base_selection.image_ref,
-            project_path=context.project_path,
-            tool_config_host=tool_config.tool_config_host,
-            tool_mount_container=_TOOL_MOUNT_CONTAINER,
-            merged_docker_args=merged_docker_args,
-            tool_args=parsed.tool_args,
-            tool_path=tool_config.tool_path,
-            mounts=auth_mounts,
-        )
-
-        if project_dirty:
-            context.store.save_project(context.project_path, context.project_cfg)
+        run_args: DockerRunArgs = build_run_args(context=context, parsed=parsed)
 
         run_cmd: List[str] = assemble_docker_run(run_args)
 

@@ -37,10 +37,12 @@ class ConfigStoreTests(TestCase):
             project_path = base_dir / "project"
             project_path.mkdir(parents=True, exist_ok=True)
             project_cfg = store.load_project(project_path)
-            self.assertEqual(ProjectConfig(path=str(project_path), docker_args="", tools={}), project_cfg)
+            self.assertEqual(ProjectConfig(path=str(project_path), tools={}), project_cfg)
 
-            project_cfg.docker_args = "--add-host=host.docker.internal:host-gateway"
-            project_cfg.tools["codex"] = {"base": "fedora"}
+            project_cfg.tools["codex"] = {
+                "base": "fedora",
+                "docker_args": "--add-host=host.docker.internal:host-gateway",
+            }
             store.save_project(project_path, project_cfg)
 
             reloaded_project = store.load_project(project_path)

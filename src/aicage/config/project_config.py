@@ -8,16 +8,19 @@ __all__ = ["ProjectConfig"]
 @dataclass
 class ProjectConfig:
     path: str
-    docker_args: str = ""
     tools: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
     def from_mapping(cls, project_path: Path, data: Dict[str, Any]) -> "ProjectConfig":
+        tools = data.get("tools", {}) or {}
+        legacy_docker_args = data.get("docker_args", "")
+        if legacy_docker_args:
+            for tool_cfg in tools.values():
+                tool_cfg.setdefault("docker_args", legacy_docker_args)
         return cls(
             path=data.get("path", str(project_path)),
-            docker_args=data.get("docker_args", ""),
-            tools=data.get("tools", {}) or {},
+            tools=tools,
         )
 
     def to_mapping(self) -> Dict[str, Any]:
-        return {"path": self.path, "docker_args": self.docker_args, "tools": self.tools}
+        return {"path": self.path, "tools": self.tools}
