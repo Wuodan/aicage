@@ -12,6 +12,8 @@ This needs fixing, the user should see:
   - A percentage counter
   - anything else which helps him estimate how much longer he has to wait
 
+Additionally writing the output of docker-pull to a log-file on /tmp and telling user about it would be nice too.
+
 ## Task Workflow
 
 Don't forget to read AGENTS.md and always use the existing venv.
