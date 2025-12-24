@@ -1,7 +1,6 @@
-import json
 import subprocess
 import sys
-from typing import Any
+from dataclasses import dataclass
 
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
@@ -12,130 +11,12 @@ from .discovery.catalog import discover_tool_bases
 __all__ = ["pull_image", "select_tool_image"]
 
 
-def _repository_from_ref(image_ref: str) -> str:
-    if "@" in image_ref:
-        return image_ref.split("@", 1)[0]
-    last_colon = image_ref.rfind(":")
-    if last_colon > image_ref.rfind("/"):
-        return image_ref[:last_colon]
-    return image_ref
-
-
-def _get_local_digest(image_ref: str, repository: str) -> str | None:
-    inspect = subprocess.run(
-        ["docker", "image", "inspect", image_ref, "--format", "{{json .RepoDigests}}"],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if inspect.returncode != 0:
-        return None
-
-    try:
-        digests = json.loads(inspect.stdout)
-    except json.JSONDecodeError:
-        return None
-
-    if not isinstance(digests, list):
-        return None
-
-    for entry in digests:
-        if not isinstance(entry, str):
-            continue
-        repo, sep, digest = entry.partition("@")
-        if sep and repo == repository and digest:
-            return digest
-
-    return None
-
-
-def _get_remote_digests(image_ref: str) -> set[str] | None:
-    inspect = subprocess.run(
-        ["docker", "manifest", "inspect", "--verbose", image_ref],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if inspect.returncode != 0:
-        return None
-
-    try:
-        payload: Any = json.loads(inspect.stdout)
-    except json.JSONDecodeError:
-        return None
-
-    digests: set[str] = set()
-
-    def collect_digest(entry: Any) -> None:
-        if not isinstance(entry, dict):
-            return
-        descriptor = entry.get("Descriptor")
-        if isinstance(descriptor, dict):
-            digest = descriptor.get("digest")
-            if isinstance(digest, str) and digest:
-                digests.add(digest)
-        manifest_digest = entry.get("digest")
-        if isinstance(manifest_digest, str) and manifest_digest:
-            digests.add(manifest_digest)
-        config = entry.get("config")
-        if isinstance(config, dict):
-            config_digest = config.get("digest")
-            if isinstance(config_digest, str) and config_digest:
-                digests.add(config_digest)
-        manifests = entry.get("manifests")
-        if isinstance(manifests, list):
-            for manifest in manifests:
-                collect_digest(manifest)
-
-    if isinstance(payload, list):
-        for item in payload:
-            collect_digest(item)
-    else:
-        collect_digest(payload)
-
-    return digests or None
-
-
 def pull_image(image_ref: str) -> None:
-    repository = _repository_from_ref(image_ref)
-    local_digest = _get_local_digest(image_ref, repository)
-    if local_digest is not None:
-        remote_digests = _get_remote_digests(image_ref)
-        if remote_digests is not None and local_digest in remote_digests:
+    pull_result = _stream_docker_pull(image_ref)
+
+    if pull_result.returncode == 0:
+        if not pull_result.showed_output and pull_result.up_to_date:
             print(f"[aicage] Image {image_ref} is up to date.")
-            return
-
-    print(f"[aicage] Pulling image {image_ref}...")
-
-    last_nonempty_line = ""
-    line_buffer = ""
-    pull_process = subprocess.Popen(
-        ["docker", "pull", image_ref],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
-    )
-
-    if pull_process.stdout is not None:
-        while True:
-            chunk = pull_process.stdout.read(1)
-            if chunk == "":
-                break
-            sys.stdout.write(chunk)
-            sys.stdout.flush()
-
-            if chunk in ("\n", "\r"):
-                stripped = line_buffer.strip()
-                if stripped:
-                    last_nonempty_line = stripped
-                line_buffer = ""
-            else:
-                line_buffer += chunk
-
-    pull_process.wait()
-
-    if pull_process.returncode == 0:
         return
 
     inspect = subprocess.run(
@@ -145,12 +26,78 @@ def pull_image(image_ref: str) -> None:
         text=True,
     )
     if inspect.returncode == 0:
-        msg = last_nonempty_line or f"docker pull failed for {image_ref}"
+        msg = pull_result.last_nonempty_line or f"docker pull failed for {image_ref}"
         print(f"[aicage] Warning: {msg}. Using local image.", file=sys.stderr)
         return
 
-    detail = last_nonempty_line or f"docker pull failed for {image_ref}"
+    detail = pull_result.last_nonempty_line or f"docker pull failed for {image_ref}"
     raise CliError(detail)
+
+
+@dataclass(frozen=True)
+class _PullResult:
+    returncode: int
+    last_nonempty_line: str
+    showed_output: bool
+    up_to_date: bool
+
+
+def _is_progress_line(line: str) -> bool:
+    return any(
+        marker in line
+        for marker in (
+            "Pulling fs layer",
+            "Downloading",
+            "Extracting",
+            "Waiting",
+            "Download complete",
+            "Pull complete",
+            "Downloaded newer image",
+        )
+    )
+
+
+def _stream_docker_pull(image_ref: str) -> _PullResult:
+    show_output = False
+    up_to_date = False
+    buffered_lines: list[str] = []
+    last_nonempty_line = ""
+    pull_process = subprocess.Popen(
+        ["docker", "pull", image_ref],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    if pull_process.stdout is not None:
+        for line in pull_process.stdout:
+            if show_output:
+                sys.stdout.write(line)
+                sys.stdout.flush()
+            else:
+                buffered_lines.append(line)
+
+            stripped = line.strip()
+            if not stripped:
+                continue
+            last_nonempty_line = stripped
+            if "Image is up to date" in stripped:
+                up_to_date = True
+            if not show_output and _is_progress_line(stripped):
+                show_output = True
+                print(f"[aicage] Pulling image {image_ref}...")
+                sys.stdout.write("".join(buffered_lines))
+                sys.stdout.flush()
+                buffered_lines = []
+
+    pull_process.wait()
+
+    return _PullResult(
+        returncode=pull_process.returncode,
+        last_nonempty_line=last_nonempty_line,
+        showed_output=show_output,
+        up_to_date=up_to_date,
+    )
 
 
 def select_tool_image(tool: str, context: ConfigContext) -> str:
