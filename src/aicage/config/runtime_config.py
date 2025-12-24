@@ -7,7 +7,7 @@ from aicage.cli_types import ParsedArgs
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.file_locking import lock_config_files
-from aicage.registry import select_tool_image
+from aicage.registry.image_selection import select_tool_image
 from aicage.runtime.auth.mounts import (
     MountPreferences,
     build_auth_mounts,

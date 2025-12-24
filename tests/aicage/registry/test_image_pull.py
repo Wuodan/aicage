@@ -1,10 +1,9 @@
 import io
-import subprocess
+import json
 from unittest import TestCase, mock
 
 from aicage.errors import CliError
 from aicage.registry import image_pull
-from aicage.registry.discovery import _local as registry_local
 
 
 class FakeCompleted:
@@ -116,26 +115,73 @@ class DockerInvocationTests(TestCase):
         popen_mock.assert_not_called()
         self.assertEqual("", stdout.getvalue())
 
-    def test_discover_local_bases_and_errors(self) -> None:
-        list_output = "\n".join(
-            [
-                "repo:codex-ubuntu-latest",
-                "repo:codex-debian-latest",
-                "repo:codex-ubuntu-1.0",
-                "other:codex-ubuntu-latest",
-                "repo:codex-<none>",
-            ]
-        )
+
+class DigestParsingTests(TestCase):
+    def test_repository_from_ref(self) -> None:
+        self.assertEqual("repo", image_pull._repository_from_ref("repo:tag"))
+        self.assertEqual("repo/name", image_pull._repository_from_ref("repo/name:tag"))
+        self.assertEqual("repo/name", image_pull._repository_from_ref("repo/name@sha256:deadbeef"))
+        self.assertEqual("localhost:5000/repo", image_pull._repository_from_ref("localhost:5000/repo:tag"))
+
+    def test_get_local_repo_digest(self) -> None:
         with mock.patch(
-            "aicage.registry.discovery._local.subprocess.run",
-            return_value=FakeCompleted(stdout=list_output, returncode=0),
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=1, stdout=""),
         ):
-            aliases = registry_local.discover_local_bases("repo", "codex")
-        self.assertEqual(["debian", "ubuntu"], aliases)
+            self.assertIsNone(image_pull._get_local_repo_digest("repo:tag"))
 
         with mock.patch(
-            "aicage.registry.discovery._local.subprocess.run",
-            side_effect=subprocess.CalledProcessError(1, "docker image ls", stderr="boom"),
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout="not-json"),
         ):
-            with self.assertRaises(CliError):
-                registry_local.discover_local_bases("repo", "codex")
+            self.assertIsNone(image_pull._get_local_repo_digest("repo:tag"))
+
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout='{"bad": "data"}'),
+        ):
+            self.assertIsNone(image_pull._get_local_repo_digest("repo:tag"))
+
+        payload = '["repo@sha256:deadbeef", "other@sha256:skip"]'
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout=payload),
+        ):
+            digest = image_pull._get_local_repo_digest("repo:tag")
+        self.assertEqual("sha256:deadbeef", digest)
+
+    def test_get_remote_manifest_digests(self) -> None:
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=1, stdout=""),
+        ):
+            self.assertIsNone(image_pull._get_remote_manifest_digests("repo:tag"))
+
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout="not-json"),
+        ):
+            self.assertIsNone(image_pull._get_remote_manifest_digests("repo:tag"))
+
+        payload = {
+            "Descriptor": {"digest": "sha256:one"},
+            "config": {"digest": "sha256:cfg"},
+            "manifests": [{"digest": "sha256:two"}],
+        }
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout=json.dumps(payload)),
+        ):
+            digests = image_pull._get_remote_manifest_digests("repo:tag")
+        self.assertEqual({"sha256:one", "sha256:cfg", "sha256:two"}, digests)
+
+        list_payload = [
+            {"Descriptor": {"digest": "sha256:list-one"}},
+            {"config": {"digest": "sha256:list-two"}},
+        ]
+        with mock.patch(
+            "aicage.registry.image_pull.subprocess.run",
+            return_value=FakeCompleted(returncode=0, stdout=json.dumps(list_payload)),
+        ):
+            digests = image_pull._get_remote_manifest_digests("repo:tag")
+        self.assertEqual({"sha256:list-one", "sha256:list-two"}, digests)

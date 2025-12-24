@@ -1,6 +1,11 @@
-import sys
+from __future__ import annotations
 
-from aicage.config.context import ConfigContext
+import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aicage.config.context import ConfigContext
+
 from aicage.errors import CliError
 
 from ._local import discover_local_bases

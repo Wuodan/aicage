@@ -1,4 +1,10 @@
-from aicage.config.context import ConfigContext
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aicage.config.context import ConfigContext
+
 from aicage.errors import CliError
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
 

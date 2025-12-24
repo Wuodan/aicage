@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage import cli
-from aicage.config import RunConfig
+from aicage.config import ConfigError, RunConfig
 from aicage.errors import CliError
 from aicage.runtime.run_args import DockerRunArgs
 
@@ -34,6 +34,50 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
 
 
 class MainFlowTests(TestCase):
+    def test_print_project_config_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "project.yaml"
+            store = mock.Mock()
+            store.project_config_path.return_value = config_path
+            with (
+                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                cli._print_project_config()
+
+        output = stdout.getvalue()
+        self.assertIn("Project config path:", output)
+        self.assertIn(str(config_path), output)
+        self.assertIn("(missing)", output)
+
+    def test_print_project_config_empty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "project.yaml"
+            config_path.write_text("", encoding="utf-8")
+            store = mock.Mock()
+            store.project_config_path.return_value = config_path
+            with (
+                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                cli._print_project_config()
+
+        self.assertIn("(empty)", stdout.getvalue())
+
+    def test_print_project_config_contents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "project.yaml"
+            config_path.write_text("tools: {}", encoding="utf-8")
+            store = mock.Mock()
+            store.project_config_path.return_value = config_path
+            with (
+                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                cli._print_project_config()
+
+        self.assertIn("tools: {}", stdout.getvalue())
+
     def test_main_config_print(self) -> None:
         with (
             mock.patch(
@@ -134,6 +178,20 @@ class MainFlowTests(TestCase):
 
             self.assertEqual(1, exit_code)
             self.assertIn("No base images found", stderr.getvalue())
+
+    def test_main_handles_config_error(self) -> None:
+        with (
+            mock.patch(
+                "aicage.cli.parse_cli",
+                return_value=cli.ParsedArgs(False, "", "codex", [], None, False, None),
+            ),
+            mock.patch("aicage.cli.load_run_config", side_effect=ConfigError("bad config")),
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            exit_code = cli.main([])
+
+        self.assertEqual(1, exit_code)
+        self.assertIn("bad config", stderr.getvalue())
 
     def test_main_keyboard_interrupt(self) -> None:
         with mock.patch("aicage.cli.parse_cli", side_effect=KeyboardInterrupt):

@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import json
 import re
 import urllib.request
 from collections.abc import Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from aicage.config.context import ConfigContext
+if TYPE_CHECKING:
+    from aicage.config.context import ConfigContext
 
 
 class RegistryDiscoveryError(Exception):
