@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from aicage.cli_types import ParsedArgs
 from aicage.config.config_store import SettingsStore
@@ -14,14 +13,7 @@ from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
-__all__ = ["MountPreferencesSnapshot", "RunConfig", "load_run_config"]
-
-
-@dataclass(frozen=True)
-class MountPreferencesSnapshot:
-    gitconfig: bool | None
-    gnupg: bool | None
-    ssh: bool | None
+__all__ = ["RunConfig", "load_run_config"]
 
 
 @dataclass(frozen=True)
@@ -32,7 +24,6 @@ class RunConfig:
     global_cfg: GlobalConfig
     project_docker_args: str
     mounts: list[MountSpec]
-    mount_preferences: MountPreferencesSnapshot
 
 
 def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
@@ -70,23 +61,12 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             global_cfg=global_cfg,
             project_docker_args=existing_project_docker_args,
             mounts=mounts,
-            mount_preferences=_load_mount_preferences_snapshot(tool_cfg),
         )
 
-
-def _load_mount_preferences_snapshot(tool_cfg: dict[str, Any]) -> MountPreferencesSnapshot:
-    mounts = tool_cfg.get("mounts", {}) or {}
-    return MountPreferencesSnapshot(
-        gitconfig=mounts.get("gitconfig"),
-        gnupg=mounts.get("gnupg"),
-        ssh=mounts.get("ssh"),
-    )
-
-
-def _persist_docker_args(tool_cfg: dict[str, Any], parsed: ParsedArgs | None) -> bool:
+def _persist_docker_args(tool_cfg: dict[str, object], parsed: ParsedArgs | None) -> bool:
     if parsed is None or not parsed.docker_args:
         return False
-    existing = tool_cfg.get("docker_args", "")
+    existing = str(tool_cfg.get("docker_args", ""))
     if existing == parsed.docker_args:
         return False
 

@@ -18,7 +18,6 @@ class RunPlanTests(TestCase):
             global_cfg=self._get_global_config(),
             project_docker_args="--project",
             mounts=[],
-            mount_preferences=mock.Mock(),
         )
         parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None)
         tool_config = ToolConfig(tool_path="~/.codex", tool_config_host=Path("/tmp/.codex"))
@@ -39,7 +38,6 @@ class RunPlanTests(TestCase):
             global_cfg=self._get_global_config(),
             project_docker_args="",
             mounts=[mount],
-            mount_preferences=mock.Mock(),
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
         tool_config = ToolConfig(tool_path="~/.codex", tool_config_host=Path("/tmp/.codex"))

@@ -34,5 +34,4 @@ class RuntimeConfigTests(TestCase):
 
         self.assertIsInstance(run_config, RunConfig)
         self.assertEqual("--project", run_config.project_docker_args)
-        self.assertTrue(run_config.mount_preferences.gitconfig)
         self.assertEqual(mounts, run_config.mounts)

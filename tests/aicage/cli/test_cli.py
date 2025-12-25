@@ -36,7 +36,6 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
         ),
         project_docker_args="--project",
         mounts=[],
-        mount_preferences=mock.Mock(),
     )
 
 

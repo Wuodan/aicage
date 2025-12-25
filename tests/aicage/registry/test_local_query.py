@@ -28,7 +28,6 @@ class LocalQueryTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
-            mount_preferences=mock.Mock(),
         )
 
     def test_get_local_repo_digest(self) -> None:

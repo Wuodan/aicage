@@ -37,7 +37,6 @@ class RemoteQueryTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
-            mount_preferences=mock.Mock(),
         )
 
     def test_get_remote_repo_digest_returns_none_on_token_error(self) -> None:

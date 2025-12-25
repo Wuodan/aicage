@@ -39,7 +39,6 @@ class DockerInvocationTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
-            mount_preferences=mock.Mock(),
         )
 
     def test_pull_image_success_and_warning(self) -> None:
