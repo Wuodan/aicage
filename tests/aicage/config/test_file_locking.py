@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config import file_locking
+from aicage.config import _file_locking as file_locking
 
 
 class FileLockingTests(TestCase):
@@ -14,7 +14,7 @@ class FileLockingTests(TestCase):
             def __exit__(self, exc_type, exc, tb):
                 return False
 
-        with mock.patch("aicage.config.file_locking.portalocker.Lock", return_value=FakeLock()) as lock_mock:
+        with mock.patch("aicage.config._file_locking.portalocker.Lock", return_value=FakeLock()) as lock_mock:
             global_path = Path("/tmp/aicage/test/global/lockfile")
             project_path = Path("/tmp/aicage/test/project/lockfile")
             with file_locking.lock_config_files(global_path, project_path):
@@ -32,7 +32,7 @@ class FileLockingTests(TestCase):
             yield
 
         with mock.patch(
-            "aicage.config.file_locking._lock_file",
+            "aicage.config._file_locking._lock_file",
             side_effect=[fake_lock(Path("/tmp/global")), fake_lock(Path("/tmp/project"))],
         ) as lock_mock:
             with file_locking.lock_config_files(Path("/tmp/global"), Path("/tmp/project")):

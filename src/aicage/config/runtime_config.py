@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
+from aicage.config._file_locking import lock_config_files
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.file_locking import lock_config_files
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import ToolConfig
 from aicage.registry.image_selection import select_tool_image
