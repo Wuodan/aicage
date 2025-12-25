@@ -71,6 +71,8 @@ preferences and credentials.
 - `--docker` mounts `/run/docker.sock` into the container to enable Docker-in-Docker workflows.
 - `--config print` prints the project config path and its contents.
 
+Configuration file formats are documented in [CONFIG.md](CONFIG.md).
+
 ## Why cage agents?
 
 AI coding agents read your code, run shells, install packages, and edit files. That power is useful,
