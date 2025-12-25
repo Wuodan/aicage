@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.runtime.auth._ssh_keys import default_ssh_dir
+from aicage.runtime.mounts._ssh_keys import default_ssh_dir
 
 
 class SshKeyTests(TestCase):

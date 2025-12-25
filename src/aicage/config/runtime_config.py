@@ -10,18 +10,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.file_locking import lock_config_files
 from aicage.config.global_config import GlobalConfig
 from aicage.registry.image_selection import select_tool_image
-from aicage.runtime.auth.mounts import (
-    MountPreferences,
-    build_auth_mounts,
-    load_mount_preferences,
-    store_mount_preferences,
-)
-from aicage.runtime.extra_mounts import (
-    _build_extra_mounts,
-    _ExtraMountPreferences,
-    _load_extra_mount_preferences,
-    _store_extra_mount_preferences,
-)
+from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
@@ -67,22 +56,11 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
 
         existing_project_docker_args: str = tool_cfg.get("docker_args", "")
 
-        prefs = load_mount_preferences(tool_cfg)
-        mounts, auth_prefs_updated = build_auth_mounts(project_path, prefs)
-
-        extra_prefs: _ExtraMountPreferences = _load_extra_mount_preferences(tool_cfg)
-        cli_entrypoint = parsed.entrypoint if parsed else None
-        cli_docker_socket = parsed.docker_socket if parsed else False
-        extra_mounts, extra_prefs_updated = _build_extra_mounts(cli_entrypoint, cli_docker_socket, extra_prefs)
-        mounts.extend(extra_mounts)
+        mounts = resolve_mounts(context, tool, parsed)
 
         docker_args_updated = _persist_docker_args(tool_cfg, parsed)
 
-        if auth_prefs_updated:
-            store_mount_preferences(tool_cfg, prefs)
-        if extra_prefs_updated:
-            _store_extra_mount_preferences(tool_cfg, extra_prefs)
-        if auth_prefs_updated or extra_prefs_updated or docker_args_updated:
+        if docker_args_updated:
             store.save_project(project_path, project_cfg)
 
         return RunConfig(
@@ -92,15 +70,16 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             global_cfg=global_cfg,
             project_docker_args=existing_project_docker_args,
             mounts=mounts,
-            mount_preferences=_freeze_mount_preferences(prefs),
+            mount_preferences=_load_mount_preferences_snapshot(tool_cfg),
         )
 
 
-def _freeze_mount_preferences(prefs: MountPreferences) -> MountPreferencesSnapshot:
+def _load_mount_preferences_snapshot(tool_cfg: dict[str, Any]) -> MountPreferencesSnapshot:
+    mounts = tool_cfg.get("mounts", {}) or {}
     return MountPreferencesSnapshot(
-        gitconfig=prefs.gitconfig,
-        gnupg=prefs.gnupg,
-        ssh=prefs.ssh,
+        gitconfig=mounts.get("gitconfig"),
+        gnupg=mounts.get("gnupg"),
+        ssh=mounts.get("ssh"),
     )
 
 

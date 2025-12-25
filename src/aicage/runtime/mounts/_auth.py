@@ -10,21 +10,19 @@ from ._gpg import resolve_gpg_home
 from ._signing import is_commit_signing_enabled, resolve_signing_format
 from ._ssh_keys import default_ssh_dir
 
-__all__ = ["MountPreferences", "load_mount_preferences", "store_mount_preferences", "build_auth_mounts"]
-
 _GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
 _GPG_HOME_MOUNT = Path("/aicage/host/gnupg")
 _SSH_MOUNT = Path("/aicage/host/ssh")
 
 
 @dataclass
-class MountPreferences:
+class _MountPreferences:
     gitconfig: bool | None = None
     gnupg: bool | None = None
     ssh: bool | None = None
 
     @classmethod
-    def from_mapping(cls, data: dict[str, Any]) -> "MountPreferences":
+    def from_mapping(cls, data: dict[str, Any]) -> "_MountPreferences":
         return cls(
             gitconfig=data.get("gitconfig"),
             gnupg=data.get("gnupg"),
@@ -42,17 +40,28 @@ class MountPreferences:
         return payload
 
 
-def load_mount_preferences(tool_cfg: dict[str, Any]) -> MountPreferences:
-    return MountPreferences.from_mapping(tool_cfg.get("mounts", {}))
+def _resolve_auth_mounts(
+    project_path: Path,
+    tool_cfg: dict[str, Any],
+) -> tuple[list[MountSpec], bool]:
+    prefs = _load_mount_preferences(tool_cfg)
+    mounts, updated = _build_auth_mounts(project_path, prefs)
+    if updated:
+        _store_mount_preferences(tool_cfg, prefs)
+    return mounts, updated
 
 
-def store_mount_preferences(tool_cfg: dict[str, Any], prefs: MountPreferences) -> None:
+def _load_mount_preferences(tool_cfg: dict[str, Any]) -> _MountPreferences:
+    return _MountPreferences.from_mapping(tool_cfg.get("mounts", {}))
+
+
+def _store_mount_preferences(tool_cfg: dict[str, Any], prefs: _MountPreferences) -> None:
     mounts = tool_cfg.get("mounts", {}) or {}
     mounts.update(prefs.to_mapping())
     tool_cfg["mounts"] = mounts
 
 
-def build_auth_mounts(project_path: Path, prefs: MountPreferences) -> tuple[list[MountSpec], bool]:
+def _build_auth_mounts(project_path: Path, prefs: _MountPreferences) -> tuple[list[MountSpec], bool]:
     mounts: list[MountSpec] = []
     updated = False
 
