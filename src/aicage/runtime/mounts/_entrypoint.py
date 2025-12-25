@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from typing import Any
 
+from aicage.config.project_config import ToolConfig
 from aicage.errors import CliError
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
@@ -10,10 +10,10 @@ _ENTRYPOINT_CONTAINER_PATH = Path("/usr/local/bin/entrypoint.sh")
 
 
 def _resolve_entrypoint_mount(
-    tool_cfg: dict[str, Any],
+    tool_cfg: ToolConfig,
     cli_entrypoint: str | None,
 ) -> list[MountSpec]:
-    entrypoint_value = cli_entrypoint or tool_cfg.get("entrypoint")
+    entrypoint_value = cli_entrypoint or tool_cfg.entrypoint
     if not entrypoint_value:
         return []
 
@@ -27,9 +27,9 @@ def _resolve_entrypoint_mount(
         )
     ]
 
-    if cli_entrypoint and tool_cfg.get("entrypoint") is None:
+    if cli_entrypoint and tool_cfg.entrypoint is None:
         if prompt_yes_no(f"Persist entrypoint '{entrypoint_path}' for this project?", default=True):
-            tool_cfg["entrypoint"] = str(entrypoint_path)
+            tool_cfg.entrypoint = str(entrypoint_path)
 
     return mounts
 

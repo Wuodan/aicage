@@ -1,6 +1,6 @@
 from pathlib import Path
-from typing import Any
 
+from aicage.config.project_config import ToolConfig
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
@@ -25,19 +25,18 @@ def _resolve_git_config_path() -> Path | None:
     return None
 
 
-def resolve_git_config_mount(tool_cfg: dict[str, Any]) -> list[MountSpec]:
+def resolve_git_config_mount(tool_cfg: ToolConfig) -> list[MountSpec]:
     git_config = _resolve_git_config_path()
     if not git_config or not git_config.exists():
         return []
 
-    mounts_cfg = tool_cfg.get("mounts", {}) or {}
-    pref = mounts_cfg.get("gitconfig")
+    mounts_cfg = tool_cfg.mounts
+    pref = mounts_cfg.gitconfig
     if pref is None:
         pref = prompt_yes_no(
             f"Mount Git config from '{git_config}' so Git uses your usual name/email?", default=True
         )
-        mounts_cfg["gitconfig"] = pref
-        tool_cfg["mounts"] = mounts_cfg
+        mounts_cfg.gitconfig = pref
 
     if pref:
         return [MountSpec(host_path=git_config, container_path=_GITCONFIG_MOUNT)]

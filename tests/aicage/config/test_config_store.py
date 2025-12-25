@@ -5,6 +5,7 @@ from unittest import TestCase
 import yaml
 
 from aicage.config import ConfigError, ProjectConfig, SettingsStore
+from aicage.config.project_config import ToolConfig, ToolMounts
 
 
 class ConfigStoreTests(TestCase):
@@ -36,10 +37,11 @@ class ConfigStoreTests(TestCase):
             project_cfg = store.load_project(project_path)
             self.assertEqual(ProjectConfig(path=str(project_path), tools={}), project_cfg)
 
-            project_cfg.tools["codex"] = {
-                "base": "fedora",
-                "docker_args": "--add-host=host.docker.internal:host-gateway",
-            }
+            project_cfg.tools["codex"] = ToolConfig(
+                base="fedora",
+                docker_args="--add-host=host.docker.internal:host-gateway",
+                mounts=ToolMounts(),
+            )
             store.save_project(project_path, project_cfg)
 
             reloaded_project = store.load_project(project_path)

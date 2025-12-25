@@ -8,6 +8,7 @@ from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.file_locking import lock_config_files
 from aicage.config.global_config import GlobalConfig
+from aicage.config.project_config import ToolConfig
 from aicage.registry.image_selection import select_tool_image
 from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_yes_no
@@ -43,9 +44,9 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             global_cfg=global_cfg,
         )
         image_ref = select_tool_image(tool, context)
-        tool_cfg = project_cfg.tools.setdefault(tool, {})
+        tool_cfg = project_cfg.tools.setdefault(tool, ToolConfig())
 
-        existing_project_docker_args: str = tool_cfg.get("docker_args", "")
+        existing_project_docker_args: str = tool_cfg.docker_args
 
         mounts = resolve_mounts(context, tool, parsed)
 
@@ -61,10 +62,10 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             mounts=mounts,
         )
 
-def _persist_docker_args(tool_cfg: dict[str, object], parsed: ParsedArgs | None) -> None:
+def _persist_docker_args(tool_cfg: ToolConfig, parsed: ParsedArgs | None) -> None:
     if parsed is None or not parsed.docker_args:
         return
-    existing = str(tool_cfg.get("docker_args", ""))
+    existing = tool_cfg.docker_args
     if existing == parsed.docker_args:
         return
 
@@ -77,4 +78,4 @@ def _persist_docker_args(tool_cfg: dict[str, object], parsed: ParsedArgs | None)
         question = f"Persist docker run args '{parsed.docker_args}' for this project?"
 
     if prompt_yes_no(question, default=True):
-        tool_cfg["docker_args"] = parsed.docker_args
+        tool_cfg.docker_args = parsed.docker_args

@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
+from aicage.config.project_config import ToolConfig
 from aicage.errors import CliError
 from aicage.registry import image_selection
 
@@ -27,7 +28,7 @@ class ImageSelectionTests(TestCase):
                     tools={},
                 ),
             )
-            context.project_cfg.tools["codex"] = {"base": "debian"}
+            context.project_cfg.tools["codex"] = ToolConfig(base="debian")
             selection = image_selection.select_tool_image("codex", context)
 
             self.assertIsInstance(selection, str)
@@ -59,7 +60,7 @@ class ImageSelectionTests(TestCase):
             ):
                 image_selection.select_tool_image("codex", context)
 
-            self.assertEqual("alpine", context.project_cfg.tools["codex"]["base"])
+            self.assertEqual("alpine", context.project_cfg.tools["codex"].base)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_raises_without_bases(self) -> None:

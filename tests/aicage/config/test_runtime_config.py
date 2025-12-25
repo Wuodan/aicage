@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config import SettingsStore
+from aicage.config.project_config import ToolConfig, ToolMounts
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.runtime.run_args import MountSpec
 
@@ -17,7 +18,11 @@ class RuntimeConfigTests(TestCase):
             store = SettingsStore(base_dir=base_dir)
 
             project_cfg = store.load_project(project_path)
-            project_cfg.tools["codex"] = {"base": "ubuntu", "docker_args": "--project", "mounts": {"gitconfig": True}}
+            project_cfg.tools["codex"] = ToolConfig(
+                base="ubuntu",
+                docker_args="--project",
+                mounts=ToolMounts(gitconfig=True),
+            )
             store.save_project(project_path, project_cfg)
 
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
