@@ -25,7 +25,6 @@ See [Why cage agents?](#why-cage-agents) for the full rationale.
 - Use one of these commands:
 
   ```bash
-  aicage cline
   aicage codex
   aicage copilot
   aicage gemini
@@ -53,7 +52,6 @@ All base images have the same stack of tools installed.
 
 | CLI      | Agent              | Homepage                                                                           |
 |----------|--------------------|------------------------------------------------------------------------------------|
-| cline    | Cline CLI          | [https://docs.cline.bot/cline-cli](https://docs.cline.bot/cline-cli/overview)      |
 | codex    | Codex CLI          | [https://developers.openai.com/codex/cli](https://developers.openai.com/codex/cli) |
 | copilot  | GitHub Copilot CLI | [https://github.com/features/copilot/cli](https://github.com/features/copilot/cli) |
 | gemini   | Gemini CLI         | [https://geminicli.com](https://geminicli.com)                                     |

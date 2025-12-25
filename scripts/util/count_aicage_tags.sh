@@ -4,7 +4,7 @@ set -euo pipefail
 # Count and sanity-check GHCR tags for ghcr.io/aicage/aicage against your expected base/tool matrix.
 # Assumptions:
 # - Tag names contain BOTH the tool token and the base token somewhere in the tag name
-#   (e.g. "codex-ubuntu-latest", "cline-debian-0.0.1", etc.)
+#   (e.g. "codex-ubuntu-latest", "copilot-debian-0.0.1", etc.)
 # - If your tag scheme differs, adjust match_tag() below.
 
 registry_api_url="https://ghcr.io/v2"
@@ -12,7 +12,7 @@ registry_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository"
 repo="aicage/aicage"
 
 bases=(act ubuntu fedora node alpine debian)
-tools=(claude copilot cline codex qwen droid opencode goose gemini)
+tools=(claude copilot codex qwen droid opencode goose gemini)
 
 ghcr_pull_token() {
   local repo="$1"

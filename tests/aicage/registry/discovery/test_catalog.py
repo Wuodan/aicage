@@ -45,7 +45,7 @@ class DiscoveryTests(TestCase):
                 headers = {"Link": f'<{next_tags_url}>; rel="next"'}
                 return FakeResponse(payload, headers)
             if url == next_tags_url:
-                payload = {"tags": ["codex-debian-latest", "codex-debian-arm64-latest", "cline-ubuntu-latest"]}
+                payload = {"tags": ["codex-debian-latest", "codex-debian-arm64-latest", "copilot-ubuntu-latest"]}
                 return FakeResponse(payload)
             raise AssertionError(f"Unexpected URL {url}")
 
