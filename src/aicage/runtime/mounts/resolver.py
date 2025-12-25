@@ -4,6 +4,7 @@ from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
+from aicage.config.project_config import ToolConfig
 from aicage.runtime.run_args import MountSpec
 
 from ._docker_socket import _resolve_docker_socket_mount
@@ -18,7 +19,7 @@ def resolve_mounts(
     tool: str,
     parsed: ParsedArgs | None,
 ) -> list[MountSpec]:
-    tool_cfg = context.project_cfg.tools.setdefault(tool, {})
+    tool_cfg = context.project_cfg.tools.setdefault(tool, ToolConfig())
 
     git_mounts = resolve_git_config_mount(tool_cfg)
     project_path = Path(context.project_cfg.path)

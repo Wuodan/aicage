@@ -50,3 +50,29 @@ class ResolverTests(TestCase):
         gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.tools["codex"])
         entry_mock.assert_called_once_with(project_cfg.tools["codex"], None)
         docker_mock.assert_called_once_with(project_cfg.tools["codex"], False)
+
+    def test_resolve_mounts_inserts_tool_config(self) -> None:
+        project_cfg = ProjectConfig(path="/tmp/project", tools={})
+        context = ConfigContext(
+            store=mock.Mock(),
+            project_cfg=project_cfg,
+            global_cfg=GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+                image_repository="aicage/aicage",
+                default_image_base="ubuntu",
+                tools={},
+            ),
+        )
+
+        with (
+            mock.patch("aicage.runtime.mounts.resolver.resolve_git_config_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver.resolve_ssh_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver.resolve_gpg_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver._resolve_entrypoint_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver._resolve_docker_socket_mount", return_value=[]),
+        ):
+            resolver.resolve_mounts(context, "codex", None)
+
+        self.assertIsInstance(project_cfg.tools["codex"], ToolConfig)
