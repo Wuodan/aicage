@@ -1,7 +1,41 @@
 from pathlib import Path
+from typing import Any
 
-__all__ = ["default_ssh_dir"]
+from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.run_args import MountSpec
+
+from ._signing import is_commit_signing_enabled, resolve_signing_format
+
+__all__ = ["resolve_ssh_mount"]
+
+_SSH_MOUNT = Path("/aicage/host/ssh")
 
 
-def default_ssh_dir() -> Path:
+def _default_ssh_dir() -> Path:
     return Path.home() / ".ssh"
+
+
+def resolve_ssh_mount(project_path: Path, tool_cfg: dict[str, Any]) -> tuple[list[MountSpec], bool]:
+    updated = False
+    if not is_commit_signing_enabled(project_path):
+        return [], updated
+    if resolve_signing_format(project_path) != "ssh":
+        return [], updated
+
+    ssh_dir = _default_ssh_dir()
+    if not ssh_dir.exists():
+        return [], updated
+
+    mounts_cfg = tool_cfg.get("mounts", {}) or {}
+    pref = mounts_cfg.get("ssh")
+    if pref is None:
+        pref = prompt_yes_no(
+            f"Mount SSH keys from '{ssh_dir}' so Git signing works like on your host?", default=True
+        )
+        mounts_cfg["ssh"] = pref
+        tool_cfg["mounts"] = mounts_cfg
+        updated = True
+
+    if pref:
+        return [MountSpec(host_path=ssh_dir, container_path=_SSH_MOUNT)], updated
+    return [], updated

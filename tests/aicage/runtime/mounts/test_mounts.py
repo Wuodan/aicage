@@ -2,108 +2,60 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.runtime.mounts import _auth as auth_mounts
+from aicage.runtime.mounts import _git_config, _gpg, _ssh_keys
 
 
-class AuthMountTests(TestCase):
-    def test_mount_preferences_round_trip(self) -> None:
-        prefs = auth_mounts._MountPreferences.from_mapping({"gitconfig": True, "gnupg": False, "ssh": True})
-        self.assertTrue(prefs.gitconfig)
-        self.assertFalse(prefs.gnupg)
-        self.assertTrue(prefs.ssh)
-        self.assertEqual({"gitconfig": True, "gnupg": False, "ssh": True}, prefs.to_mapping())
-
-    def test_store_mount_preferences_updates_tool_config(self) -> None:
-        tool_cfg = {"mounts": {"gitconfig": False}}
-        prefs = auth_mounts._MountPreferences(gitconfig=True, gnupg=True)
-        auth_mounts._store_mount_preferences(tool_cfg, prefs)
-        self.assertEqual({"gitconfig": True, "gnupg": True}, tool_cfg["mounts"])
-
-    def test_load_mount_preferences_defaults_missing(self) -> None:
-        prefs = auth_mounts._load_mount_preferences({})
-        self.assertIsNone(prefs.gitconfig)
-        self.assertIsNone(prefs.gnupg)
-        self.assertIsNone(prefs.ssh)
-
-    def test_build_auth_mounts_collects_git_and_gpg(self) -> None:
+class MountResolutionTests(TestCase):
+    def test_resolve_git_config_mount_persists_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            home = Path(tmp_dir)
-            gitconfig = home / ".gitconfig"
+            gitconfig = Path(tmp_dir) / ".gitconfig"
             gitconfig.write_text("user.name = coder", encoding="utf-8")
-            gnupg = home / ".gnupg"
-            gnupg.mkdir()
+            tool_cfg: dict[str, object] = {}
 
-            prefs = auth_mounts._MountPreferences()
-            with mock.patch("pathlib.Path.home", return_value=home), mock.patch(
-                "aicage.runtime.mounts._auth.resolve_git_config_path", return_value=gitconfig
-            ), mock.patch("aicage.runtime.mounts._auth.is_commit_signing_enabled", return_value=True), mock.patch(
-                "aicage.runtime.mounts._auth.resolve_signing_format", return_value=None
-            ), mock.patch(
-                "aicage.runtime.mounts._auth.resolve_gpg_home", return_value=gnupg
-            ), mock.patch(
-                "aicage.runtime.mounts._auth.prompt_yes_no", return_value=True
+            with (
+                mock.patch("aicage.runtime.mounts._git_config._resolve_git_config_path", return_value=gitconfig),
+                mock.patch("aicage.runtime.mounts._git_config.prompt_yes_no", return_value=True),
             ):
-                mounts, updated = auth_mounts._build_auth_mounts(Path("/repo"), prefs)
+                mounts, updated = _git_config.resolve_git_config_mount(tool_cfg)
 
         self.assertTrue(updated)
-        self.assertEqual({gitconfig, gnupg}, {mount.host_path for mount in mounts})
+        self.assertEqual({"gitconfig": True}, tool_cfg["mounts"])
+        self.assertEqual(1, len(mounts))
 
-    def test_build_auth_mounts_uses_existing_ssh_preference(self) -> None:
+    def test_resolve_ssh_mount_uses_existing_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            home = Path(tmp_dir)
-            ssh_dir = home / ".ssh"
+            ssh_dir = Path(tmp_dir) / ".ssh"
             ssh_dir.mkdir()
+            tool_cfg: dict[str, object] = {"mounts": {"ssh": True}}
 
-            prefs = auth_mounts._MountPreferences(ssh=True)
-            with mock.patch("pathlib.Path.home", return_value=home), mock.patch(
-                "aicage.runtime.mounts._auth.resolve_git_config_path", return_value=None
-            ), mock.patch("aicage.runtime.mounts._auth.is_commit_signing_enabled", return_value=True), mock.patch(
-                "aicage.runtime.mounts._auth.resolve_signing_format", return_value="ssh"
-            ), mock.patch(
-                "aicage.runtime.mounts._auth.prompt_yes_no"
-            ) as prompt_mock:
-                mounts, updated = auth_mounts._build_auth_mounts(Path("/repo"), prefs)
+            with (
+                mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
+                mock.patch("aicage.runtime.mounts._ssh_keys.resolve_signing_format", return_value="ssh"),
+                mock.patch("aicage.runtime.mounts._ssh_keys._default_ssh_dir", return_value=ssh_dir),
+                mock.patch("aicage.runtime.mounts._ssh_keys.prompt_yes_no") as prompt_mock,
+            ):
+                mounts, updated = _ssh_keys.resolve_ssh_mount(Path("/repo"), tool_cfg)
 
         prompt_mock.assert_not_called()
         self.assertFalse(updated)
+        self.assertEqual(1, len(mounts))
         self.assertEqual(ssh_dir, mounts[0].host_path)
 
-    def test_build_auth_mounts_uses_gpg_prefs(self) -> None:
+    def test_resolve_gpg_mount_uses_existing_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             gpg_home = Path(tmp_dir) / ".gnupg"
             gpg_home.mkdir()
+            tool_cfg: dict[str, object] = {"mounts": {"gnupg": True}}
 
-            prefs = auth_mounts._MountPreferences(gnupg=True)
             with (
-                mock.patch("aicage.runtime.mounts._auth.resolve_git_config_path", return_value=None),
-                mock.patch("aicage.runtime.mounts._auth.is_commit_signing_enabled", return_value=True),
-                mock.patch("aicage.runtime.mounts._auth.resolve_signing_format", return_value=None),
-                mock.patch("aicage.runtime.mounts._auth.resolve_gpg_home", return_value=gpg_home),
-                mock.patch("aicage.runtime.mounts._auth.prompt_yes_no") as prompt_mock,
+                mock.patch("aicage.runtime.mounts._gpg.is_commit_signing_enabled", return_value=True),
+                mock.patch("aicage.runtime.mounts._gpg.resolve_signing_format", return_value=None),
+                mock.patch("aicage.runtime.mounts._gpg._resolve_gpg_home", return_value=gpg_home),
+                mock.patch("aicage.runtime.mounts._gpg.prompt_yes_no") as prompt_mock,
             ):
-                mounts, updated = auth_mounts._build_auth_mounts(Path("/repo"), prefs)
+                mounts, updated = _gpg.resolve_gpg_mount(Path("/repo"), tool_cfg)
 
         prompt_mock.assert_not_called()
         self.assertFalse(updated)
         self.assertEqual(1, len(mounts))
         self.assertEqual(gpg_home, mounts[0].host_path)
-
-    def test_build_auth_mounts_prompts_for_ssh(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            ssh_dir = Path(tmp_dir) / ".ssh"
-            ssh_dir.mkdir()
-
-            prefs = auth_mounts._MountPreferences()
-            with (
-                mock.patch("aicage.runtime.mounts._auth.resolve_git_config_path", return_value=None),
-                mock.patch("aicage.runtime.mounts._auth.is_commit_signing_enabled", return_value=True),
-                mock.patch("aicage.runtime.mounts._auth.resolve_signing_format", return_value="ssh"),
-                mock.patch("aicage.runtime.mounts._auth.default_ssh_dir", return_value=ssh_dir),
-                mock.patch("aicage.runtime.mounts._auth.prompt_yes_no", return_value=True),
-            ):
-                mounts, updated = auth_mounts._build_auth_mounts(Path("/repo"), prefs)
-
-        self.assertTrue(updated)
-        self.assertTrue(prefs.ssh)
-        self.assertEqual(1, len(mounts))
-        self.assertEqual(ssh_dir, mounts[0].host_path)
