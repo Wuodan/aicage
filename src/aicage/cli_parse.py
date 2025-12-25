@@ -13,7 +13,7 @@ MIN_REMAINING_FOR_DOCKER_ARGS = 2
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     """
     Returns parsed CLI args.
-    Docker args are a single opaque string; precedence is resolved later.
+    Docker args are captured as an opaque string; precedence is resolved later.
     """
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
@@ -30,10 +30,13 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     if opts.help:
         usage: str = (
             "Usage:\n"
-            "  aicage [--dry-run] [--docker] [--entrypoint PATH] [<docker-args>] <tool> [-- <tool-args>]\n"
-            "  aicage [--dry-run] [--docker] [--entrypoint PATH] [<docker-args>] -- <tool> <tool-args>\n"
+            "  aicage <tool>\n"
+            "  aicage [--dry-run] [--docker] [--entrypoint PATH] -- <tool> [<tool-args>]\n"
+            "  aicage [--dry-run] [--docker] [--entrypoint PATH] <docker-args> -- <tool> [<tool-args>]\n"
             "  aicage --config print\n\n"
-            "<docker-args> is a single string of docker run flags (optional).\n"
+            "Any arguments between aicage and the tool require a '--' separator before the tool.\n"
+            "<docker-args> are any arguments not recognized by aicage.\n"
+            "These arguments are forwarded verbatim to docker run.\n"
             "<tool-args> are passed verbatim to the tool.\n"
         )
         print(usage)
