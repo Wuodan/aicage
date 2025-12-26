@@ -1,31 +1,24 @@
 from __future__ import annotations
 
-import json
-import subprocess
+from docker.errors import DockerException, ImageNotFound
 
 from aicage.config.runtime_config import RunConfig
+from aicage.docker_client import get_docker_client
 
 
 def get_local_repo_digest(run_config: RunConfig) -> str | None:
     repository = f"{run_config.global_cfg.image_registry}/{run_config.global_cfg.image_repository}"
-    inspect = subprocess.run(
-        ["docker", "image", "inspect", run_config.image_ref, "--format", "{{json .RepoDigests}}"],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if inspect.returncode != 0:
-        return None
-
     try:
-        digests = json.loads(inspect.stdout)
-    except json.JSONDecodeError:
+        client = get_docker_client()
+        image = client.images.get(run_config.image_ref)
+    except (ImageNotFound, DockerException):
         return None
 
-    if not isinstance(digests, list):
+    repo_digests = image.attrs.get("RepoDigests")
+    if not isinstance(repo_digests, list):
         return None
 
-    for entry in digests:
+    for entry in repo_digests:
         if not isinstance(entry, str):
             continue
         repo, sep, digest = entry.partition("@")

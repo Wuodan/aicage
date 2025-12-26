@@ -1,8 +1,10 @@
 import os
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from docker.errors import DockerException, ImageNotFound
+
+from aicage.docker_client import get_docker_client
 from aicage.errors import CliError
 
 __all__ = ["ToolConfig", "resolve_tool_config"]
@@ -25,15 +27,12 @@ def resolve_tool_config(image_ref: str) -> ToolConfig:
 
 def _read_image_label(image_ref: str, label: str) -> str:
     try:
-        result = subprocess.run(
-            ["docker", "inspect", image_ref, "--format", f'{{{{ index .Config.Labels "{label}" }}}}'],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        raise CliError(f"Failed to inspect image {image_ref}: {exc.stderr.strip() or exc}") from exc
-    value = result.stdout.strip()
+        client = get_docker_client()
+        image = client.images.get(image_ref)
+    except (ImageNotFound, DockerException) as exc:
+        raise CliError(f"Failed to inspect image {image_ref}: {exc}") from exc
+    labels = image.labels or {}
+    value = labels.get(label, "").strip()
     if not value:
         raise CliError(f"Label '{label}' not found on image {image_ref}.")
     return value

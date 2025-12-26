@@ -1,16 +1,31 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from docker.errors import ImageNotFound
+
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry import _local_query
 
 
-class FakeCompleted:
-    def __init__(self, stdout: str = "", stderr: str = "", returncode: int = 0):
-        self.stdout = stdout
-        self.stderr = stderr
-        self.returncode = returncode
+class FakeImage:
+    def __init__(self, repo_digests: object):
+        self.attrs = {"RepoDigests": repo_digests}
+
+
+class FakeImages:
+    def __init__(self, image: FakeImage | None):
+        self._image = image
+
+    def get(self, image_ref: str) -> FakeImage:
+        if self._image is None:
+            raise ImageNotFound(image_ref)
+        return self._image
+
+
+class FakeClient:
+    def __init__(self, image: FakeImage | None):
+        self.images = FakeImages(image)
 
 
 class LocalQueryTests(TestCase):
@@ -33,27 +48,27 @@ class LocalQueryTests(TestCase):
     def test_get_local_repo_digest(self) -> None:
         run_config = self._build_run_config("repo:tag")
         with mock.patch(
-            "aicage.registry._local_query.subprocess.run",
-            return_value=FakeCompleted(returncode=1, stdout=""),
+            "aicage.registry._local_query.get_docker_client",
+            return_value=FakeClient(None),
         ):
             self.assertIsNone(_local_query.get_local_repo_digest(run_config))
 
         with mock.patch(
-            "aicage.registry._local_query.subprocess.run",
-            return_value=FakeCompleted(returncode=0, stdout="not-json"),
+            "aicage.registry._local_query.get_docker_client",
+            return_value=FakeClient(FakeImage(repo_digests={"bad": "data"})),
         ):
             self.assertIsNone(_local_query.get_local_repo_digest(run_config))
 
         with mock.patch(
-            "aicage.registry._local_query.subprocess.run",
-            return_value=FakeCompleted(returncode=0, stdout='{"bad": "data"}'),
+            "aicage.registry._local_query.get_docker_client",
+            return_value=FakeClient(FakeImage(repo_digests=["bad"])),
         ):
             self.assertIsNone(_local_query.get_local_repo_digest(run_config))
 
-        payload = '["ghcr.io/aicage/aicage@sha256:deadbeef", "other@sha256:skip"]'
+        payload = ["ghcr.io/aicage/aicage@sha256:deadbeef", "other@sha256:skip"]
         with mock.patch(
-            "aicage.registry._local_query.subprocess.run",
-            return_value=FakeCompleted(returncode=0, stdout=payload),
+            "aicage.registry._local_query.get_docker_client",
+            return_value=FakeClient(FakeImage(repo_digests=payload)),
         ):
             digest = _local_query.get_local_repo_digest(run_config)
         self.assertEqual("sha256:deadbeef", digest)
