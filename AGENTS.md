@@ -25,6 +25,17 @@ Meaning:
 - pass wrapping objects when you can, don't split wrapping objects into variables
 - Respect `doc/python-test-structure-guidelines.md` when it comes to writing Python tests.
 
+## Visibility rules
+
+- Defining scope: anything not used outside its defining scope must be prefixed with `_`.
+- Module scope: functions, constants, and classes used outside their module must be public; if used only inside the
+  module, prefix with `_`.
+- Class scope: methods and attributes used outside their defining class must be public; if used only inside the class,
+  prefix with `_`.
+- Package scope: modules/files imported from outside the package must be public; if used only inside the package, prefix
+  the filename with `_`.
+- Tests are exempt from the "outside" checks above.
+
 ## Repo structure
 
 - [README.md](README.md) (users)
