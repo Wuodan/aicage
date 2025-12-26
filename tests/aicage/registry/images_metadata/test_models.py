@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from aicage.errors import CliError
-from aicage.registry.images_metadata._models import ImagesMetadata
+from aicage.registry.images_metadata.models import ImagesMetadata
 
 
 class ImagesMetadataModelTests(TestCase):

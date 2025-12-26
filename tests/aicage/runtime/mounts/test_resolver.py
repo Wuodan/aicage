@@ -5,6 +5,7 @@ from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import ProjectConfig, ToolConfig
+from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.mounts import resolver
 from aicage.runtime.run_args import MountSpec
 
@@ -27,6 +28,7 @@ class ResolverTests(TestCase):
                 images_metadata_retry_backoff_seconds=1.5,
                 tools={},
             ),
+            images_metadata=self._get_images_metadata(),
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
         git_mount = MountSpec(host_path=Path("/tmp/git"), container_path=Path("/git"))
@@ -72,6 +74,7 @@ class ResolverTests(TestCase):
                 images_metadata_retry_backoff_seconds=1.5,
                 tools={},
             ),
+            images_metadata=self._get_images_metadata(),
         )
 
         with (
@@ -84,3 +87,29 @@ class ResolverTests(TestCase):
             resolver.resolve_mounts(context, "codex", None)
 
         self.assertIsInstance(project_cfg.tools["codex"], ToolConfig)
+
+    @staticmethod
+    def _get_images_metadata() -> ImagesMetadata:
+        return ImagesMetadata.from_mapping(
+            {
+                "aicage-image": {"version": "0.3.3"},
+                "aicage-image-base": {"version": "0.3.3"},
+                "bases": {
+                    "ubuntu": {
+                        "root_image": "ubuntu:latest",
+                        "base_image_distro": "Ubuntu",
+                        "base_image_description": "Default",
+                        "os_installer": "distro/debian/install.sh",
+                        "test_suite": "default",
+                    }
+                },
+                "tool": {
+                    "codex": {
+                        "tool_path": "~/.codex",
+                        "tool_full_name": "Codex CLI",
+                        "tool_homepage": "https://example.com",
+                        "valid_bases": ["ubuntu"],
+                    }
+                },
+            }
+        )

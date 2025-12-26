@@ -7,6 +7,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.project_config import ToolConfig
 from aicage.errors import CliError
 from aicage.registry import image_selection
+from aicage.registry.images_metadata.models import ImagesMetadata
 
 
 class ImageSelectionTests(TestCase):
@@ -15,21 +16,10 @@ class ImageSelectionTests(TestCase):
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
             store = mock.Mock()
-            context = ConfigContext(
-                store=store,
-                project_cfg=ProjectConfig(path=str(project_path), tools={}),
-                global_cfg=GlobalConfig(
-                    image_registry="ghcr.io",
-                    image_registry_api_url="https://ghcr.io/v2",
-                    image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                    image_repository="aicage/aicage",
-                    default_image_base="ubuntu",
-                    images_metadata_release_api_url="https://api.github.com/repos/aicage/aicage-image/releases/latest",
-                    images_metadata_asset_name="images-metadata.yaml",
-                    images_metadata_download_retries=3,
-                    images_metadata_retry_backoff_seconds=1.5,
-                    tools={},
-                ),
+            context = self._build_context(
+                store,
+                project_path,
+                bases=["debian", "ubuntu"],
             )
             context.project_cfg.tools["codex"] = ToolConfig(base="debian")
             selection = image_selection.select_tool_image("codex", context)
@@ -43,25 +33,12 @@ class ImageSelectionTests(TestCase):
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
             store = mock.Mock()
-            context = ConfigContext(
-                store=store,
-                project_cfg=ProjectConfig(path=str(project_path), tools={}),
-                global_cfg=GlobalConfig(
-                    image_registry="ghcr.io",
-                    image_registry_api_url="https://ghcr.io/v2",
-                    image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                    image_repository="aicage/aicage",
-                    default_image_base="ubuntu",
-                    images_metadata_release_api_url="https://api.github.com/repos/aicage/aicage-image/releases/latest",
-                    images_metadata_asset_name="images-metadata.yaml",
-                    images_metadata_download_retries=3,
-                    images_metadata_retry_backoff_seconds=1.5,
-                    tools={},
-                ),
+            context = self._build_context(
+                store,
+                project_path,
+                bases=["alpine", "ubuntu"],
             )
             with mock.patch(
-                "aicage.registry.discovery.catalog.discover_tool_bases", return_value=["alpine", "ubuntu"]
-            ), mock.patch(
                 "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
                 image_selection.select_tool_image("codex", context)
@@ -70,22 +47,76 @@ class ImageSelectionTests(TestCase):
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_raises_without_bases(self) -> None:
-        context = ConfigContext(
-            store=mock.Mock(),
-            project_cfg=ProjectConfig(path="/tmp/project", tools={}),
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                default_image_base="ubuntu",
-                images_metadata_release_api_url="https://api.github.com/repos/aicage/aicage-image/releases/latest",
-                images_metadata_asset_name="images-metadata.yaml",
-                images_metadata_download_retries=3,
-                images_metadata_retry_backoff_seconds=1.5,
-                tools={},
-            ),
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=[],
         )
-        with mock.patch("aicage.registry.discovery.catalog.discover_tool_bases", return_value=[]):
-            with self.assertRaises(CliError):
-                image_selection.select_tool_image("codex", context)
+        with self.assertRaises(CliError):
+            image_selection.select_tool_image("codex", context)
+
+    def test_resolve_raises_on_invalid_base(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+            tools={"codex": ToolConfig(base="alpine")},
+        )
+        with self.assertRaises(CliError):
+            image_selection.select_tool_image("codex", context)
+
+    @staticmethod
+    def _build_context(
+        store: mock.Mock,
+        project_path: Path,
+        bases: list[str],
+        tools: dict[str, ToolConfig] | None = None,
+    ) -> ConfigContext:
+        return ConfigContext(
+            store=store,
+            project_cfg=ProjectConfig(path=str(project_path), tools=tools or {}),
+            global_cfg=ImageSelectionTests._global_config(),
+            images_metadata=ImageSelectionTests._metadata_with_bases(bases),
+        )
+
+    @staticmethod
+    def _global_config() -> GlobalConfig:
+        return GlobalConfig(
+            image_registry="ghcr.io",
+            image_registry_api_url="https://ghcr.io/v2",
+            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+            image_repository="aicage/aicage",
+            default_image_base="ubuntu",
+            images_metadata_release_api_url="https://api.github.com/repos/aicage/aicage-image/releases/latest",
+            images_metadata_asset_name="images-metadata.yaml",
+            images_metadata_download_retries=3,
+            images_metadata_retry_backoff_seconds=1.5,
+            tools={},
+        )
+
+    @staticmethod
+    def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:
+        return ImagesMetadata.from_mapping(
+            {
+                "aicage-image": {"version": "0.3.3"},
+                "aicage-image-base": {"version": "0.3.3"},
+                "bases": {
+                    name: {
+                        "root_image": "ubuntu:latest",
+                        "base_image_distro": "Ubuntu",
+                        "base_image_description": "Default",
+                        "os_installer": "distro/debian/install.sh",
+                        "test_suite": "default",
+                    }
+                    for name in bases
+                },
+                "tool": {
+                    "codex": {
+                        "tool_path": "~/.codex",
+                        "tool_full_name": "Codex CLI",
+                        "tool_homepage": "https://example.com",
+                        "valid_bases": bases,
+                    }
+                },
+            }
+        )

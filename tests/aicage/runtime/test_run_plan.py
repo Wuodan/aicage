@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 from aicage.cli_types import ParsedArgs
 from aicage.config import RunConfig
 from aicage.config.global_config import GlobalConfig
+from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.run_plan import build_run_args
 from aicage.runtime.tool_config import ToolConfig
 
@@ -16,6 +17,7 @@ class RunPlanTests(TestCase):
             tool="codex",
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
             global_cfg=self._get_global_config(),
+            images_metadata=self._get_images_metadata(),
             project_docker_args="--project",
             mounts=[],
         )
@@ -36,6 +38,7 @@ class RunPlanTests(TestCase):
             tool="codex",
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
             global_cfg=self._get_global_config(),
+            images_metadata=self._get_images_metadata(),
             project_docker_args="",
             mounts=[mount],
         )
@@ -59,4 +62,30 @@ class RunPlanTests(TestCase):
             images_metadata_asset_name="images-metadata.yaml",
             images_metadata_download_retries=3,
             images_metadata_retry_backoff_seconds=1.5,
+        )
+
+    @staticmethod
+    def _get_images_metadata() -> ImagesMetadata:
+        return ImagesMetadata.from_mapping(
+            {
+                "aicage-image": {"version": "0.3.3"},
+                "aicage-image-base": {"version": "0.3.3"},
+                "bases": {
+                    "ubuntu": {
+                        "root_image": "ubuntu:latest",
+                        "base_image_distro": "Ubuntu",
+                        "base_image_description": "Default",
+                        "os_installer": "distro/debian/install.sh",
+                        "test_suite": "default",
+                    }
+                },
+                "tool": {
+                    "codex": {
+                        "tool_path": "~/.codex",
+                        "tool_full_name": "Codex CLI",
+                        "tool_homepage": "https://example.com",
+                        "valid_bases": ["ubuntu"],
+                    }
+                },
+            }
         )

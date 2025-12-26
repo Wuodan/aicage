@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry import _remote_query
+from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.registry.remote_api import RegistryDiscoveryError
 
 
@@ -39,8 +40,35 @@ class RemoteQueryTests(TestCase):
                 images_metadata_download_retries=3,
                 images_metadata_retry_backoff_seconds=1.5,
             ),
+            images_metadata=self._get_images_metadata(),
             project_docker_args="",
             mounts=[],
+        )
+
+    @staticmethod
+    def _get_images_metadata() -> ImagesMetadata:
+        return ImagesMetadata.from_mapping(
+            {
+                "aicage-image": {"version": "0.3.3"},
+                "aicage-image-base": {"version": "0.3.3"},
+                "bases": {
+                    "ubuntu": {
+                        "root_image": "ubuntu:latest",
+                        "base_image_distro": "Ubuntu",
+                        "base_image_description": "Default",
+                        "os_installer": "distro/debian/install.sh",
+                        "test_suite": "default",
+                    }
+                },
+                "tool": {
+                    "codex": {
+                        "tool_path": "~/.codex",
+                        "tool_full_name": "Codex CLI",
+                        "tool_homepage": "https://example.com",
+                        "valid_bases": ["ubuntu"],
+                    }
+                },
+            }
         )
 
     def test_get_remote_repo_digest_returns_none_on_token_error(self) -> None:

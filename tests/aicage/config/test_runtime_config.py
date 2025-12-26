@@ -5,6 +5,7 @@ from unittest import TestCase, mock
 from aicage.config import SettingsStore
 from aicage.config.project_config import ToolConfig, ToolMounts
 from aicage.config.runtime_config import RunConfig, load_run_config
+from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.run_args import MountSpec
 
 
@@ -34,10 +35,39 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=mounts),
-                mock.patch("aicage.config.runtime_config.load_images_metadata"),
+                mock.patch(
+                    "aicage.config.runtime_config.load_images_metadata",
+                    return_value=self._get_images_metadata(),
+                ),
             ):
                 run_config = load_run_config("codex")
 
         self.assertIsInstance(run_config, RunConfig)
         self.assertEqual("--project", run_config.project_docker_args)
         self.assertEqual(mounts, run_config.mounts)
+
+    @staticmethod
+    def _get_images_metadata() -> ImagesMetadata:
+        return ImagesMetadata.from_mapping(
+            {
+                "aicage-image": {"version": "0.3.3"},
+                "aicage-image-base": {"version": "0.3.3"},
+                "bases": {
+                    "ubuntu": {
+                        "root_image": "ubuntu:latest",
+                        "base_image_distro": "Ubuntu",
+                        "base_image_description": "Default",
+                        "os_installer": "distro/debian/install.sh",
+                        "test_suite": "default",
+                    }
+                },
+                "tool": {
+                    "codex": {
+                        "tool_path": "~/.codex",
+                        "tool_full_name": "Codex CLI",
+                        "tool_homepage": "https://example.com",
+                        "valid_bases": ["ubuntu"],
+                    }
+                },
+            }
+        )

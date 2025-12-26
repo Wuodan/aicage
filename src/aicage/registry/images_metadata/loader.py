@@ -8,7 +8,7 @@ from aicage.errors import CliError
 
 from ._cache import load_cached_payload, save_cached_payload
 from ._download import download_images_metadata
-from ._models import ImagesMetadata
+from .models import ImagesMetadata
 
 __all__ = ["load_images_metadata"]
 

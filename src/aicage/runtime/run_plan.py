@@ -9,7 +9,7 @@ __all__ = ["build_run_args"]
 
 
 def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
-    tool_config: ToolConfig = resolve_tool_config(config.image_ref)
+    tool_config: ToolConfig = resolve_tool_config(config.tool, config.images_metadata)
 
     merged_docker_args: str = merge_docker_args(
         config.project_docker_args,

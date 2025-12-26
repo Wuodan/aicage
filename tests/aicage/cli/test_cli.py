@@ -7,6 +7,7 @@ from aicage import cli
 from aicage.config import ConfigError, RunConfig
 from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
+from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.run_args import DockerRunArgs
 
 
@@ -38,8 +39,49 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
             images_metadata_download_retries=3,
             images_metadata_retry_backoff_seconds=1.5,
         ),
+        images_metadata=_build_images_metadata(),
         project_docker_args="--project",
         mounts=[],
+    )
+
+
+def _build_images_metadata() -> ImagesMetadata:
+    return ImagesMetadata.from_mapping(
+        {
+            "aicage-image": {"version": "0.3.3"},
+            "aicage-image-base": {"version": "0.3.3"},
+            "bases": {
+                "alpine": {
+                    "root_image": "alpine:latest",
+                    "base_image_distro": "Alpine",
+                    "base_image_description": "Minimal",
+                    "os_installer": "distro/alpine/install.sh",
+                    "test_suite": "default",
+                },
+                "debian": {
+                    "root_image": "debian:latest",
+                    "base_image_distro": "Debian",
+                    "base_image_description": "Default",
+                    "os_installer": "distro/debian/install.sh",
+                    "test_suite": "default",
+                },
+                "ubuntu": {
+                    "root_image": "ubuntu:latest",
+                    "base_image_distro": "Ubuntu",
+                    "base_image_description": "Default",
+                    "os_installer": "distro/debian/install.sh",
+                    "test_suite": "default",
+                },
+            },
+            "tool": {
+                "codex": {
+                    "tool_path": "~/.codex",
+                    "tool_full_name": "Codex CLI",
+                    "tool_homepage": "https://example.com",
+                    "valid_bases": ["alpine", "debian", "ubuntu"],
+                }
+            },
+        }
     )
 
 

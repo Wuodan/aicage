@@ -9,12 +9,12 @@ from aicage.errors import CliError
 
 
 @dataclass(frozen=True)
-class _ImageReleaseInfo:
+class ImageReleaseInfo:
     version: str
 
 
 @dataclass(frozen=True)
-class _BaseMetadata:
+class BaseMetadata:
     root_image: str
     base_image_distro: str
     base_image_description: str
@@ -23,7 +23,7 @@ class _BaseMetadata:
 
 
 @dataclass(frozen=True)
-class _ToolMetadata:
+class ToolMetadata:
     tool_path: str
     tool_full_name: str
     tool_homepage: str
@@ -34,10 +34,10 @@ class _ToolMetadata:
 
 @dataclass(frozen=True)
 class ImagesMetadata:
-    aicage_image: _ImageReleaseInfo
-    aicage_image_base: _ImageReleaseInfo
-    bases: dict[str, _BaseMetadata]
-    tools: dict[str, _ToolMetadata]
+    aicage_image: ImageReleaseInfo
+    aicage_image_base: ImageReleaseInfo
+    bases: dict[str, BaseMetadata]
+    tools: dict[str, ToolMetadata]
 
     @classmethod
     def from_yaml(cls, payload: str) -> ImagesMetadata:
@@ -69,15 +69,15 @@ class ImagesMetadata:
         )
 
 
-def _parse_release_info(value: Any, context: str) -> _ImageReleaseInfo:
+def _parse_release_info(value: Any, context: str) -> ImageReleaseInfo:
     mapping = _expect_mapping(value, context)
     _expect_keys(mapping, required={"version"}, optional=set(), context=context)
-    return _ImageReleaseInfo(version=_expect_string(mapping.get("version"), f"{context}.version"))
+    return ImageReleaseInfo(version=_expect_string(mapping.get("version"), f"{context}.version"))
 
 
-def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
+def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
     mapping = _expect_mapping(value, "bases")
-    bases: dict[str, _BaseMetadata] = {}
+    bases: dict[str, BaseMetadata] = {}
     for name, base_value in mapping.items():
         if not isinstance(name, str):
             raise CliError("Images metadata base keys must be strings.")
@@ -94,7 +94,7 @@ def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
             optional=set(),
             context=f"bases.{name}",
         )
-        bases[name] = _BaseMetadata(
+        bases[name] = BaseMetadata(
             root_image=_expect_string(base_mapping.get("root_image"), f"bases.{name}.root_image"),
             base_image_distro=_expect_string(
                 base_mapping.get("base_image_distro"), f"bases.{name}.base_image_distro"
@@ -109,9 +109,9 @@ def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
     return bases
 
 
-def _parse_tools(value: Any) -> dict[str, _ToolMetadata]:
+def _parse_tools(value: Any) -> dict[str, ToolMetadata]:
     mapping = _expect_mapping(value, "tool")
-    tools: dict[str, _ToolMetadata] = {}
+    tools: dict[str, ToolMetadata] = {}
     for name, tool_value in mapping.items():
         if not isinstance(name, str):
             raise CliError("Images metadata tool keys must be strings.")
@@ -122,7 +122,7 @@ def _parse_tools(value: Any) -> dict[str, _ToolMetadata]:
             optional={"base_exclude", "base_distro_exclude"},
             context=f"tool.{name}",
         )
-        tools[name] = _ToolMetadata(
+        tools[name] = ToolMetadata(
             tool_path=_expect_string(tool_mapping.get("tool_path"), f"tool.{name}.tool_path"),
             tool_full_name=_expect_string(
                 tool_mapping.get("tool_full_name"), f"tool.{name}.tool_full_name"
