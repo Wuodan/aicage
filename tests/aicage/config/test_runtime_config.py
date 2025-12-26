@@ -34,6 +34,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=mounts),
+                mock.patch("aicage.config.runtime_config.load_images_metadata"),
             ):
                 run_config = load_run_config("codex")
 
