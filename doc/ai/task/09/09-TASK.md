@@ -49,3 +49,5 @@ You shall follow this order:
 5. Run linters as in the pipeline `.github/workflows/publish.yml`
 6. Present me the change for review
 7. Interactively react to my review feedback
+
+Visibility note: apply the "defining scope" rule from AGENTS.md (tests are exempt when deciding "outside").
