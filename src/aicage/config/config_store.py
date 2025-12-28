@@ -63,7 +63,8 @@ class SettingsStore:
         self._save_yaml(self._project_path(project_realpath), config.to_mapping())
 
 
-    def _global_config(self) -> Path:
+    @staticmethod
+    def _global_config() -> Path:
         """
         Returns the path to the packaged global config file.
         """

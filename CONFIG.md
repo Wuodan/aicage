@@ -20,12 +20,12 @@ image_repository: string
 default_image_base: string
 ```
 
-| Key                            | Type   | Presence | Description                                      |
-|--------------------------------|--------|----------|--------------------------------------------------|
-| `image_registry`               | string | Always   | Registry host used for image pulls.              |
-| `image_registry_api_url`       | string | Always   | Registry API base URL for discovery/auth.        |
-| `image_registry_api_token_url` | string | Always   | Token endpoint used to request registry access.  |
-| `image_repository`             | string | Always   | Image repository name (without tag).             |
+| Key                            | Type   | Presence | Description                                        |
+|--------------------------------|--------|----------|----------------------------------------------------|
+| `image_registry`               | string | Always   | Registry host used for image pulls.                |
+| `image_registry_api_url`       | string | Always   | Registry API base URL for discovery/auth.          |
+| `image_registry_api_token_url` | string | Always   | Token endpoint used to request registry access.    |
+| `image_repository`             | string | Always   | Image repository name (without tag).               |
 | `default_image_base`           | string | Always   | Default base when selecting an image for an agent. |
 
 ## Project config schema
@@ -46,8 +46,8 @@ agents:
       docker: bool
 ```
 
-| Key            | Type   | Presence | Description                     |
-|----------------|--------|----------|---------------------------------|
+| Key              | Type   | Presence | Description                      |
+|------------------|--------|----------|----------------------------------|
 | `path`           | string | Always   | Absolute project path.           |
 | `agents`         | map    | Always   | Per-agent configuration.         |
 | `agents.<agent>` | map    | Always   | Agent config schema (see below). |
