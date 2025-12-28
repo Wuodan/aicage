@@ -26,7 +26,7 @@ class DockerRunArgs:
     image_ref: str
     project_path: Path
     tool_config_host: Path
-    tool_mount_container: Path
+    agent_config_mount_container: Path
     merged_docker_args: str
     tool_args: list[str]
     tool_path: str | None = None
@@ -63,7 +63,7 @@ def assemble_docker_run(args: DockerRunArgs) -> list[str]:
         cmd.extend(["-e", env])
     cmd.extend(["-v", f"{args.project_path}:/workspace"])
     cmd.extend(["-v", f"{args.project_path}:{args.project_path}"])
-    cmd.extend(["-v", f"{args.tool_config_host}:{args.tool_mount_container}"])
+    cmd.extend(["-v", f"{args.tool_config_host}:{args.agent_config_mount_container}"])
     for mount in args.mounts:
         suffix = ":ro" if mount.read_only else ""
         cmd.extend(["-v", f"{mount.host_path}:{mount.container_path}{suffix}"])

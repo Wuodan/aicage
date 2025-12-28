@@ -20,7 +20,7 @@ def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
         image_ref=config.image_ref,
         project_path=config.project_path,
         tool_config_host=tool_config.tool_config_host,
-        tool_mount_container=Path("/aicage/tool-config"),
+        agent_config_mount_container=Path("/aicage/agent-config"),
         merged_docker_args=merged_docker_args,
         tool_args=parsed.tool_args,
         tool_path=tool_config.tool_path,
