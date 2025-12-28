@@ -8,8 +8,8 @@ from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import ToolConfig
-from aicage.registry.image_selection import select_tool_image
+from aicage.config.project_config import AgentConfig
+from aicage.registry.image_selection import select_agent_image
 from aicage.registry.images_metadata.loader import load_images_metadata
 from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.mounts import resolve_mounts
@@ -22,7 +22,7 @@ __all__ = ["RunConfig", "load_run_config"]
 @dataclass(frozen=True)
 class RunConfig:
     project_path: Path
-    tool: str
+    agent: str
     image_ref: str
     global_cfg: GlobalConfig
     images_metadata: ImagesMetadata
@@ -30,7 +30,7 @@ class RunConfig:
     mounts: list[MountSpec]
 
 
-def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
+def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
     store = SettingsStore()
     project_path = Path.cwd().resolve()
     project_config_path = store.project_config_path(project_path)
@@ -45,19 +45,19 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             global_cfg=global_cfg,
             images_metadata=images_metadata,
         )
-        image_ref = select_tool_image(tool, context)
-        tool_cfg = project_cfg.tools.setdefault(tool, ToolConfig())
+        image_ref = select_agent_image(agent, context)
+        agent_cfg = project_cfg.agents.setdefault(agent, AgentConfig())
 
-        existing_project_docker_args: str = tool_cfg.docker_args
+        existing_project_docker_args: str = agent_cfg.docker_args
 
-        mounts = resolve_mounts(context, tool, parsed)
+        mounts = resolve_mounts(context, agent, parsed)
 
-        _persist_docker_args(tool_cfg, parsed)
+        _persist_docker_args(agent_cfg, parsed)
         store.save_project(project_path, project_cfg)
 
         return RunConfig(
             project_path=project_path,
-            tool=tool,
+            agent=agent,
             image_ref=image_ref,
             global_cfg=global_cfg,
             images_metadata=images_metadata,
@@ -65,10 +65,11 @@ def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
             mounts=mounts,
         )
 
-def _persist_docker_args(tool_cfg: ToolConfig, parsed: ParsedArgs | None) -> None:
+
+def _persist_docker_args(agent_cfg: AgentConfig, parsed: ParsedArgs | None) -> None:
     if parsed is None or not parsed.docker_args:
         return
-    existing = tool_cfg.docker_args
+    existing = agent_cfg.docker_args
     if existing == parsed.docker_args:
         return
 
@@ -81,4 +82,4 @@ def _persist_docker_args(tool_cfg: ToolConfig, parsed: ParsedArgs | None) -> Non
         question = f"Persist docker run args '{parsed.docker_args}' for this project?"
 
     if prompt_yes_no(question, default=True):
-        tool_cfg.docker_args = parsed.docker_args
+        agent_cfg.docker_args = parsed.docker_args

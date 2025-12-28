@@ -51,11 +51,11 @@ bases:
     base_image_description: Good default for most users
     os_installer: distro/debian/install.sh
     test_suite: default
-tool:
+agent:
   codex:
-    tool_path: ~/.codex
-    tool_full_name: Codex CLI
-    tool_homepage: https://developers.openai.com/codex/cli
+    agent_path: ~/.codex
+    agent_full_name: Codex CLI
+    agent_homepage: https://developers.openai.com/codex/cli
     valid_bases:
       - act
       - alpine
@@ -66,9 +66,9 @@ tool:
       - openhands
       - ubuntu
   copilot:
-    tool_path: ~/.copilot
-    tool_full_name: GitHub Copilot CLI
-    tool_homepage: https://github.com/features/copilot/cli
+    agent_path: ~/.copilot
+    agent_full_name: GitHub Copilot CLI
+    agent_homepage: https://github.com/features/copilot/cli
     base_exclude:
       - alpine
       - minimal
@@ -82,9 +82,9 @@ tool:
       - openhands
       - ubuntu
   cursor:
-    tool_path: ~/.cursor
-    tool_full_name: Cursor
-    tool_homepage: https://www.cursor.com
+    agent_path: ~/.cursor
+    agent_full_name: Cursor
+    agent_homepage: https://www.cursor.com
     base_exclude:
       - minimal
     base_distro_exclude:

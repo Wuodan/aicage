@@ -25,7 +25,7 @@
     "default_image_base": {
       "type": "string"
     },
-    "tools": {
+    "agents": {
       "type": "object",
       "additionalProperties": {
         "type": "object"

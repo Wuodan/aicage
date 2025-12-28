@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import ProjectConfig, ToolConfig
+from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.mounts import resolver
 from aicage.runtime.run_args import MountSpec
@@ -12,7 +12,7 @@ from aicage.runtime.run_args import MountSpec
 
 class ResolverTests(TestCase):
     def test_resolve_mounts_aggregates_mounts(self) -> None:
-        project_cfg = ProjectConfig(path="/tmp/project", tools={"codex": ToolConfig()})
+        project_cfg = ProjectConfig(path="/tmp/project", agents={"codex": AgentConfig()})
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
@@ -22,7 +22,7 @@ class ResolverTests(TestCase):
                 image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
-                tools={},
+                agents={},
             ),
             images_metadata=self._get_images_metadata(),
         )
@@ -47,14 +47,14 @@ class ResolverTests(TestCase):
             mounts = resolver.resolve_mounts(context, "codex", parsed)
 
         self.assertEqual([git_mount, ssh_mount, gpg_mount, entry_mount, docker_mount], mounts)
-        git_mock.assert_called_once_with(project_cfg.tools["codex"])
-        ssh_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.tools["codex"])
-        gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.tools["codex"])
-        entry_mock.assert_called_once_with(project_cfg.tools["codex"], None)
-        docker_mock.assert_called_once_with(project_cfg.tools["codex"], False)
+        git_mock.assert_called_once_with(project_cfg.agents["codex"])
+        ssh_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
+        gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
+        entry_mock.assert_called_once_with(project_cfg.agents["codex"], None)
+        docker_mock.assert_called_once_with(project_cfg.agents["codex"], False)
 
-    def test_resolve_mounts_inserts_tool_config(self) -> None:
-        project_cfg = ProjectConfig(path="/tmp/project", tools={})
+    def test_resolve_mounts_inserts_agent_config(self) -> None:
+        project_cfg = ProjectConfig(path="/tmp/project", agents={})
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
@@ -64,7 +64,7 @@ class ResolverTests(TestCase):
                 image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
-                tools={},
+                agents={},
             ),
             images_metadata=self._get_images_metadata(),
         )
@@ -78,7 +78,7 @@ class ResolverTests(TestCase):
         ):
             resolver.resolve_mounts(context, "codex", None)
 
-        self.assertIsInstance(project_cfg.tools["codex"], ToolConfig)
+        self.assertIsInstance(project_cfg.agents["codex"], AgentConfig)
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:
@@ -95,11 +95,11 @@ class ResolverTests(TestCase):
                         "test_suite": "default",
                     }
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": ["ubuntu"],
                     }
                 },

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.config.project_config import ToolConfig
+from aicage.config.project_config import AgentConfig
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
@@ -20,7 +20,7 @@ def _resolve_gpg_home() -> Path | None:
     return Path(path).expanduser() if path else None
 
 
-def resolve_gpg_mount(project_path: Path, tool_cfg: ToolConfig) -> list[MountSpec]:
+def resolve_gpg_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountSpec]:
     if not is_commit_signing_enabled(project_path):
         return []
     if resolve_signing_format(project_path) == "ssh":
@@ -30,7 +30,7 @@ def resolve_gpg_mount(project_path: Path, tool_cfg: ToolConfig) -> list[MountSpe
     if not gpg_home or not gpg_home.exists():
         return []
 
-    mounts_cfg = tool_cfg.mounts
+    mounts_cfg = agent_cfg.mounts
     pref = mounts_cfg.gnupg
     if pref is None:
         pref = prompt_yes_no(

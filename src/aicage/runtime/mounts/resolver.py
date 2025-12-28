@@ -4,7 +4,7 @@ from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
-from aicage.config.project_config import ToolConfig
+from aicage.config.project_config import AgentConfig
 from aicage.runtime.run_args import MountSpec
 
 from ._docker_socket import _resolve_docker_socket_mount
@@ -16,21 +16,21 @@ from ._ssh_keys import resolve_ssh_mount
 
 def resolve_mounts(
     context: ConfigContext,
-    tool: str,
+    agent: str,
     parsed: ParsedArgs | None,
 ) -> list[MountSpec]:
-    tool_cfg = context.project_cfg.tools.setdefault(tool, ToolConfig())
+    agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
 
-    git_mounts = resolve_git_config_mount(tool_cfg)
+    git_mounts = resolve_git_config_mount(agent_cfg)
     project_path = Path(context.project_cfg.path)
-    ssh_mounts = resolve_ssh_mount(project_path, tool_cfg)
-    gpg_mounts = resolve_gpg_mount(project_path, tool_cfg)
+    ssh_mounts = resolve_ssh_mount(project_path, agent_cfg)
+    gpg_mounts = resolve_gpg_mount(project_path, agent_cfg)
     entrypoint_mounts = _resolve_entrypoint_mount(
-        tool_cfg,
+        agent_cfg,
         parsed.entrypoint if parsed else None,
     )
     docker_mounts = _resolve_docker_socket_mount(
-        tool_cfg,
+        agent_cfg,
         parsed.docker_socket if parsed else False,
     )
 

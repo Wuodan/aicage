@@ -59,7 +59,7 @@ All base images have the same stack of tools installed.
 | opencode | OpenCode           | [https://qwenlm.github.io/qwen-code-docs](https://qwenlm.github.io/qwen-code-docs) |
 | qwen     | Qwen Code          | [https://opencode.ai](https://opencode.ai)                                         |
 
-Your existing CLI config for each tool is mounted inside the container so you can keep using your
+Your existing CLI config for each agent is mounted inside the container so you can keep using your
 preferences and credentials.
 
 ## aicage options
@@ -79,7 +79,7 @@ but granting it directly on the host expands your risk surface.
 Where built-in safety is limited:
 
 - Allow/deny lists only cover known patterns; unexpected commands or attack paths can slip through.
-- Some tools work fully only after relaxing their own safety modes, broadening what they can touch.
+- Some agents work fully only after relaxing their own safety modes, broadening what they can touch.
 - “Read-only project” features are software rules. Other projects and files still sit alongside them
   on the same host.
 

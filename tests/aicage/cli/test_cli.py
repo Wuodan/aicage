@@ -11,22 +11,24 @@ from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.run_args import DockerRunArgs
 
 
-def _build_run_args(project_path: Path, image_ref: str, merged_docker_args: str, tool_args: list[str]) -> DockerRunArgs:
+def _build_run_args(
+    project_path: Path, image_ref: str, merged_docker_args: str, agent_args: list[str]
+) -> DockerRunArgs:
     return DockerRunArgs(
         image_ref=image_ref,
         project_path=project_path,
-        tool_config_host=project_path / ".codex",
+        agent_config_host=project_path / ".codex",
         agent_config_mount_container=Path("/aicage/agent-config"),
         merged_docker_args=merged_docker_args,
-        tool_args=tool_args,
-        tool_path=str(project_path / ".codex"),
+        agent_args=agent_args,
+        agent_path=str(project_path / ".codex"),
     )
 
 
 def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
     return RunConfig(
         project_path=project_path,
-        tool="codex",
+        agent="codex",
         image_ref=image_ref,
         global_cfg=GlobalConfig(
             image_registry="ghcr.io",
@@ -69,11 +71,11 @@ def _build_images_metadata() -> ImagesMetadata:
                     "test_suite": "default",
                 },
             },
-            "tool": {
+            "agent": {
                 "codex": {
-                    "tool_path": "~/.codex",
-                    "tool_full_name": "Codex CLI",
-                    "tool_homepage": "https://example.com",
+                    "agent_path": "~/.codex",
+                    "agent_full_name": "Codex CLI",
+                    "agent_homepage": "https://example.com",
                     "valid_bases": ["alpine", "debian", "ubuntu"],
                 }
             },
@@ -115,7 +117,7 @@ class MainFlowTests(TestCase):
     def test_print_project_config_contents(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             config_path = Path(tmp_dir) / "project.yaml"
-            config_path.write_text("tools: {}", encoding="utf-8")
+            config_path.write_text("agents: {}", encoding="utf-8")
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
@@ -124,7 +126,7 @@ class MainFlowTests(TestCase):
             ):
                 cli._print_project_config()
 
-        self.assertIn("tools: {}", stdout.getvalue())
+        self.assertIn("agents: {}", stdout.getvalue())
 
     def test_main_config_print(self) -> None:
         with (

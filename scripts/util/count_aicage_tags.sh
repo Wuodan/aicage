@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Count and sanity-check GHCR tags for ghcr.io/aicage/aicage against your expected base/tool matrix.
+# Count and sanity-check GHCR tags for ghcr.io/aicage/aicage against your expected base/agent matrix.
 # Assumptions:
-# - Tag names contain BOTH the tool token and the base token somewhere in the tag name
+# - Tag names contain BOTH the agent token and the base token somewhere in the tag name
 #   (e.g. "codex-ubuntu-latest", "copilot-debian-0.0.1", etc.)
 # - If your tag scheme differs, adjust match_tag() below.
 
@@ -12,7 +12,7 @@ registry_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository"
 repo="aicage/aicage"
 
 bases=(act ubuntu fedora node alpine debian)
-tools=(claude copilot codex qwen droid opencode goose gemini)
+agents=(claude copilot codex qwen droid opencode goose gemini)
 
 ghcr_pull_token() {
   local repo="$1"
@@ -42,15 +42,15 @@ ghcr_list_all_tags() {
   done
 }
 
-# Echo "tool base" if tag matches exactly one tool and exactly one base, else return non-zero.
+# Echo "agent base" if tag matches exactly one agent and exactly one base, else return non-zero.
 match_tag() {
   local tag="$1"
   local t="" b=""
 
-  for x in "${tools[@]}"; do
+  for x in "${agents[@]}"; do
     if [[ "$tag" == *"$x"* ]]; then
       if [[ -n "$t" && "$t" != "$x" ]]; then
-        return 1  # ambiguous tool
+        return 1  # ambiguous agent
       fi
       t="$x"
     fi
@@ -79,20 +79,20 @@ main() {
 
   # Counters (must be associative; initialize explicitly under `set -u`)
   declare -A per_base=()
-  declare -A per_tool=()
+  declare -A per_agent=()
 
   declare -a unmatched=()
 
   for tag in "${tags[@]}"; do
     if out="$(match_tag "$tag" 2>/dev/null)"; then
-      tool="${out%% *}"
+      agent="${out%% *}"
       base="${out##* }"
-      seen["$tool|$base"]=1
+      seen["$agent|$base"]=1
 
       : "${per_base["$base"]:=0}"
-      : "${per_tool["$tool"]:=0}"
+      : "${per_agent["$agent"]:=0}"
       per_base["$base"]=$(( per_base["$base"] + 1 ))
-      per_tool["$tool"]=$(( per_tool["$tool"] + 1 ))
+      per_agent["$agent"]=$(( per_agent["$agent"] + 1 ))
     else
       unmatched+=("$tag")
     fi
@@ -104,18 +104,18 @@ main() {
   done
   echo
 
-  echo "Tags per tool (matched by substring):"
-  for t in "${tools[@]}"; do
-    printf "  %-8s %s\n" "$t" "${per_tool[$t]:-0}"
+  echo "Tags per agent (matched by substring):"
+  for agent in "${agents[@]}"; do
+    printf "  %-8s %s\n" "$agent" "${per_agent[$agent]:-0}"
   done
   echo
 
-  echo "Missing combinations (expected 9 tools per base => 54 combos):"
+  echo "Missing combinations (expected 9 agents per base => 54 combos):"
   missing=0
   for b in "${bases[@]}"; do
-    for t in "${tools[@]}"; do
-      if [[ -z "${seen["$t|$b"]+x}" ]]; then
-        echo "  missing: tool=$t base=$b"
+    for agent in "${agents[@]}"; do
+      if [[ -z "${seen["$agent|$b"]+x}" ]]; then
+        echo "  missing: agent=$agent base=$b"
         missing=$((missing + 1))
       fi
     done
@@ -124,10 +124,10 @@ main() {
   echo
 
   if ((${#unmatched[@]} > 0)); then
-    echo "Unmatched/ambiguous tags (didn't map cleanly to exactly 1 tool + 1 base):"
+    echo "Unmatched/ambiguous tags (didn't map cleanly to exactly 1 agent + 1 base):"
     printf '  %s\n' "${unmatched[@]}"
     echo
-    echo "If these are valid tags, your naming scheme likely doesn't include plain tool/base tokens."
+    echo "If these are valid tags, your naming scheme likely doesn't include plain agent/base tokens."
     echo "Adjust match_tag() to parse your actual tag format."
   fi
 }

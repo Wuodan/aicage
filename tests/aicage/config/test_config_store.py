@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config import ConfigError, ProjectConfig, SettingsStore
-from aicage.config.project_config import ToolConfig, ToolMounts
+from aicage.config.project_config import AgentConfig, AgentMounts
 
 
 class ConfigStoreTests(TestCase):
@@ -42,17 +42,17 @@ class ConfigStoreTests(TestCase):
                 global_cfg = store.load_global()
                 self.assertEqual("aicage/aicage", global_cfg.image_repository)
                 self.assertEqual("ubuntu", global_cfg.default_image_base)
-                self.assertEqual({}, global_cfg.tools)
+                self.assertEqual({}, global_cfg.agents)
 
             project_path = base_dir / "project"
             project_path.mkdir(parents=True, exist_ok=True)
             project_cfg = store.load_project(project_path)
-            self.assertEqual(ProjectConfig(path=str(project_path), tools={}), project_cfg)
+            self.assertEqual(ProjectConfig(path=str(project_path), agents={}), project_cfg)
 
-            project_cfg.tools["codex"] = ToolConfig(
+            project_cfg.agents["codex"] = AgentConfig(
                 base="fedora",
                 docker_args="--add-host=host.docker.internal:host-gateway",
-                mounts=ToolMounts(),
+                mounts=AgentMounts(),
             )
             store.save_project(project_path, project_cfg)
 

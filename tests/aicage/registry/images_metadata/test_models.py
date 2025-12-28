@@ -18,11 +18,11 @@ bases:
     base_image_description: Good default
     os_installer: distro/debian/install.sh
     test_suite: default
-tool:
+agent:
   codex:
-    tool_path: ~/.codex
-    tool_full_name: Codex CLI
-    tool_homepage: https://example.com
+    agent_path: ~/.codex
+    agent_full_name: Codex CLI
+    agent_homepage: https://example.com
     valid_bases:
       - ubuntu
         """
@@ -30,30 +30,30 @@ tool:
         self.assertEqual("0.3.3", metadata.aicage_image.version)
         self.assertEqual("0.3.3", metadata.aicage_image_base.version)
         self.assertIn("ubuntu", metadata.bases)
-        self.assertIn("codex", metadata.tools)
-        self.assertEqual(["ubuntu"], metadata.tools["codex"].valid_bases)
+        self.assertIn("codex", metadata.agents)
+        self.assertEqual(["ubuntu"], metadata.agents["codex"].valid_bases)
 
     def test_from_mapping_rejects_unknown_top_level_keys(self) -> None:
         data = {
             "aicage-image": {"version": "0.3.3"},
             "aicage-image-base": {"version": "0.3.3"},
             "bases": {},
-            "tool": {},
+            "agent": {},
             "extra": {},
         }
         with self.assertRaises(CliError):
             ImagesMetadata.from_mapping(data)
 
-    def test_from_mapping_rejects_unknown_tool_keys(self) -> None:
+    def test_from_mapping_rejects_unknown_agent_keys(self) -> None:
         data = {
             "aicage-image": {"version": "0.3.3"},
             "aicage-image-base": {"version": "0.3.3"},
             "bases": {},
-            "tool": {
+            "agent": {
                 "codex": {
-                    "tool_path": "~/.codex",
-                    "tool_full_name": "Codex CLI",
-                    "tool_homepage": "https://example.com",
+                    "agent_path": "~/.codex",
+                    "agent_full_name": "Codex CLI",
+                    "agent_homepage": "https://example.com",
                     "valid_bases": ["ubuntu"],
                     "extra": "nope",
                 }

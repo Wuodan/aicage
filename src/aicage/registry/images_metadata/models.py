@@ -23,10 +23,10 @@ class BaseMetadata:
 
 
 @dataclass(frozen=True)
-class ToolMetadata:
-    tool_path: str
-    tool_full_name: str
-    tool_homepage: str
+class AgentMetadata:
+    agent_path: str
+    agent_full_name: str
+    agent_homepage: str
     valid_bases: list[str]
     base_exclude: list[str] | None = None
     base_distro_exclude: list[str] | None = None
@@ -37,7 +37,7 @@ class ImagesMetadata:
     aicage_image: ImageReleaseInfo
     aicage_image_base: ImageReleaseInfo
     bases: dict[str, BaseMetadata]
-    tools: dict[str, ToolMetadata]
+    agents: dict[str, AgentMetadata]
 
     @classmethod
     def from_yaml(cls, payload: str) -> ImagesMetadata:
@@ -53,19 +53,19 @@ class ImagesMetadata:
     def from_mapping(cls, data: dict[str, Any]) -> ImagesMetadata:
         _expect_keys(
             data,
-            required={"aicage-image", "aicage-image-base", "bases", "tool"},
+            required={"aicage-image", "aicage-image-base", "bases", "agent"},
             optional=set(),
             context="images metadata",
         )
         aicage_image = _parse_release_info(data["aicage-image"], "aicage-image")
         aicage_image_base = _parse_release_info(data["aicage-image-base"], "aicage-image-base")
         bases = _parse_bases(data["bases"])
-        tools = _parse_tools(data["tool"])
+        agents = _parse_agents(data["agent"])
         return cls(
             aicage_image=aicage_image,
             aicage_image_base=aicage_image_base,
             bases=bases,
-            tools=tools,
+            agents=agents,
         )
 
 
@@ -109,34 +109,38 @@ def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
     return bases
 
 
-def _parse_tools(value: Any) -> dict[str, ToolMetadata]:
-    mapping = _expect_mapping(value, "tool")
-    tools: dict[str, ToolMetadata] = {}
-    for name, tool_value in mapping.items():
+def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
+    mapping = _expect_mapping(value, "agent")
+    agents: dict[str, AgentMetadata] = {}
+    for name, agent_value in mapping.items():
         if not isinstance(name, str):
-            raise CliError("Images metadata tool keys must be strings.")
-        tool_mapping = _expect_mapping(tool_value, f"tool.{name}")
+            raise CliError("Images metadata agent keys must be strings.")
+        agent_mapping = _expect_mapping(agent_value, f"agent.{name}")
         _expect_keys(
-            tool_mapping,
-            required={"tool_path", "tool_full_name", "tool_homepage", "valid_bases"},
+            agent_mapping,
+            required={"agent_path", "agent_full_name", "agent_homepage", "valid_bases"},
             optional={"base_exclude", "base_distro_exclude"},
-            context=f"tool.{name}",
+            context=f"agent.{name}",
         )
-        tools[name] = ToolMetadata(
-            tool_path=_expect_string(tool_mapping.get("tool_path"), f"tool.{name}.tool_path"),
-            tool_full_name=_expect_string(
-                tool_mapping.get("tool_full_name"), f"tool.{name}.tool_full_name"
+        agents[name] = AgentMetadata(
+            agent_path=_expect_string(agent_mapping.get("agent_path"), f"agent.{name}.agent_path"),
+            agent_full_name=_expect_string(
+                agent_mapping.get("agent_full_name"), f"agent.{name}.agent_full_name"
             ),
-            tool_homepage=_expect_string(
-                tool_mapping.get("tool_homepage"), f"tool.{name}.tool_homepage"
+            agent_homepage=_expect_string(
+                agent_mapping.get("agent_homepage"), f"agent.{name}.agent_homepage"
             ),
-            valid_bases=_expect_str_list(tool_mapping.get("valid_bases"), f"tool.{name}.valid_bases"),
-            base_exclude=_maybe_str_list(tool_mapping.get("base_exclude"), f"tool.{name}.base_exclude"),
+            valid_bases=_expect_str_list(
+                agent_mapping.get("valid_bases"), f"agent.{name}.valid_bases"
+            ),
+            base_exclude=_maybe_str_list(
+                agent_mapping.get("base_exclude"), f"agent.{name}.base_exclude"
+            ),
             base_distro_exclude=_maybe_str_list(
-                tool_mapping.get("base_distro_exclude"), f"tool.{name}.base_distro_exclude"
+                agent_mapping.get("base_distro_exclude"), f"agent.{name}.base_distro_exclude"
             ),
         )
-    return tools
+    return agents
 
 
 def _expect_mapping(value: Any, context: str) -> dict[str, Any]:

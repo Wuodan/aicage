@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.config.project_config import ToolConfig
+from aicage.config.project_config import AgentConfig
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
@@ -8,10 +8,10 @@ _DOCKER_SOCKET_PATH = Path("/run/docker.sock")
 
 
 def _resolve_docker_socket_mount(
-    tool_cfg: ToolConfig,
+    agent_cfg: AgentConfig,
     cli_docker_socket: bool,
 ) -> list[MountSpec]:
-    mounts_cfg = tool_cfg.mounts
+    mounts_cfg = agent_cfg.mounts
     docker_socket_enabled = cli_docker_socket or bool(mounts_cfg.docker)
     if not docker_socket_enabled:
         return []

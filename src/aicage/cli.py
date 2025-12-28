@@ -40,7 +40,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if parsed.config_action == "print":
             _print_project_config()
             return 0
-        run_config: RunConfig = load_run_config(parsed.tool, parsed)
+        run_config: RunConfig = load_run_config(parsed.agent, parsed)
         pull_image(run_config)
         run_args: DockerRunArgs = build_run_args(config=run_config, parsed=parsed)
 

@@ -3,15 +3,15 @@ from dataclasses import dataclass
 
 from aicage.config.context import ConfigContext
 from aicage.errors import CliError
-from aicage.registry.images_metadata.models import ToolMetadata
+from aicage.registry.images_metadata.models import AgentMetadata
 
 __all__ = ["BaseSelectionRequest", "ensure_tty_for_prompt", "prompt_yes_no", "prompt_for_base"]
 
 @dataclass(frozen=True)
 class BaseSelectionRequest:
-    tool: str
+    agent: str
     context: ConfigContext
-    tool_metadata: ToolMetadata
+    agent_metadata: AgentMetadata
 
 
 def ensure_tty_for_prompt() -> None:
@@ -30,8 +30,8 @@ def prompt_yes_no(question: str, default: bool = False) -> bool:
 
 def prompt_for_base(request: BaseSelectionRequest) -> str:
     ensure_tty_for_prompt()
-    title = f"Select base image for '{request.tool}' (runtime to use inside the container):"
-    bases = _base_options(request.context, request.tool_metadata)
+    title = f"Select base image for '{request.agent}' (runtime to use inside the container):"
+    bases = _base_options(request.context, request.agent_metadata)
 
     if bases:
         print(title)
@@ -65,13 +65,13 @@ class _BaseOption:
     description: str
 
 
-def _base_options(context: ConfigContext, tool_metadata: ToolMetadata) -> list[_BaseOption]:
+def _base_options(context: ConfigContext, agent_metadata: AgentMetadata) -> list[_BaseOption]:
     return [
         _BaseOption(
             base=base,
             description=context.images_metadata.bases[base].base_image_description,
         )
-        for base in sorted(set(tool_metadata.valid_bases))
+        for base in sorted(set(agent_metadata.valid_bases))
     ]
 
 

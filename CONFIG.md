@@ -26,16 +26,16 @@ default_image_base: string
 | `image_registry_api_url`       | string | Always   | Registry API base URL for discovery/auth.        |
 | `image_registry_api_token_url` | string | Always   | Token endpoint used to request registry access.  |
 | `image_repository`             | string | Always   | Image repository name (without tag).             |
-| `default_image_base`           | string | Always   | Default base when selecting an image for a tool. |
+| `default_image_base`           | string | Always   | Default base when selecting an image for an agent. |
 
 ## Project config schema
 
-`~/.aicage/projects/<sha256>.yaml` stores per-project tool settings.
+`~/.aicage/projects/<sha256>.yaml` stores per-project agent settings.
 
 ```yaml
 path: string
-tools:
-  <tool>:
+agents:
+  <agent>:
     base: string
     docker_args: string
     entrypoint: string
@@ -48,21 +48,21 @@ tools:
 
 | Key            | Type   | Presence | Description                     |
 |----------------|--------|----------|---------------------------------|
-| `path`         | string | Always   | Absolute project path.          |
-| `tools`        | map    | Always   | Per-tool configuration.         |
-| `tools.<tool>` | map    | Always   | Tool config schema (see below). |
+| `path`           | string | Always   | Absolute project path.           |
+| `agents`         | map    | Always   | Per-agent configuration.         |
+| `agents.<agent>` | map    | Always   | Agent config schema (see below). |
 
-## Tool config schema
+## Agent config schema
 
-Used under `tools.<tool>` in the project config.
+Used under `agents.<agent>` in the project config.
 
-| Key                | Type   | Presence | Description                                             |
-|--------------------|--------|----------|---------------------------------------------------------|
-| `base`             | string | Always   | Image base to use for this tool in this project.        |
-| `docker_args`      | string | Optional | Persisted `docker run` args for this tool.              |
-| `entrypoint`       | string | Optional | Persisted host path to an executable entrypoint script. |
-| `mounts`           | map    | Optional | Host resource mount preferences.                        |
-| `mounts.gitconfig` | bool   | Optional | Mount the host Git config file.                         |
-| `mounts.gnupg`     | bool   | Optional | Mount the host GnuPG home for Git signing.              |
-| `mounts.ssh`       | bool   | Optional | Mount the host SSH keys for SSH-based Git signing.      |
-| `mounts.docker`    | bool   | Optional | Mount `/run/docker.sock` into the container.            |
+| Key                | Type   | Presence | Description                                              |
+|--------------------|--------|----------|----------------------------------------------------------|
+| `base`             | string | Always   | Image base to use for this agent in this project.        |
+| `docker_args`      | string | Optional | Persisted `docker run` args for this agent.              |
+| `entrypoint`       | string | Optional | Persisted host path to an executable entrypoint script.  |
+| `mounts`           | map    | Optional | Host resource mount preferences.                         |
+| `mounts.gitconfig` | bool   | Optional | Mount the host Git config file.                          |
+| `mounts.gnupg`     | bool   | Optional | Mount the host GnuPG home for Git signing.               |
+| `mounts.ssh`       | bool   | Optional | Mount the host SSH keys for SSH-based Git signing.       |
+| `mounts.docker`    | bool   | Optional | Mount `/run/docker.sock` into the container.             |

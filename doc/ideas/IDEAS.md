@@ -18,7 +18,7 @@ See pipelines in https://github.com/Wuodan/factoryai-droid-docker:
 - one scheduled checks for new version and triggers
 - build pipeline
 
-`droid` here is actually complicated (wget script, parse version) while other tools can be queried with npm or pipx.
+`droid` here is actually complicated (wget script, parse version) while other agents can be queried with npm or pipx.
 
 ## Enable and document custom images by user
 

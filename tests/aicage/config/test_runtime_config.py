@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config import SettingsStore
-from aicage.config.project_config import ToolConfig, ToolMounts
+from aicage.config.project_config import AgentConfig, AgentMounts
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.run_args import MountSpec
@@ -19,10 +19,10 @@ class RuntimeConfigTests(TestCase):
             store = SettingsStore(base_dir=base_dir)
 
             project_cfg = store.load_project(project_path)
-            project_cfg.tools["codex"] = ToolConfig(
+            project_cfg.agents["codex"] = AgentConfig(
                 base="ubuntu",
                 docker_args="--project",
-                mounts=ToolMounts(gitconfig=True),
+                mounts=AgentMounts(gitconfig=True),
             )
             store.save_project(project_path, project_cfg)
 
@@ -60,11 +60,11 @@ class RuntimeConfigTests(TestCase):
                         "test_suite": "default",
                     }
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": ["ubuntu"],
                     }
                 },

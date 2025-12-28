@@ -33,11 +33,11 @@ class RunArgsTests(TestCase):
             run_args = DockerRunArgs(
                 image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
                 project_path=Path("/work/project"),
-                tool_config_host=Path("/host/.codex"),
+                agent_config_host=Path("/host/.codex"),
                 agent_config_mount_container=Path("/aicage/agent-config"),
                 merged_docker_args="--network=host",
-                tool_args=["--flag"],
-                tool_path="~/.codex",
+                agent_args=["--flag"],
+                agent_path="~/.codex",
             )
             cmd = assemble_docker_run(run_args)
         self.assertEqual(
@@ -49,7 +49,7 @@ class RunArgsTests(TestCase):
                 "-e",
                 "AICAGE_WORKSPACE=/work/project",
                 "-e",
-                "AICAGE_TOOL_PATH=~/.codex",
+                "AICAGE_AGENT_CONFIG_PATH=~/.codex",
                 "-v",
                 "/work/project:/workspace",
                 "-v",
@@ -68,11 +68,11 @@ class RunArgsTests(TestCase):
             run_args = DockerRunArgs(
                 image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
                 project_path=Path("/work/project"),
-                tool_config_host=Path("/host/.codex"),
+                agent_config_host=Path("/host/.codex"),
                 agent_config_mount_container=Path("/aicage/agent-config"),
                 merged_docker_args="--net=host",
-                tool_args=["--flag"],
-                tool_path=None,
+                agent_args=["--flag"],
+                agent_path=None,
                 env=["EXTRA=1"],
                 mounts=[MountSpec(host_path=Path("/tmp/one"), container_path=Path("/opt/one"), read_only=True)],
             )
@@ -81,4 +81,4 @@ class RunArgsTests(TestCase):
         self.assertIn("EXTRA=1", cmd)
         self.assertIn("-v", cmd)
         self.assertIn("/tmp/one:/opt/one:ro", cmd)
-        self.assertNotIn("AICAGE_TOOL_PATH", " ".join(cmd))
+        self.assertNotIn("AICAGE_AGENT_CONFIG_PATH", " ".join(cmd))

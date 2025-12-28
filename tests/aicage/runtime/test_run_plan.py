@@ -5,8 +5,8 @@ from aicage.cli_types import ParsedArgs
 from aicage.config import RunConfig
 from aicage.config.global_config import GlobalConfig
 from aicage.registry.images_metadata.models import ImagesMetadata
+from aicage.runtime.agent_config import AgentConfig
 from aicage.runtime.run_plan import build_run_args
-from aicage.runtime.tool_config import ToolConfig
 
 
 class RunPlanTests(TestCase):
@@ -14,7 +14,7 @@ class RunPlanTests(TestCase):
         project_path = Path("/tmp/project")
         config = RunConfig(
             project_path=project_path,
-            tool="codex",
+            agent="codex",
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
             global_cfg=self._get_global_config(),
             images_metadata=self._get_images_metadata(),
@@ -22,20 +22,20 @@ class RunPlanTests(TestCase):
             mounts=[],
         )
         parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None)
-        tool_config = ToolConfig(tool_path="~/.codex", tool_config_host=Path("/tmp/.codex"))
+        agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))
 
-        with mock.patch("aicage.runtime.run_plan.resolve_tool_config", return_value=tool_config):
+        with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):
             run_args = build_run_args(config, parsed)
 
         self.assertEqual("--project --cli", run_args.merged_docker_args)
-        self.assertEqual(["--flag"], run_args.tool_args)
+        self.assertEqual(["--flag"], run_args.agent_args)
 
     def test_build_run_args_uses_mounts_from_config(self) -> None:
         project_path = Path("/tmp/project")
         mount = mock.Mock()
         config = RunConfig(
             project_path=project_path,
-            tool="codex",
+            agent="codex",
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
             global_cfg=self._get_global_config(),
             images_metadata=self._get_images_metadata(),
@@ -43,9 +43,9 @@ class RunPlanTests(TestCase):
             mounts=[mount],
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
-        tool_config = ToolConfig(tool_path="~/.codex", tool_config_host=Path("/tmp/.codex"))
+        agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))
 
-        with mock.patch("aicage.runtime.run_plan.resolve_tool_config", return_value=tool_config):
+        with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):
             run_args = build_run_args(config, parsed)
 
         self.assertEqual([mount], run_args.mounts)
@@ -75,11 +75,11 @@ class RunPlanTests(TestCase):
                         "test_suite": "default",
                     }
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": ["ubuntu"],
                     }
                 },

@@ -30,14 +30,14 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     if opts.help:
         usage: str = (
             "Usage:\n"
-            "  aicage <tool>\n"
-            "  aicage [--dry-run] [--docker] [--entrypoint PATH] -- <tool> [<tool-args>]\n"
-            "  aicage [--dry-run] [--docker] [--entrypoint PATH] <docker-args> -- <tool> [<tool-args>]\n"
+            "  aicage <agent>\n"
+            "  aicage [--dry-run] [--docker] [--entrypoint PATH] -- <agent> [<agent-args>]\n"
+            "  aicage [--dry-run] [--docker] [--entrypoint PATH] <docker-args> -- <agent> [<agent-args>]\n"
             "  aicage --config print\n\n"
-            "Any arguments between aicage and the tool require a '--' separator before the tool.\n"
+            "Any arguments between aicage and the agent require a '--' separator before the agent.\n"
             "<docker-args> are any arguments not recognized by aicage.\n"
             "These arguments are forwarded verbatim to docker run.\n"
-            "<tool-args> are passed verbatim to the tool.\n"
+            "<agent-args> are passed verbatim to the agent.\n"
         )
         print(usage)
         sys.exit(0)
@@ -54,16 +54,16 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
             opts.config,
         )
 
-    docker_args, tool, tool_args = _parse_tool_section(remaining, post_argv)
+    docker_args, agent, agent_args = _parse_agent_section(remaining, post_argv)
 
-    if not tool:
-        raise CliError("Tool name is required.")
+    if not agent:
+        raise CliError("Agent name is required.")
 
     return ParsedArgs(
         opts.dry_run,
         docker_args,
-        tool,
-        tool_args,
+        agent,
+        agent_args,
         opts.entrypoint,
         opts.docker,
         None,
@@ -90,17 +90,17 @@ def _validate_config_action(
         raise CliError("No additional arguments are allowed with --config.")
 
 
-def _parse_tool_section(
+def _parse_agent_section(
     remaining: list[str],
     post_argv: list[str] | None,
 ) -> tuple[str, str, list[str]]:
     if post_argv is not None:
         if not post_argv:
-            raise CliError("Missing tool after '--'.")
+            raise CliError("Missing agent after '--'.")
         docker_args = " ".join(remaining).strip()
         return docker_args, post_argv[0], post_argv[1:]
     if not remaining:
-        raise CliError("Missing arguments. Provide a tool name (and optional docker args).")
+        raise CliError("Missing arguments. Provide an agent name (and optional docker args).")
     first: str = remaining[0]
     if len(remaining) >= MIN_REMAINING_FOR_DOCKER_ARGS and (first.startswith("-") or "=" in first):
         return first, remaining[1], remaining[2:]

@@ -8,8 +8,8 @@ class ParsedArgsTests(TestCase):
         parsed = ParsedArgs(
             dry_run=True,
             docker_args="--net=host",
-            tool="codex",
-            tool_args=["--flag"],
+            agent="codex",
+            agent_args=["--flag"],
             entrypoint="/bin/bash",
             docker_socket=False,
             config_action=None,
@@ -17,8 +17,8 @@ class ParsedArgsTests(TestCase):
 
         self.assertTrue(parsed.dry_run)
         self.assertEqual("--net=host", parsed.docker_args)
-        self.assertEqual("codex", parsed.tool)
-        self.assertEqual(["--flag"], parsed.tool_args)
+        self.assertEqual("codex", parsed.agent)
+        self.assertEqual(["--flag"], parsed.agent_args)
         self.assertEqual("/bin/bash", parsed.entrypoint)
         self.assertFalse(parsed.docker_socket)
         self.assertIsNone(parsed.config_action)

@@ -9,4 +9,4 @@ class EnvVarsTests(TestCase):
         self.assertEqual("AICAGE_GID", _env_vars.AICAGE_GID)
         self.assertEqual("AICAGE_USER", _env_vars.AICAGE_USER)
         self.assertEqual("AICAGE_WORKSPACE", _env_vars.AICAGE_WORKSPACE)
-        self.assertEqual("AICAGE_TOOL_PATH", _env_vars.AICAGE_TOOL_PATH)
+        self.assertEqual("AICAGE_AGENT_CONFIG_PATH", _env_vars.AICAGE_AGENT_CONFIG_PATH)

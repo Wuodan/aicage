@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
-from aicage.config.project_config import ToolConfig
+from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
 from aicage.registry import image_selection
 from aicage.registry.images_metadata.models import ImagesMetadata
@@ -21,8 +21,8 @@ class ImageSelectionTests(TestCase):
                 project_path,
                 bases=["debian", "ubuntu"],
             )
-            context.project_cfg.tools["codex"] = ToolConfig(base="debian")
-            selection = image_selection.select_tool_image("codex", context)
+            context.project_cfg.agents["codex"] = AgentConfig(base="debian")
+            selection = image_selection.select_agent_image("codex", context)
 
             self.assertIsInstance(selection, str)
             self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection)
@@ -41,9 +41,9 @@ class ImageSelectionTests(TestCase):
             with mock.patch(
                 "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
             ):
-                image_selection.select_tool_image("codex", context)
+                image_selection.select_agent_image("codex", context)
 
-            self.assertEqual("alpine", context.project_cfg.tools["codex"].base)
+            self.assertEqual("alpine", context.project_cfg.agents["codex"].base)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_raises_without_bases(self) -> None:
@@ -53,28 +53,28 @@ class ImageSelectionTests(TestCase):
             bases=[],
         )
         with self.assertRaises(CliError):
-            image_selection.select_tool_image("codex", context)
+            image_selection.select_agent_image("codex", context)
 
     def test_resolve_raises_on_invalid_base(self) -> None:
         context = self._build_context(
             mock.Mock(),
             Path("/tmp/project"),
             bases=["ubuntu"],
-            tools={"codex": ToolConfig(base="alpine")},
+            agents={"codex": AgentConfig(base="alpine")},
         )
         with self.assertRaises(CliError):
-            image_selection.select_tool_image("codex", context)
+            image_selection.select_agent_image("codex", context)
 
     @staticmethod
     def _build_context(
         store: mock.Mock,
         project_path: Path,
         bases: list[str],
-        tools: dict[str, ToolConfig] | None = None,
+        agents: dict[str, AgentConfig] | None = None,
     ) -> ConfigContext:
         return ConfigContext(
             store=store,
-            project_cfg=ProjectConfig(path=str(project_path), tools=tools or {}),
+            project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
             global_cfg=ImageSelectionTests._global_config(),
             images_metadata=ImageSelectionTests._metadata_with_bases(bases),
         )
@@ -87,7 +87,7 @@ class ImageSelectionTests(TestCase):
             image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
             image_repository="aicage/aicage",
             default_image_base="ubuntu",
-            tools={},
+            agents={},
         )
 
     @staticmethod
@@ -106,11 +106,11 @@ class ImageSelectionTests(TestCase):
                     }
                     for name in bases
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": bases,
                     }
                 },

@@ -13,7 +13,7 @@ class GlobalConfig:
     image_registry_api_token_url: str
     image_repository: str
     default_image_base: str
-    tools: dict[str, dict[str, Any]] = field(default_factory=dict)
+    agents: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "GlobalConfig":
@@ -33,7 +33,7 @@ class GlobalConfig:
             image_registry_api_token_url=data["image_registry_api_token_url"],
             image_repository=data["image_repository"],
             default_image_base=data["default_image_base"],
-            tools=data.get("tools", {}) or {},
+            agents=data.get("agents", {}) or {},
         )
 
     def to_mapping(self) -> dict[str, Any]:
@@ -43,5 +43,5 @@ class GlobalConfig:
             "image_registry_api_token_url": self.image_registry_api_token_url,
             "image_repository": self.image_repository,
             "default_image_base": self.default_image_base,
-            "tools": self.tools,
+            "agents": self.agents,
         }

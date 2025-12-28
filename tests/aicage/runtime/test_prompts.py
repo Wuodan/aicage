@@ -4,7 +4,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import ProjectConfig
 from aicage.errors import CliError
-from aicage.registry.images_metadata.models import ImagesMetadata, ToolMetadata
+from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.runtime.prompts import (
     BaseSelectionRequest,
     ensure_tty_for_prompt,
@@ -26,9 +26,9 @@ class PromptTests(TestCase):
             with self.assertRaises(CliError):
                 prompt_for_base(
                     BaseSelectionRequest(
-                        tool="codex",
+                        agent="codex",
                         context=self._build_context(["ubuntu"]),
-                        tool_metadata=self._tool_metadata(["ubuntu"]),
+                        agent_metadata=self._agent_metadata(["ubuntu"]),
                     )
                 )
 
@@ -36,17 +36,17 @@ class PromptTests(TestCase):
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", side_effect=["2", ""]):
             choice = prompt_for_base(
                 BaseSelectionRequest(
-                    tool="codex",
+                    agent="codex",
                     context=self._build_context(["alpine", "ubuntu"]),
-                    tool_metadata=self._tool_metadata(["alpine", "ubuntu"]),
+                    agent_metadata=self._agent_metadata(["alpine", "ubuntu"]),
                 )
             )
             self.assertEqual("ubuntu", choice)
             default_choice = prompt_for_base(
                 BaseSelectionRequest(
-                    tool="codex",
+                    agent="codex",
                     context=self._build_context(["ubuntu"]),
-                    tool_metadata=self._tool_metadata(["ubuntu"]),
+                    agent_metadata=self._agent_metadata(["ubuntu"]),
                 )
             )
             self.assertEqual("ubuntu", default_choice)
@@ -54,9 +54,9 @@ class PromptTests(TestCase):
             with self.assertRaises(CliError):
                 prompt_for_base(
                     BaseSelectionRequest(
-                        tool="codex",
+                        agent="codex",
                         context=self._build_context(["alpine", "ubuntu"]),
-                        tool_metadata=self._tool_metadata(["alpine", "ubuntu"]),
+                        agent_metadata=self._agent_metadata(["alpine", "ubuntu"]),
                     )
                 )
 
@@ -64,9 +64,9 @@ class PromptTests(TestCase):
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value=""):
             choice = prompt_for_base(
                 BaseSelectionRequest(
-                    tool="codex",
+                    agent="codex",
                     context=self._build_context([]),
-                    tool_metadata=self._tool_metadata([]),
+                    agent_metadata=self._agent_metadata([]),
                 )
             )
         self.assertEqual("ubuntu", choice)
@@ -87,22 +87,22 @@ class PromptTests(TestCase):
         metadata = PromptTests._metadata_with_bases(bases)
         return ConfigContext(
             store=mock.Mock(),
-            project_cfg=ProjectConfig(path="/tmp/project", tools={}),
+            project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",
                 image_registry_api_url="https://ghcr.io/v2",
                 image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
-                tools={},
+                agents={},
             ),
             images_metadata=metadata,
         )
 
     @staticmethod
-    def _tool_metadata(bases: list[str]) -> ToolMetadata:
+    def _agent_metadata(bases: list[str]) -> AgentMetadata:
         metadata = PromptTests._metadata_with_bases(bases)
-        return metadata.tools["codex"]
+        return metadata.agents["codex"]
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:
@@ -120,11 +120,11 @@ class PromptTests(TestCase):
                     }
                     for name in bases
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": bases,
                     }
                 },

@@ -27,7 +27,7 @@ class RemoteQueryTests(TestCase):
     def _build_run_config(self, image_ref: str) -> RunConfig:
         return RunConfig(
             project_path=Path("/tmp/project"),
-            tool="codex",
+            agent="codex",
             image_ref=image_ref,
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",
@@ -56,11 +56,11 @@ class RemoteQueryTests(TestCase):
                         "test_suite": "default",
                     }
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": ["ubuntu"],
                     }
                 },

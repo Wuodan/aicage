@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from aicage.config.context import ConfigContext
     from aicage.config.runtime_config import RunConfig
 
-__all__ = ["pull_image", "select_tool_image"]
+__all__ = ["pull_image", "select_agent_image"]
 
 
 def pull_image(run_config: RunConfig) -> None:
@@ -15,6 +15,6 @@ def pull_image(run_config: RunConfig) -> None:
     module.pull_image(run_config)
 
 
-def select_tool_image(tool: str, context: ConfigContext) -> str:
+def select_agent_image(agent: str, context: ConfigContext) -> str:
     module = importlib.import_module("aicage.registry.image_selection")
-    return module.select_tool_image(tool, context)
+    return module.select_agent_image(agent, context)

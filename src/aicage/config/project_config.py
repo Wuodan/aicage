@@ -2,18 +2,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-__all__ = ["ProjectConfig", "ToolConfig", "ToolMounts"]
+__all__ = ["ProjectConfig", "AgentConfig", "AgentMounts"]
 
 
 @dataclass
-class ToolMounts:
+class AgentMounts:
     gitconfig: bool | None = None
     gnupg: bool | None = None
     ssh: bool | None = None
     docker: bool | None = None
 
     @classmethod
-    def from_mapping(cls, data: dict[str, Any]) -> "ToolMounts":
+    def from_mapping(cls, data: dict[str, Any]) -> "AgentMounts":
         return cls(
             gitconfig=data.get("gitconfig"),
             gnupg=data.get("gnupg"),
@@ -35,15 +35,15 @@ class ToolMounts:
 
 
 @dataclass
-class ToolConfig:
+class AgentConfig:
     base: str | None = None
     docker_args: str = ""
     entrypoint: str | None = None
-    mounts: ToolMounts = field(default_factory=ToolMounts)
+    mounts: AgentMounts = field(default_factory=AgentMounts)
 
     @classmethod
-    def from_mapping(cls, data: dict[str, Any]) -> "ToolConfig":
-        mounts = ToolMounts.from_mapping(data.get("mounts", {}) or {})
+    def from_mapping(cls, data: dict[str, Any]) -> "AgentConfig":
+        mounts = AgentMounts.from_mapping(data.get("mounts", {}) or {})
         return cls(
             base=data.get("base"),
             docker_args=data.get("docker_args", "") or "",
@@ -68,22 +68,22 @@ class ToolConfig:
 @dataclass
 class ProjectConfig:
     path: str
-    tools: dict[str, ToolConfig] = field(default_factory=dict)
+    agents: dict[str, AgentConfig] = field(default_factory=dict)
 
     @classmethod
     def from_mapping(cls, project_path: Path, data: dict[str, Any]) -> "ProjectConfig":
-        raw_tools = data.get("tools", {}) or {}
-        tools = {name: ToolConfig.from_mapping(cfg) for name, cfg in raw_tools.items()}
+        raw_agents = data.get("agents", {}) or {}
+        agents = {name: AgentConfig.from_mapping(cfg) for name, cfg in raw_agents.items()}
         legacy_docker_args = data.get("docker_args", "")
         if legacy_docker_args:
-            for tool_cfg in tools.values():
-                if not tool_cfg.docker_args:
-                    tool_cfg.docker_args = legacy_docker_args
+            for agent_cfg in agents.values():
+                if not agent_cfg.docker_args:
+                    agent_cfg.docker_args = legacy_docker_args
         return cls(
             path=data.get("path", str(project_path)),
-            tools=tools,
+            agents=agents,
         )
 
     def to_mapping(self) -> dict[str, Any]:
-        tools_payload = {name: cfg.to_mapping() for name, cfg in self.tools.items()}
-        return {"path": self.path, "tools": tools_payload}
+        agents_payload = {name: cfg.to_mapping() for name, cfg in self.agents.items()}
+        return {"path": self.path, "agents": agents_payload}

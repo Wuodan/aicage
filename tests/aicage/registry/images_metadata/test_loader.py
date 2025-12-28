@@ -45,11 +45,11 @@ bases:
     base_image_description: Good default
     os_installer: distro/debian/install.sh
     test_suite: default
-tool:
+agent:
   codex:
-    tool_path: ~/.codex
-    tool_full_name: Codex CLI
-    tool_homepage: https://example.com
+    agent_path: ~/.codex
+    agent_full_name: Codex CLI
+    agent_homepage: https://example.com
     valid_bases:
       - ubuntu
 """

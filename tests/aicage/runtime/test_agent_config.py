@@ -4,13 +4,13 @@ from unittest import TestCase
 
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import ImagesMetadata
-from aicage.runtime.tool_config import resolve_tool_config
+from aicage.runtime.agent_config import resolve_agent_config
 
 
-class ToolConfigTests(TestCase):
-    def test_resolve_tool_config_reads_metadata_and_creates_dir(self) -> None:
+class AgentConfigTests(TestCase):
+    def test_resolve_agent_config_reads_metadata_and_creates_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            tool_dir = Path(tmp_dir) / ".codex"
+            agent_dir = Path(tmp_dir) / ".codex"
             metadata = ImagesMetadata.from_mapping(
                 {
                     "aicage-image": {"version": "0.3.3"},
@@ -24,28 +24,28 @@ class ToolConfigTests(TestCase):
                             "test_suite": "default",
                         }
                     },
-                    "tool": {
+                    "agent": {
                         "codex": {
-                            "tool_path": str(tool_dir),
-                            "tool_full_name": "Codex CLI",
-                            "tool_homepage": "https://example.com",
+                            "agent_path": str(agent_dir),
+                            "agent_full_name": "Codex CLI",
+                            "agent_homepage": "https://example.com",
                             "valid_bases": ["ubuntu"],
                         }
                     },
                 }
             )
-            config = resolve_tool_config("codex", metadata)
-            self.assertEqual(str(tool_dir), config.tool_path)
-            self.assertTrue(config.tool_config_host.exists())
+            config = resolve_agent_config("codex", metadata)
+            self.assertEqual(str(agent_dir), config.agent_path)
+            self.assertTrue(config.agent_config_host.exists())
 
-    def test_resolve_tool_config_missing_tool_raises(self) -> None:
+    def test_resolve_agent_config_missing_agent_raises(self) -> None:
         metadata = ImagesMetadata.from_mapping(
             {
                 "aicage-image": {"version": "0.3.3"},
                 "aicage-image-base": {"version": "0.3.3"},
                 "bases": {},
-                "tool": {},
+                "agent": {},
             }
         )
         with self.assertRaises(CliError):
-            resolve_tool_config("codex", metadata)
+            resolve_agent_config("codex", metadata)

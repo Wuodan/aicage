@@ -7,8 +7,8 @@ __all__ = ["ParsedArgs"]
 class ParsedArgs:
     dry_run: bool
     docker_args: str
-    tool: str
-    tool_args: list[str]
+    agent: str
+    agent_args: list[str]
     entrypoint: str | None
     docker_socket: bool
     config_action: str | None

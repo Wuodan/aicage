@@ -16,7 +16,7 @@ class GlobalConfigTests(TestCase):
             "image_registry_api_token_url": "https://ghcr.io/token",
             "image_repository": "aicage/aicage",
             "default_image_base": "ubuntu",
-            "tools": {"codex": {"base": "ubuntu"}},
+            "agents": {"codex": {"base": "ubuntu"}},
         }
         cfg = GlobalConfig.from_mapping(data)
         self.assertEqual(data, cfg.to_mapping())

@@ -11,14 +11,14 @@ class ContextTests(TestCase):
     def test_image_repository_ref(self) -> None:
         context = ConfigContext(
             store=mock.Mock(),
-            project_cfg=ProjectConfig(path="/work/project", tools={}),
+            project_cfg=ProjectConfig(path="/work/project", agents={}),
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",
                 image_registry_api_url="https://ghcr.io/v2",
                 image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
                 image_repository="aicage/aicage",
                 default_image_base="ubuntu",
-                tools={},
+                agents={},
             ),
             images_metadata=self._get_images_metadata(),
         )
@@ -31,9 +31,9 @@ class ContextTests(TestCase):
             image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
             image_repository="aicage/aicage",
             default_image_base="ubuntu",
-            tools={},
+            agents={},
         )
-        project_cfg = ProjectConfig(path="/work/project", tools={})
+        project_cfg = ProjectConfig(path="/work/project", agents={})
         with (
             mock.patch("aicage.config.context.SettingsStore") as store_cls,
             mock.patch("aicage.config.context.Path.cwd", return_value=Path("/work/project")),
@@ -65,11 +65,11 @@ class ContextTests(TestCase):
                         "test_suite": "default",
                     }
                 },
-                "tool": {
+                "agent": {
                     "codex": {
-                        "tool_path": "~/.codex",
-                        "tool_full_name": "Codex CLI",
-                        "tool_homepage": "https://example.com",
+                        "agent_path": "~/.codex",
+                        "agent_full_name": "Codex CLI",
+                        "agent_homepage": "https://example.com",
                         "valid_bases": ["ubuntu"],
                     }
                 },

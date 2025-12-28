@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.project_config import ToolConfig, ToolMounts
+from aicage.config.project_config import AgentConfig, AgentMounts
 from aicage.runtime.mounts import _git_config, _gpg, _ssh_keys
 
 
@@ -11,22 +11,22 @@ class MountResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             gitconfig = Path(tmp_dir) / ".gitconfig"
             gitconfig.write_text("user.name = coder", encoding="utf-8")
-            tool_cfg = ToolConfig()
+            agent_cfg = AgentConfig()
 
             with (
                 mock.patch("aicage.runtime.mounts._git_config._resolve_git_config_path", return_value=gitconfig),
                 mock.patch("aicage.runtime.mounts._git_config.prompt_yes_no", return_value=True),
             ):
-                mounts = _git_config.resolve_git_config_mount(tool_cfg)
+                mounts = _git_config.resolve_git_config_mount(agent_cfg)
 
-        self.assertTrue(tool_cfg.mounts.gitconfig)
+        self.assertTrue(agent_cfg.mounts.gitconfig)
         self.assertEqual(1, len(mounts))
 
     def test_resolve_ssh_mount_uses_existing_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             ssh_dir = Path(tmp_dir) / ".ssh"
             ssh_dir.mkdir()
-            tool_cfg = ToolConfig(mounts=ToolMounts(ssh=True))
+            agent_cfg = AgentConfig(mounts=AgentMounts(ssh=True))
 
             with (
                 mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
@@ -34,7 +34,7 @@ class MountResolutionTests(TestCase):
                 mock.patch("aicage.runtime.mounts._ssh_keys._default_ssh_dir", return_value=ssh_dir),
                 mock.patch("aicage.runtime.mounts._ssh_keys.prompt_yes_no") as prompt_mock,
             ):
-                mounts = _ssh_keys.resolve_ssh_mount(Path("/repo"), tool_cfg)
+                mounts = _ssh_keys.resolve_ssh_mount(Path("/repo"), agent_cfg)
 
         prompt_mock.assert_not_called()
         self.assertEqual(1, len(mounts))
@@ -44,7 +44,7 @@ class MountResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             gpg_home = Path(tmp_dir) / ".gnupg"
             gpg_home.mkdir()
-            tool_cfg = ToolConfig(mounts=ToolMounts(gnupg=True))
+            agent_cfg = AgentConfig(mounts=AgentMounts(gnupg=True))
 
             with (
                 mock.patch("aicage.runtime.mounts._gpg.is_commit_signing_enabled", return_value=True),
@@ -52,7 +52,7 @@ class MountResolutionTests(TestCase):
                 mock.patch("aicage.runtime.mounts._gpg._resolve_gpg_home", return_value=gpg_home),
                 mock.patch("aicage.runtime.mounts._gpg.prompt_yes_no") as prompt_mock,
             ):
-                mounts = _gpg.resolve_gpg_mount(Path("/repo"), tool_cfg)
+                mounts = _gpg.resolve_gpg_mount(Path("/repo"), agent_cfg)
 
         prompt_mock.assert_not_called()
         self.assertEqual(1, len(mounts))

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.config.project_config import ToolConfig
+from aicage.config.project_config import AgentConfig
 from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
@@ -25,12 +25,12 @@ def _resolve_git_config_path() -> Path | None:
     return None
 
 
-def resolve_git_config_mount(tool_cfg: ToolConfig) -> list[MountSpec]:
+def resolve_git_config_mount(agent_cfg: AgentConfig) -> list[MountSpec]:
     git_config = _resolve_git_config_path()
     if not git_config or not git_config.exists():
         return []
 
-    mounts_cfg = tool_cfg.mounts
+    mounts_cfg = agent_cfg.mounts
     pref = mounts_cfg.gitconfig
     if pref is None:
         pref = prompt_yes_no(

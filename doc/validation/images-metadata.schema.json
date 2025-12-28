@@ -6,7 +6,7 @@
     "aicage-image",
     "aicage-image-base",
     "bases",
-    "tool"
+    "agent"
   ],
   "properties": {
     "aicage-image": {
@@ -64,24 +64,24 @@
         "additionalProperties": false
       }
     },
-    "tool": {
+    "agent": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
         "required": [
-          "tool_path",
-          "tool_full_name",
-          "tool_homepage",
+          "agent_path",
+          "agent_full_name",
+          "agent_homepage",
           "valid_bases"
         ],
         "properties": {
-          "tool_path": {
+          "agent_path": {
             "type": "string"
           },
-          "tool_full_name": {
+          "agent_full_name": {
             "type": "string"
           },
-          "tool_homepage": {
+          "agent_homepage": {
             "type": "string"
           },
           "base_exclude": {
