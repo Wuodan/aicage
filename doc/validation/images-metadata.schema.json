@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AICAGE release images metadata",
+  "type": "object",
+  "required": [
+    "aicage-image",
+    "aicage-image-base",
+    "bases",
+    "tool"
+  ],
+  "properties": {
+    "aicage-image": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "aicage-image-base": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "bases": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "root_image",
+          "base_image_distro",
+          "base_image_description",
+          "os_installer",
+          "test_suite"
+        ],
+        "properties": {
+          "root_image": {
+            "type": "string"
+          },
+          "base_image_distro": {
+            "type": "string"
+          },
+          "base_image_description": {
+            "type": "string"
+          },
+          "os_installer": {
+            "type": "string"
+          },
+          "test_suite": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "tool_path",
+          "tool_full_name",
+          "tool_homepage",
+          "valid_bases"
+        ],
+        "properties": {
+          "tool_path": {
+            "type": "string"
+          },
+          "tool_full_name": {
+            "type": "string"
+          },
+          "tool_homepage": {
+            "type": "string"
+          },
+          "base_exclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "base_distro_exclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "valid_bases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

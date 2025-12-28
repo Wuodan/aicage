@@ -1,6 +1,6 @@
 import tempfile
 from pathlib import Path
-from unittest import TestCase
+from unittest import TestCase, mock
 
 import yaml
 
@@ -12,25 +12,37 @@ class ConfigStoreTests(TestCase):
     def test_global_and_project_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             base_dir = Path(tmp_dir)
-            store = SettingsStore(base_dir=base_dir)
-            global_path = store.global_config()
-            self.assertTrue(global_path.exists())
-            global_data = yaml.safe_load(global_path.read_text())
-            self.assertEqual("aicage/aicage", global_data["image_repository"])
+            packaged_dir = base_dir / "packaged"
+            packaged_dir.mkdir(parents=True, exist_ok=True)
+            packaged_config = packaged_dir / "config.yaml"
+            packaged_config.write_text(
+                yaml.safe_dump(
+                    {
+                        "image_registry": "ghcr.io",
+                        "image_registry_api_url": "https://ghcr.io/v2",
+                        "image_registry_api_token_url": "https://ghcr.io/token",
+                        "image_repository": "aicage/aicage",
+                        "default_image_base": "ubuntu",
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
 
-            global_cfg = store.load_global()
-            self.assertEqual("aicage/aicage", global_cfg.image_repository)
-            self.assertEqual("ubuntu", global_cfg.default_image_base)
-            self.assertEqual({}, global_cfg.tools)
+            with mock.patch(
+                "aicage.config.config_store.find_packaged_path",
+                return_value=packaged_config,
+            ):
+                store = SettingsStore(base_dir=base_dir)
+                global_path = store._global_config()
+                self.assertTrue(global_path.exists())
+                global_data = yaml.safe_load(global_path.read_text())
+                self.assertEqual("aicage/aicage", global_data["image_repository"])
 
-            global_cfg.tools["codex"] = {"base": "ubuntu"}
-            store.save_global(global_cfg)
-
-            reloaded_global = store.load_global()
-            self.assertEqual(global_cfg, reloaded_global)
-            updated_global = yaml.safe_load(global_path.read_text())
-            self.assertEqual("aicage/aicage", updated_global["image_repository"])
-            self.assertEqual({"codex": {"base": "ubuntu"}}, updated_global["tools"])
+                global_cfg = store.load_global()
+                self.assertEqual("aicage/aicage", global_cfg.image_repository)
+                self.assertEqual("ubuntu", global_cfg.default_image_base)
+                self.assertEqual({}, global_cfg.tools)
 
             project_path = base_dir / "project"
             project_path.mkdir(parents=True, exist_ok=True)

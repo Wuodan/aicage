@@ -6,3 +6,4 @@ pytest-cov
 ruff
 yamllint
 yq
+check-jsonschema

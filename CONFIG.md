@@ -2,7 +2,7 @@
 
 ## Locations
 
-- Global config: `~/.aicage/config.yaml`
+- Global config: packaged `config/config.yaml`
 - Project config: `~/.aicage/projects/<sha256>.yaml`
 - `aicage --config print` prints the current project config path and contents.
 
@@ -10,7 +10,7 @@ Project config filenames are the SHA-256 digest of the resolved project path str
 
 ## Global config schema
 
-`~/.aicage/config.yaml` is required and created from the packaged defaults on first run.
+`config/config.yaml` is packaged with `aicage` and read on startup.
 
 ```yaml
 image_registry: string

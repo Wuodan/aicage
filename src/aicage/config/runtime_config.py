@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
-from aicage.config._file_locking import lock_config_files
+from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
@@ -31,15 +31,13 @@ class RunConfig:
 
 
 def load_run_config(tool: str, parsed: ParsedArgs | None = None) -> RunConfig:
-    store = SettingsStore(ensure_global_config=False)
+    store = SettingsStore()
     project_path = Path.cwd().resolve()
-    global_config_path = store.global_config()
     project_config_path = store.project_config_path(project_path)
 
-    with lock_config_files(global_config_path, project_config_path):
-        store.ensure_global_config()
+    with lock_project_config(project_config_path):
         global_cfg = store.load_global()
-        images_metadata = load_images_metadata(global_cfg, store)
+        images_metadata = load_images_metadata()
         project_cfg = store.load_project(project_path)
         context = ConfigContext(
             store=store,

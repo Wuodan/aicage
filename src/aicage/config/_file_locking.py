@@ -1,27 +1,25 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from contextlib import ExitStack, contextmanager
+from contextlib import contextmanager
 from pathlib import Path
 
 import portalocker
 
 from aicage.config.errors import ConfigError
 
-__all__ = ["lock_config_files"]
+__all__ = ["lock_project_config"]
 
 _LOCK_TIMEOUT_SECONDS = 30
 
 
 @contextmanager
-def lock_config_files(global_config_path: Path, project_config_path: Path) -> Iterator[None]:
+def lock_project_config(project_config_path: Path) -> Iterator[None]:
     try:
-        with ExitStack() as stack:
-            stack.enter_context(_lock_file(global_config_path))
-            stack.enter_context(_lock_file(project_config_path))
+        with _lock_file(project_config_path):
             yield
     except portalocker.exceptions.LockException as exc:  # pragma: no cover - rare file lock failure
-        raise ConfigError(f"Failed to lock configuration files: {exc}") from exc
+        raise ConfigError(f"Failed to lock project configuration file: {exc}") from exc
 
 
 def _lock_file(path: Path) -> portalocker.Lock:

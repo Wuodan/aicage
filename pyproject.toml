@@ -17,7 +17,7 @@ aicage = "aicage.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aicage"]
-include = ["src/aicage/config/config.yaml"]
+include = ["config/config.yaml", "config/images-metadata.yaml"]
 
 [tool.hatch.version]
 source = "vcs"

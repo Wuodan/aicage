@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AICAGE config",
+  "type": "object",
+  "required": [
+    "image_registry",
+    "image_registry_api_url",
+    "image_registry_api_token_url",
+    "image_repository",
+    "default_image_base"
+  ],
+  "properties": {
+    "image_registry": {
+      "type": "string"
+    },
+    "image_registry_api_url": {
+      "type": "string"
+    },
+    "image_registry_api_token_url": {
+      "type": "string"
+    },
+    "image_repository": {
+      "type": "string"
+    },
+    "default_image_base": {
+      "type": "string"
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": false
+}

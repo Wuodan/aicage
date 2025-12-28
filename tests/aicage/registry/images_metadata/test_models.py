@@ -25,7 +25,7 @@ tool:
     tool_homepage: https://example.com
     valid_bases:
       - ubuntu
-"""
+        """
         metadata = ImagesMetadata.from_yaml(payload)
         self.assertEqual("0.3.3", metadata.aicage_image.version)
         self.assertEqual("0.3.3", metadata.aicage_image_base.version)

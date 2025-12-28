@@ -16,7 +16,7 @@ __all__ = ["ParsedArgs", "parse_cli", "main"]
 
 
 def _print_project_config() -> None:
-    store = SettingsStore(ensure_global_config=False)
+    store = SettingsStore()
     project_path = Path.cwd().resolve()
     config_path = store.project_config_path(project_path)
     print("Project config path:")

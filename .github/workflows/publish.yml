@@ -33,6 +33,21 @@ jobs:
           ruff check .
           pymarkdown --config .pymarkdown.json scan .
 
+      - name: Download latest images metadata
+        run: |
+          curl -fsSL \
+            --retry 8 \
+            --retry-all-errors \
+            --retry-delay 2 \
+            --max-time 600 \
+            -o config/images-metadata.yaml \
+            https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
+
+      - name: Validate config schemas
+        run: |
+          check-jsonschema --schemafile doc/validation/config.schema.json config/config.yaml
+          check-jsonschema --schemafile doc/validation/images-metadata.schema.json config/images-metadata.yaml
+
       - name: Test
         run: pytest --cov=src --cov-report=term-missing
 

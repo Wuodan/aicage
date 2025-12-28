@@ -27,8 +27,7 @@ class RuntimeConfigTests(TestCase):
             store.save_project(project_path, project_cfg)
 
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
-                ensure = bool(kwargs.get("ensure_global_config", True))
-                return SettingsStore(base_dir=base_dir, ensure_global_config=ensure)
+                return SettingsStore(base_dir=base_dir)
 
             mounts = [MountSpec(host_path=Path("/tmp/host"), container_path=Path("/tmp/container"))]
             with (
