@@ -11,23 +11,9 @@ The goal is to make local builds reproducible and independent of host tooling.
 
 ## Options
 
-### Single builder image
-
-One image that contains both build tooling and agent version check tooling.
-
-Pros:
-
-- Simpler distribution and runtime logic.
-- Single cache to manage for local builds.
-
-Cons:
-
-- Larger image.
-- Higher maintenance surface for tools that are not always needed.
-
 ### Split images
 
-Two images: one for building, one for version checks.
+Two images: one for building, one for version checks. This is the current preferred direction.
 
 Pros:
 
@@ -55,9 +41,27 @@ Cons:
 
 ## Repository layout options
 
+Current direction:
+
+- One git repo containing both images (KISS).
+- Suggested repo name: `aicage-images-local` (alternatives: `aicage-images-builder`, `aicage-builder`).
+
+Other options:
+
 - Separate git repo for `aicage-builder`.
 - In-repo under a new top-level folder.
 - Two repos if split images are used.
+
+## Version check image details
+
+- Base image: `ubuntu:latest`.
+- Single current image (no per-distro variants).
+- Preferred runtime order:
+  - Try version check inside the image first.
+  - If that fails, fall back to running the same command on the host.
+
+Rationale: the image ensures a known toolchain; fallback keeps working if the image is missing or broken. The order
+could be reversed in the future if host tooling becomes the preferred default.
 
 ## Expected toolchain
 
