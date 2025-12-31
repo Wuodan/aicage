@@ -4,3 +4,6 @@
 [submodule "aicage-image"]
 	path = aicage-image
 	url = git@github.com:aicage/aicage-image.git
+[submodule "aicage-image-util"]
+	path = aicage-image-util
+	url = git@github.com:aicage/aicage-image-util.git
