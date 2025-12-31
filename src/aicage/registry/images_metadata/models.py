@@ -27,7 +27,7 @@ class AgentMetadata:
     agent_path: str
     agent_full_name: str
     agent_homepage: str
-    valid_bases: list[str]
+    valid_bases: dict[str, str]
     base_exclude: list[str] | None = None
     base_distro_exclude: list[str] | None = None
 
@@ -130,7 +130,7 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
             agent_homepage=_expect_string(
                 agent_mapping.get("agent_homepage"), f"agent.{name}.agent_homepage"
             ),
-            valid_bases=_expect_str_list(
+            valid_bases=_expect_str_mapping(
                 agent_mapping.get("valid_bases"), f"agent.{name}.valid_bases"
             ),
             base_exclude=_maybe_str_list(
@@ -163,6 +163,18 @@ def _expect_str_list(value: Any, context: str) -> list[str]:
         if not isinstance(item, str) or not item.strip():
             raise CliError(f"{context} must contain non-empty strings.")
         items.append(item)
+    return items
+
+
+def _expect_str_mapping(value: Any, context: str) -> dict[str, str]:
+    mapping = _expect_mapping(value, context)
+    items: dict[str, str] = {}
+    for key, item in mapping.items():
+        if not isinstance(key, str) or not key.strip():
+            raise CliError(f"{context} must contain non-empty string keys.")
+        if not isinstance(item, str) or not item.strip():
+            raise CliError(f"{context} must contain non-empty string values.")
+        items[key] = item
     return items
 
 

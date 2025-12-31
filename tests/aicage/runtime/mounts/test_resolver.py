@@ -100,7 +100,7 @@ class ResolverTests(TestCase):
                         "agent_path": "~/.codex",
                         "agent_full_name": "Codex CLI",
                         "agent_homepage": "https://example.com",
-                        "valid_bases": ["ubuntu"],
+                        "valid_bases": {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
                     }
                 },
             }

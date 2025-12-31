@@ -71,7 +71,7 @@ def _base_options(context: ConfigContext, agent_metadata: AgentMetadata) -> list
             base=base,
             description=context.images_metadata.bases[base].base_image_description,
         )
-        for base in sorted(set(agent_metadata.valid_bases))
+        for base in sorted(agent_metadata.valid_bases)
     ]
 
 

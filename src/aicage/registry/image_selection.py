@@ -17,7 +17,7 @@ def select_agent_image(agent: str, context: ConfigContext) -> str:
     base = agent_cfg.base or context.global_cfg.agents.get(agent, {}).get("base")
 
     if not base:
-        available_bases = _available_bases(agent, agent_metadata, context.images_metadata)
+        available_bases = _available_bases(agent, agent_metadata)
         if not available_bases:
             raise CliError(f"No base images found for agent '{agent}' in metadata.")
 
@@ -30,11 +30,9 @@ def select_agent_image(agent: str, context: ConfigContext) -> str:
         agent_cfg.base = base
         context.store.save_project(Path(context.project_cfg.path), context.project_cfg)
     else:
-        _validate_base(agent, base, agent_metadata, context.images_metadata)
+        _validate_base(agent, base, agent_metadata)
 
-    image_tag = f"{agent}-{base}"
-    image_ref = f"{context.image_repository_ref()}:{image_tag}"
-    return image_ref
+    return agent_metadata.valid_bases[base]
 
 
 def _require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:
@@ -47,23 +45,16 @@ def _require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> Agen
 def _available_bases(
     agent: str,
     agent_metadata: AgentMetadata,
-    images_metadata: ImagesMetadata,
 ) -> list[str]:
-    invalid = [base for base in agent_metadata.valid_bases if base not in images_metadata.bases]
-    if invalid:
-        raise CliError(
-            f"Agent '{agent}' references unknown base(s) in metadata: {', '.join(invalid)}."
-        )
-    return sorted(set(agent_metadata.valid_bases))
+    if not agent_metadata.valid_bases:
+        raise CliError(f"Agent '{agent}' does not define any valid bases.")
+    return sorted(agent_metadata.valid_bases)
 
 
 def _validate_base(
     agent: str,
     base: str,
     agent_metadata: AgentMetadata,
-    images_metadata: ImagesMetadata,
 ) -> None:
     if base not in agent_metadata.valid_bases:
         raise CliError(f"Base '{base}' is not valid for agent '{agent}'.")
-    if base not in images_metadata.bases:
-        raise CliError(f"Base '{base}' is missing from images metadata.")

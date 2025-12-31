@@ -29,7 +29,7 @@ class AgentConfigTests(TestCase):
                             "agent_path": str(agent_dir),
                             "agent_full_name": "Codex CLI",
                             "agent_homepage": "https://example.com",
-                            "valid_bases": ["ubuntu"],
+                            "valid_bases": {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
                         }
                     },
                 }

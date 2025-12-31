@@ -24,14 +24,17 @@ agent:
     agent_full_name: Codex CLI
     agent_homepage: https://example.com
     valid_bases:
-      - ubuntu
+      ubuntu: ghcr.io/aicage/aicage:codex-ubuntu
         """
         metadata = ImagesMetadata.from_yaml(payload)
         self.assertEqual("0.3.3", metadata.aicage_image.version)
         self.assertEqual("0.3.3", metadata.aicage_image_base.version)
         self.assertIn("ubuntu", metadata.bases)
         self.assertIn("codex", metadata.agents)
-        self.assertEqual(["ubuntu"], metadata.agents["codex"].valid_bases)
+        self.assertEqual(
+            {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
+            metadata.agents["codex"].valid_bases,
+        )
 
     def test_from_mapping_rejects_unknown_top_level_keys(self) -> None:
         data = {
@@ -54,7 +57,7 @@ agent:
                     "agent_path": "~/.codex",
                     "agent_full_name": "Codex CLI",
                     "agent_homepage": "https://example.com",
-                    "valid_bases": ["ubuntu"],
+                    "valid_bases": {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
                     "extra": "nope",
                 }
             },

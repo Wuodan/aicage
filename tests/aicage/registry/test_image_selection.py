@@ -111,7 +111,10 @@ class ImageSelectionTests(TestCase):
                         "agent_path": "~/.codex",
                         "agent_full_name": "Codex CLI",
                         "agent_homepage": "https://example.com",
-                        "valid_bases": bases,
+                        "valid_bases": {
+                            name: f"ghcr.io/aicage/aicage:codex-{name}"
+                            for name in bases
+                        },
                     }
                 },
             }

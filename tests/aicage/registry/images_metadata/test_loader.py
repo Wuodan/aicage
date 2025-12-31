@@ -51,5 +51,5 @@ agent:
     agent_full_name: Codex CLI
     agent_homepage: https://example.com
     valid_bases:
-      - ubuntu
+      ubuntu: ghcr.io/aicage/aicage:codex-ubuntu
 """

@@ -76,7 +76,11 @@ def _build_images_metadata() -> ImagesMetadata:
                     "agent_path": "~/.codex",
                     "agent_full_name": "Codex CLI",
                     "agent_homepage": "https://example.com",
-                    "valid_bases": ["alpine", "debian", "ubuntu"],
+                    "valid_bases": {
+                        "alpine": "ghcr.io/aicage/aicage:codex-alpine",
+                        "debian": "ghcr.io/aicage/aicage:codex-debian",
+                        "ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu",
+                    },
                 }
             },
         }
