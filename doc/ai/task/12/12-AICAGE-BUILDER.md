@@ -45,6 +45,7 @@ Current direction:
 
 - One git repo containing both images (KISS).
 - Repo name: `aicage/aicage-image-util`.
+- Repo is included here as submodule `aicage-image-util/`.
 
 Other options:
 

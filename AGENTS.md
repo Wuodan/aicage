@@ -44,6 +44,7 @@ Meaning:
 - Submodules:
   - `aicage-image-base/` builds base OS layers
   - `aicage-image/` builds final agent images
+  - `aicage-image-util/` builds utility images for `aicage` runtime tasks
 
 ## Linting and tests
 

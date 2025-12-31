@@ -8,6 +8,10 @@ I've been pondering this extension for a while now, it's like the last missing p
 
 Key parts of `aicage` are:
 
+### Image tooling
+
+- Submodule `aicage-image-util` builds utility images for `aicage` runtime tasks.
+
 ### Base-images
 
 - Submodule `aicage-image-base` builds the base-images.
