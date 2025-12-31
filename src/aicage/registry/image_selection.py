@@ -32,7 +32,7 @@ def select_agent_image(agent: str, context: ConfigContext) -> str:
     else:
         _validate_base(agent, base, agent_metadata, context.images_metadata)
 
-    image_tag = f"{agent}-{base}-latest"
+    image_tag = f"{agent}-{base}"
     image_ref = f"{context.image_repository_ref()}:{image_tag}"
     return image_ref
 

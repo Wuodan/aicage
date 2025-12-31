@@ -25,7 +25,7 @@ class ImageSelectionTests(TestCase):
             selection = image_selection.select_agent_image("codex", context)
 
             self.assertIsInstance(selection, str)
-            self.assertEqual("ghcr.io/aicage/aicage:codex-debian-latest", selection)
+            self.assertEqual("ghcr.io/aicage/aicage:codex-debian", selection)
             store.save_project.assert_not_called()
 
     def test_resolve_prompts_and_marks_dirty(self) -> None:

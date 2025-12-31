@@ -1,25 +1,5 @@
 # aicage: Ideas for future enhancements
 
-## Use Agent version
-
-We can use the version of an agent to:
-
-### Tag aicage final images
-
-Like:
-  - ghcr.io/aicage/aicage:codex-fedora-0.72.0 (codex version = 0.72.0)
-  - ghcr.io/aicage/aicage:codex-fedora-latest (existing)
-
-The '-latest' tag can remain as it makes handling much easier.
-
-### New agent version triggers image build
-
-See pipelines in https://github.com/Wuodan/factoryai-droid-docker:
-- one scheduled checks for new version and triggers
-- build pipeline
-
-`droid` here is actually complicated (wget script, parse version) while other agents can be queried with npm or pipx.
-
 ## Enable and document custom images by user
 
 I can build and use locally but need to use the same image-names. It would be nice if we could (by config?) add any 

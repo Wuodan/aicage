@@ -97,8 +97,8 @@
             }
           },
           "valid_bases": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "additionalProperties": {
               "type": "string"
             }
           }

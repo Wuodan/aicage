@@ -1,7 +1,7 @@
 aicage-image:
-  version: 0.3.3
+  version: 0.4.7
 aicage-image-base:
-  version: 0.3.3
+  version: 0.4.7
 bases:
   act:
     root_image: ghcr.io/catthehacker/ubuntu:act-latest
@@ -39,12 +39,6 @@ bases:
     base_image_description: Official Node image (all base images have Node)
     os_installer: distro/debian/install.sh
     test_suite: default
-  openhands:
-    root_image: docker.openhands.dev/openhands/runtime:latest-nikolaik
-    base_image_distro: Ubuntu
-    base_image_description: OpenHands runtime image
-    os_installer: distro/debian/install.sh
-    test_suite: default
   ubuntu:
     root_image: ubuntu:latest
     base_image_distro: Ubuntu
@@ -57,14 +51,13 @@ agent:
     agent_full_name: Codex CLI
     agent_homepage: https://developers.openai.com/codex/cli
     valid_bases:
-      - act
-      - alpine
-      - debian
-      - fedora
-      - minimal
-      - node
-      - openhands
-      - ubuntu
+      act: ghcr.io/aicage/aicage:codex-act
+      alpine: ghcr.io/aicage/aicage:codex-alpine
+      debian: ghcr.io/aicage/aicage:codex-debian
+      fedora: ghcr.io/aicage/aicage:codex-fedora
+      minimal: ghcr.io/aicage/aicage:codex-minimal
+      node: ghcr.io/aicage/aicage:codex-node
+      ubuntu: ghcr.io/aicage/aicage:codex-ubuntu
   copilot:
     agent_path: ~/.copilot
     agent_full_name: GitHub Copilot CLI
@@ -75,25 +68,56 @@ agent:
     base_distro_exclude:
       - Alpine
     valid_bases:
-      - act
-      - debian
-      - fedora
-      - node
-      - openhands
-      - ubuntu
-  cursor:
-    agent_path: ~/.cursor
-    agent_full_name: Cursor
-    agent_homepage: https://www.cursor.com
-    base_exclude:
-      - minimal
-    base_distro_exclude:
-      - Alpine
+      act: ghcr.io/aicage/aicage:copilot-act
+      debian: ghcr.io/aicage/aicage:copilot-debian
+      fedora: ghcr.io/aicage/aicage:copilot-fedora
+      node: ghcr.io/aicage/aicage:copilot-node
+      ubuntu: ghcr.io/aicage/aicage:copilot-ubuntu
+  crush:
+    agent_path: ~/.local/share/crush
+    agent_full_name: Crush
+    agent_homepage: https://github.com/charmbracelet/crush
     valid_bases:
-      - act
-      - alpine
-      - debian
-      - fedora
-      - node
-      - openhands
-      - ubuntu
+      act: ghcr.io/aicage/aicage:crush-act
+      alpine: ghcr.io/aicage/aicage:crush-alpine
+      debian: ghcr.io/aicage/aicage:crush-debian
+      fedora: ghcr.io/aicage/aicage:crush-fedora
+      minimal: ghcr.io/aicage/aicage:crush-minimal
+      node: ghcr.io/aicage/aicage:crush-node
+      ubuntu: ghcr.io/aicage/aicage:crush-ubuntu
+  gemini:
+    agent_path: ~/.gemini
+    agent_full_name: Gemini CLI
+    agent_homepage: https://geminicli.com
+    valid_bases:
+      act: ghcr.io/aicage/aicage:gemini-act
+      alpine: ghcr.io/aicage/aicage:gemini-alpine
+      debian: ghcr.io/aicage/aicage:gemini-debian
+      fedora: ghcr.io/aicage/aicage:gemini-fedora
+      minimal: ghcr.io/aicage/aicage:gemini-minimal
+      node: ghcr.io/aicage/aicage:gemini-node
+      ubuntu: ghcr.io/aicage/aicage:gemini-ubuntu
+  goose:
+    agent_path: ~/.config/goose
+    agent_full_name: Goose CLI
+    agent_homepage: https://block.github.io/goose
+    valid_bases:
+      act: ghcr.io/aicage/aicage:goose-act
+      alpine: ghcr.io/aicage/aicage:goose-alpine
+      debian: ghcr.io/aicage/aicage:goose-debian
+      fedora: ghcr.io/aicage/aicage:goose-fedora
+      minimal: ghcr.io/aicage/aicage:goose-minimal
+      node: ghcr.io/aicage/aicage:goose-node
+      ubuntu: ghcr.io/aicage/aicage:goose-ubuntu
+  qwen:
+    agent_path: ~/.qwen
+    agent_full_name: Qwen Code
+    agent_homepage: https://github.com/QwenLM/qwen-code
+    valid_bases:
+      act: ghcr.io/aicage/aicage:qwen-act
+      alpine: ghcr.io/aicage/aicage:qwen-alpine
+      debian: ghcr.io/aicage/aicage:qwen-debian
+      fedora: ghcr.io/aicage/aicage:qwen-fedora
+      minimal: ghcr.io/aicage/aicage:qwen-minimal
+      node: ghcr.io/aicage/aicage:qwen-node
+      ubuntu: ghcr.io/aicage/aicage:qwen-ubuntu

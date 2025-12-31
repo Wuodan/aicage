@@ -31,7 +31,7 @@ class RunArgsTests(TestCase):
     def test_assemble_includes_workspace_mount(self) -> None:
         with mock.patch("aicage.runtime.run_args._resolve_user_ids", return_value=[]):
             run_args = DockerRunArgs(
-                image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
+                image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
                 project_path=Path("/work/project"),
                 agent_config_host=Path("/host/.codex"),
                 agent_config_mount_container=Path("/aicage/agent-config"),
@@ -57,7 +57,7 @@ class RunArgsTests(TestCase):
                 "-v",
                 "/host/.codex:/aicage/agent-config",
                 "--network=host",
-                "ghcr.io/aicage/aicage:codex-ubuntu-latest",
+                "ghcr.io/aicage/aicage:codex-ubuntu",
                 "--flag",
             ],
             cmd,
@@ -66,7 +66,7 @@ class RunArgsTests(TestCase):
     def test_assemble_includes_env_and_mounts(self) -> None:
         with mock.patch("aicage.runtime.run_args._resolve_user_ids", return_value=["-e", "AICAGE_USER=me"]):
             run_args = DockerRunArgs(
-                image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
+                image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
                 project_path=Path("/work/project"),
                 agent_config_host=Path("/host/.codex"),
                 agent_config_mount_container=Path("/aicage/agent-config"),

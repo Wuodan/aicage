@@ -148,11 +148,11 @@ class MainFlowTests(TestCase):
             project_path = Path(tmp_dir)
             run_config = _build_run_config(
                 project_path,
-                "ghcr.io/aicage/aicage:codex-debian-latest",
+                "ghcr.io/aicage/aicage:codex-debian",
             )
             run_args = _build_run_args(
                 project_path,
-                "ghcr.io/aicage/aicage:codex-debian-latest",
+                "ghcr.io/aicage/aicage:codex-debian",
                 "--project --cli",
                 ["--flag"],
             )
@@ -181,11 +181,11 @@ class MainFlowTests(TestCase):
             project_path = Path(tmp_dir)
             run_config = _build_run_config(
                 project_path,
-                "ghcr.io/aicage/aicage:codex-alpine-latest",
+                "ghcr.io/aicage/aicage:codex-alpine",
             )
             run_args = _build_run_args(
                 project_path,
-                "ghcr.io/aicage/aicage:codex-alpine-latest",
+                "ghcr.io/aicage/aicage:codex-alpine",
                 "--project --cli",
                 ["--flag"],
             )
@@ -212,7 +212,7 @@ class MainFlowTests(TestCase):
             project_path = Path(tmp_dir)
             run_config = _build_run_config(
                 project_path,
-                "ghcr.io/aicage/aicage:codex-ubuntu-latest",
+                "ghcr.io/aicage/aicage:codex-ubuntu",
             )
             with (
                 mock.patch(

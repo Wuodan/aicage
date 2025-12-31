@@ -4,7 +4,7 @@ set -euo pipefail
 # Count and sanity-check GHCR tags for ghcr.io/aicage/aicage against your expected base/agent matrix.
 # Assumptions:
 # - Tag names contain BOTH the agent token and the base token somewhere in the tag name
-#   (e.g. "codex-ubuntu-latest", "copilot-debian-0.0.1", etc.)
+#   (e.g. "codex-ubuntu", "copilot-debian-0.0.1", etc.)
 # - If your tag scheme differs, adjust match_tag() below.
 
 registry_api_url="https://ghcr.io/v2"

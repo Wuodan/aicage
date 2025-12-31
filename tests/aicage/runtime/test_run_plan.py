@@ -15,7 +15,7 @@ class RunPlanTests(TestCase):
         config = RunConfig(
             project_path=project_path,
             agent="codex",
-            image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
+            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             global_cfg=self._get_global_config(),
             images_metadata=self._get_images_metadata(),
             project_docker_args="--project",
@@ -36,7 +36,7 @@ class RunPlanTests(TestCase):
         config = RunConfig(
             project_path=project_path,
             agent="codex",
-            image_ref="ghcr.io/aicage/aicage:codex-ubuntu-latest",
+            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             global_cfg=self._get_global_config(),
             images_metadata=self._get_images_metadata(),
             project_docker_args="",
