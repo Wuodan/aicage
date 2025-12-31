@@ -1,6 +1,6 @@
-# Task 12: Build images on users PC
+# Task 12: Build images on user's PC
 
-I've been pondering this extension for a while now, it's like the last missing peace before go-live of `aicage`.
+I've been pondering this extension for a while now, it's like the last missing piece before go-live of `aicage`.
 
 ## Current situation
 
@@ -61,15 +61,15 @@ the final-images.
 
 ## Desired extensions
 
-I want to solve several problems nicely, all require building and maintaining images on users PC.  
-It also seems tricky to aligning the configuration and processes for the following changes so they
+I want to solve several problems nicely, all require building and maintaining images on user's PC.  
+It also seems tricky to align the configuration and processes for the following changes so they
  don't interfere with each other and can be nicely combined.
 
 ### Non-redistributable agents
 
 Some coding-agents cannot be legally redistributed as binaries. Their license does not allow that.  
 But I think it's legal to provide installer scripts so the building of final-images from our base-images happens locally
-on users PC.  
+on user's PC.  
 The installation of those agents is trivial as well as the Dockerfile for it.  
 Basically the `Dockerfile` and an `agents/<agent>/` folder from `aicage-image` would be enough to build.  
 
@@ -134,8 +134,8 @@ Contents of `~/.aicage/custom/extension/<EXTENSION>/`:
   - Prefer `RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly` over script copying in the builtin
     Dockerfile.
   - In the built-in Dockerfile, handle cases where the install-scripts are not executable (copy-chmod or error-exit).
-- `extension.yml` (optional):
-  - Contains metadata for the extension like a description.
+- `extension.yml`:
+  - Contains metadata for the extension like a description and display name.
 
 >  The installation scripts and the process is base-image agnostic meaning there is not configuration to which base-
     or final-image an extension shall be applied. Meaning: installation-scripts typically call the package manager of 
@@ -227,11 +227,12 @@ If we do this, it will be in a separate git repo, or maybe even two if we decide
 and the version check.
 
 Here I want your opinion and/or suggestions towards this idea.
+See `doc/ai/task/12/12-AICAGE-BUILDER.md` for pros/cons and options.
 
 ## Task splitting into subtasks
 
 All those changes together are too much for one coding session with an AI coding agent. Especially testing and tuning
-tends to each up the context window.
+tends to eat up the context window.
 
 So this shall be split into several subtasks from early on with these steps and considerations:
 - One subtask first just for defining the sub-tasks. This task involves splitting into subtasks without already hard
@@ -253,7 +254,7 @@ Don't forget to read AGENTS.md and always use the existing venv.
 
 You shall follow this order:
 1. Read documentation and code to understand the task. 
-2. Aks me questions if something is not clear to you
+2. Ask me questions if something is not clear to you
 3. Present me with an implementation solution - this needs my approval
 4. Implement the change autonomously including a loop of running-tests, fixing bugs, running tests
 5. Run linters as in the pipeline `.github/workflows/publish.yml`
