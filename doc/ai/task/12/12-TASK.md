@@ -251,6 +251,15 @@ and the version check.
 Here I want your opinion and/or suggestions towards this idea.
 See `doc/ai/task/12/12-AICAGE-BUILDER.md` for pros/cons and options.
 
+## Open questions / needs definition
+
+- Image selection rules across normal, non-redistributable, and custom agents plus extensions and custom base images
+  should stay flexible for now and may evolve during subtasks.
+- Local build/update metadata shall be stored as files somewhere under `~/.aicage/` (exact structure to be defined).
+- Agent version checks: try option A (image), on error try option B (host), on error fail hard.
+- Build failures: show a short error to the user and point to the log file location.
+- `agent.yml` fields rely on existing docs and schema; `extension.yml` is expected to be minimal (description and name).
+
 ## Task splitting into subtasks
 
 All those changes together are too much for one coding session with an AI coding agent. Especially testing and tuning
