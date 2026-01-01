@@ -15,3 +15,11 @@ Extra nice and rather cheap would then be: Whenever aicage pulls a new image, th
 new local image is built.
 
 This might also be helpful or fulfill most custom image use-cases.
+
+## Validate image signature and provenance
+
+The images produced by `aicage-image` and `aicage-image-base` are signed and have provenance.
+
+We should add logic to verify we are using signed/provenanced images in:
+- `aicage-image`: When we use the base-images in CI pipelines from `aicage-image-base`
+- `aicage`: when we pull/use final-images produced by `aicage-image`
