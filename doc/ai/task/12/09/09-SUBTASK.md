@@ -22,7 +22,6 @@ breaking earlier flow.
 - Collect deferred items from earlier subtasks and implement them as appropriate.
 - Perform a holistic review of the new behavior across agent types, extensions, and custom base images.
 - Simplify or refactor code paths where complexity accumulated during earlier subtasks.
-- Consolidate and polish documentation across README.md and DEVELOPMENT.md as required.
 
 ## Out of scope
 
@@ -32,7 +31,6 @@ breaking earlier flow.
 
 - Cleaned and simplified implementation based on end-to-end review.
 - Deferred items addressed or explicitly rejected with rationale.
-- Finalized documentation updates.
 
 ## Sequencing
 
