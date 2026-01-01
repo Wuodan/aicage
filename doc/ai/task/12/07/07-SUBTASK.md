@@ -35,6 +35,7 @@ keeps earlier subtasks focused.
 
 - Extended images build and update correctly with clear logging.
 - Documentation provides a complete, usable extension authoring guide.
+- CI pipelines build and test a minimal extension (installing a simple package) and verify the agent is present.
 
 ## Sequencing
 
