@@ -4,7 +4,6 @@ from aicage.registry.custom_agent import load_custom_agents
 from aicage.registry.images_metadata.models import ImagesMetadata
 
 
-
 def discover_agents(
     images_metadata: ImagesMetadata,
 ) -> ImagesMetadata:

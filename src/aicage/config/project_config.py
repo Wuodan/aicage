@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any
 
 
-
 @dataclass
 class AgentMounts:
     gitconfig: bool | None = None

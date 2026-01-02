@@ -12,7 +12,6 @@ from ._runner import local_image_exists, run_build
 from ._store import BuildRecord, BuildStore
 
 
-
 def ensure_local_image(run_config: RunConfig) -> None:
     agent_metadata = run_config.images_metadata.agents[run_config.agent]
     if agent_metadata.redistributable:

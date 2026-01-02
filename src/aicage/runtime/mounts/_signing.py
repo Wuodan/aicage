@@ -3,7 +3,6 @@ from pathlib import Path
 from ._exec import capture_stdout
 
 
-
 def is_commit_signing_enabled(repo_path: Path) -> bool:
     stdout = capture_stdout(["git", "config", "commit.gpgsign"], cwd=repo_path)
     if not stdout:

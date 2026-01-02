@@ -7,7 +7,6 @@ from aicage.registry._agent_discovery import discover_agents
 from .models import ImagesMetadata
 
 
-
 def load_images_metadata() -> ImagesMetadata:
     path = find_packaged_path("images-metadata.yaml")
     try:

@@ -10,7 +10,6 @@ from aicage.errors import CliError
 from aicage.registry import _local_query, _remote_query
 
 
-
 @dataclass(frozen=True)
 class _PullDecision:
     should_pull: bool

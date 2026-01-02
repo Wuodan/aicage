@@ -1,2 +1,1 @@
-from .resolver import resolve_mounts
-
+from .resolver import resolve_mounts as resolve_mounts

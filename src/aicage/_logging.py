@@ -4,7 +4,6 @@ import logging
 import os
 from pathlib import Path
 
-
 _LOGGER_NAME = "aicage"
 _LOG_LEVEL_ENV = "AICAGE_LOG_LEVEL"
 _DEFAULT_LEVEL = "INFO"

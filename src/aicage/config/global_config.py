@@ -4,7 +4,6 @@ from typing import Any
 from .errors import ConfigError
 
 
-
 @dataclass
 class GlobalConfig:
     image_registry: str

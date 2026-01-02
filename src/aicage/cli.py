@@ -15,7 +15,6 @@ from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
 from aicage.runtime.run_plan import build_run_args
 
 
-
 def _print_project_config() -> None:
     logger = get_logger()
     store = SettingsStore()

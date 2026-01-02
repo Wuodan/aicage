@@ -20,7 +20,6 @@ from aicage.runtime.prompts import prompt_yes_no
 from aicage.runtime.run_args import MountSpec
 
 
-
 @dataclass(frozen=True)
 class RunConfig:
     project_path: Path

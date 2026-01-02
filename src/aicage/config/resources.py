@@ -3,7 +3,6 @@ from pathlib import Path
 from .errors import ConfigError
 
 
-
 def find_packaged_path(filename: str) -> Path:
     for parent in Path(__file__).resolve().parents:
         candidate = parent / "config" / filename

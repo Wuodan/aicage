@@ -1,3 +1,2 @@
-from ._store import VersionCheckStore
-from .checker import AgentVersionChecker
-
+from ._store import VersionCheckStore as VersionCheckStore
+from .checker import AgentVersionChecker as AgentVersionChecker

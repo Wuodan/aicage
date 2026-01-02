@@ -9,7 +9,6 @@ from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
 
 
-
 def select_agent_image(agent: str, context: ConfigContext) -> str:
     agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
     agent_metadata = _require_agent_metadata(agent, context.images_metadata)

@@ -8,7 +8,6 @@ import portalocker
 
 from aicage.config.errors import ConfigError
 
-
 _LOCK_TIMEOUT_SECONDS = 30
 
 

@@ -6,7 +6,6 @@ from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 
 
-
 @dataclass
 class AgentConfig:
     agent_path: str
