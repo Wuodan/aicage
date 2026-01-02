@@ -41,7 +41,7 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
             image_repository="aicage/aicage",
             image_base_repository="aicage/aicage-image-base",
             default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:latest",
+            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
             agents={},
         ),
         images_metadata=_build_images_metadata(),
