@@ -50,7 +50,14 @@ Meaning:
   - `aicage-image/` builds final agent images
   - `aicage-image-util/` builds utility images for `aicage` runtime tasks
 
-## Linting and tests
+## Linting
 
-- Lint: `yamllint .`, `pymarkdown --config .pymarkdown.json scan .`, `ruff check .`, `pyright .`
-- Tests: `pytest --cov=src --cov-report=term-missing`
+Linters:
+- `yamllint .`
+- `pymarkdown --config .pymarkdown.json scan .`
+- `ruff check .`
+- `pyright .`
+
+## Tests
+
+Tests: `pytest --cov=src --cov-report=term-missing`
