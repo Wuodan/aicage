@@ -1,5 +1,8 @@
 {
   "plugins": {
+    "md024": {
+      "enabled": false
+    },
     "md013": {
       "enabled": true,
       "line_length": 120,
