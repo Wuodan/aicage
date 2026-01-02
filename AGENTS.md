@@ -57,6 +57,7 @@ Linters:
 - `pymarkdown --config .pymarkdown.json scan .`
 - `ruff check .`
 - `pyright .`
+- `rg -n --glob '*.py' '__all__' src`
 
 ## Tests
 
