@@ -86,7 +86,7 @@ Subtask 05 can then decide where to persist this structure (file, db, etc.).
 - `src/aicage/registry/images_metadata/loader.py`
   - Call `discover_agents(...)` after loading packaged metadata.
 - `src/aicage/config/global_config.py` + `config/config.yaml`
-  - Add `version_check_image` (full image ref, default tag `latest`).
+- Add `version_check_image` (full image ref, default tag `agent-version`).
 - `src/aicage/registry/image_selection.py`
   - No behavior change; will pass through expanded metadata.
 

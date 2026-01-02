@@ -56,6 +56,7 @@ Other options:
 ## Version check image details
 
 - Base image: `ubuntu:latest`.
+- Published tag: `ghcr.io/aicage/aicage-image-util:agent-version`.
 - Single current image (no per-distro variants).
 - Runtime order is fixed:
   - Try version check inside the image first.
