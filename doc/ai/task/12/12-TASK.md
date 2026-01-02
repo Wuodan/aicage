@@ -292,5 +292,6 @@ You shall follow this order:
 5. Run linters as in the pipeline `.github/workflows/publish.yml`
 6. Present me the change for review
 7. Interactively react to my review feedback
-8. Do not commit any changes unless explicitly instructed by the user. Remind him about it when you think committing is
+8. Do not create the subtask summary unless and until I explicitly tell you to do so.
+9. Do not commit any changes unless explicitly instructed by the user. Remind him about it when you think committing is
    due.
