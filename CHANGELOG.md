@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.10] - 2026-01-02
+
+### Fixed
+
+- Package now includes the latest images metadata by downloading and packaging it, not just testing it.
+- Publish job now pins the package version to the release tag to avoid local-version uploads.
+
 ## [0.5.9] - 2026-01-02
 
 ### Added
