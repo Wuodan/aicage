@@ -14,7 +14,6 @@ from aicage.registry.local_build.ensure_local_image import ensure_local_image
 from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
 from aicage.runtime.run_plan import build_run_args
 
-__all__ = ["ParsedArgs", "parse_cli", "main"]
 
 
 def _print_project_config() -> None:

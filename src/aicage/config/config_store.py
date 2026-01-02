@@ -12,7 +12,6 @@ from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path
 
-__all__ = ["SettingsStore"]
 
 _CONFIG_FILENAME = "config.yaml"
 _DEFAULT_BASE_DIR = "~/.aicage"

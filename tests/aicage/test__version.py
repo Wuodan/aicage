@@ -11,5 +11,5 @@ class VersionModuleTests(TestCase):
             module = importlib.import_module("aicage._version")
         except ImportError:
             return
-        self.assertIn("__version__", module.__all__)
+        self.assertFalse(hasattr(module, "__all__"))
         self.assertIsInstance(module.__version__, str)

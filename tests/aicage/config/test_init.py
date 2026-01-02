@@ -5,5 +5,6 @@ from aicage import config
 
 class ConfigInitTests(TestCase):
     def test_exports(self) -> None:
-        self.assertIn("SettingsStore", config.__all__)
-        self.assertIn("RunConfig", config.__all__)
+        self.assertFalse(hasattr(config, "__all__"))
+        self.assertTrue(hasattr(config, "SettingsStore"))
+        self.assertTrue(hasattr(config, "RunConfig"))

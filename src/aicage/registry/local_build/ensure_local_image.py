@@ -11,7 +11,6 @@ from ._logs import build_log_path, pull_log_path
 from ._runner import local_image_exists, run_build
 from ._store import BuildRecord, BuildStore
 
-__all__ = ["ensure_local_image"]
 
 
 def ensure_local_image(run_config: RunConfig) -> None:

@@ -2,7 +2,6 @@ from pathlib import Path
 
 from ._exec import capture_stdout
 
-__all__ = ["is_commit_signing_enabled", "resolve_signing_format"]
 
 
 def is_commit_signing_enabled(repo_path: Path) -> bool:

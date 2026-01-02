@@ -5,7 +5,6 @@ from functools import lru_cache
 import docker
 from docker.client import DockerClient
 
-__all__ = ["get_docker_client"]
 
 
 @lru_cache(maxsize=1)

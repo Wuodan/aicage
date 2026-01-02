@@ -1,4 +1,3 @@
-__all__ = ["ConfigError"]
 
 
 class ConfigError(Exception):

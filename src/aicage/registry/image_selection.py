@@ -8,7 +8,6 @@ from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
 
-__all__ = ["select_agent_image"]
 
 
 def select_agent_image(agent: str, context: ConfigContext) -> str:

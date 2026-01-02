@@ -8,7 +8,6 @@ from aicage.errors import CliError
 from aicage.registry.custom_agent import DEFAULT_CUSTOM_AGENTS_DIR
 from aicage.registry.images_metadata.models import AgentMetadata
 
-__all__ = ["get_agent_definition_dir", "get_agent_build_root"]
 
 _AGENT_BUILD_DOCKERFILE = "agent-build/Dockerfile"
 

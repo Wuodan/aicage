@@ -6,7 +6,6 @@ from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata
 
-__all__ = ["BaseSelectionRequest", "ensure_tty_for_prompt", "prompt_yes_no", "prompt_for_base"]
 
 @dataclass(frozen=True)
 class BaseSelectionRequest:

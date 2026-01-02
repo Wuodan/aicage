@@ -6,7 +6,6 @@ from aicage._logging import get_logger
 from aicage.cli_types import ParsedArgs
 from aicage.errors import CliError
 
-__all__ = ["parse_cli"]
 
 MIN_REMAINING_FOR_DOCKER_ARGS = 2
 

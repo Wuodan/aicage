@@ -5,4 +5,4 @@ from aicage import runtime
 
 class RuntimeInitTests(TestCase):
     def test_exports(self) -> None:
-        self.assertEqual([], runtime.__all__)
+        self.assertFalse(hasattr(runtime, "__all__"))

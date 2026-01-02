@@ -5,7 +5,6 @@ from aicage.config.runtime_config import RunConfig
 from aicage.runtime.agent_config import AgentConfig, resolve_agent_config
 from aicage.runtime.run_args import DockerRunArgs, merge_docker_args
 
-__all__ = ["build_run_args"]
 
 
 def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:

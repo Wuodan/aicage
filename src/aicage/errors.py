@@ -1,4 +1,3 @@
-__all__ = ["CliError"]
 
 
 class CliError(Exception):

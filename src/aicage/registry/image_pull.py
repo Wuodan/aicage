@@ -9,7 +9,6 @@ from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
 from aicage.registry import _local_query, _remote_query
 
-__all__ = ["pull_image"]
 
 
 @dataclass(frozen=True)

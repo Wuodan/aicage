@@ -1,7 +1,6 @@
 import subprocess
 from pathlib import Path
 
-__all__ = ["capture_stdout"]
 
 
 def capture_stdout(command: list[str], cwd: Path | None = None) -> str | None:

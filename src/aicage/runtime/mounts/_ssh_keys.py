@@ -6,7 +6,6 @@ from aicage.runtime.run_args import MountSpec
 
 from ._signing import is_commit_signing_enabled, resolve_signing_format
 
-__all__ = ["resolve_ssh_mount"]
 
 _SSH_MOUNT = Path("/aicage/host/ssh")
 

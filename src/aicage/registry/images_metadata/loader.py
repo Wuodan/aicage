@@ -6,7 +6,6 @@ from aicage.registry._agent_discovery import discover_agents
 
 from .models import ImagesMetadata
 
-__all__ = ["load_images_metadata"]
 
 
 def load_images_metadata() -> ImagesMetadata:

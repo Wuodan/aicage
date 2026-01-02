@@ -6,7 +6,6 @@ from aicage.runtime.run_args import MountSpec
 
 from ._exec import capture_stdout
 
-__all__ = ["resolve_git_config_mount"]
 
 _GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
 

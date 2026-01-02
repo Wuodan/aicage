@@ -2,7 +2,6 @@ from pathlib import Path
 
 from .errors import ConfigError
 
-__all__ = ["find_packaged_path"]
 
 
 def find_packaged_path(filename: str) -> Path:

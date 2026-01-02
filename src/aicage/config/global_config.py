@@ -3,7 +3,6 @@ from typing import Any
 
 from .errors import ConfigError
 
-__all__ = ["GlobalConfig"]
 
 
 @dataclass
