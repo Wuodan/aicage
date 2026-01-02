@@ -1,4 +1,5 @@
 import io
+import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -81,26 +82,30 @@ class DockerInvocationTests(TestCase):
             output="repo:tag\n",
             returncode=0,
         )
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value=None,
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
-            ) as remote_mock,
-            mock.patch(
-                "aicage.registry._pull_runner.subprocess.Popen",
-                return_value=pull_ok,
-            ) as popen_mock,
-            mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            image_pull.pull_image(run_config)
-        remote_mock.assert_not_called()
-        popen_mock.assert_called_once()
-        run_mock.assert_not_called()
-        self.assertIn("Pulling image repo:tag", stdout.getvalue())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value=None,
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                ) as remote_mock,
+                mock.patch(
+                    "aicage.registry._pull_runner.subprocess.Popen",
+                    return_value=pull_ok,
+                ) as popen_mock,
+                mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                image_pull.pull_image(run_config)
+            remote_mock.assert_not_called()
+            popen_mock.assert_called_once()
+            run_mock.assert_not_called()
+            self.assertIn("Pulling image repo:tag", stdout.getvalue())
+            self.assertIn("repo:tag", log_path.read_text(encoding="utf-8"))
 
         pull_download = FakeProcess(
             output=(
@@ -111,100 +116,116 @@ class DockerInvocationTests(TestCase):
             ),
             returncode=0,
         )
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value=None,
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
-            ) as remote_mock,
-            mock.patch(
-                "aicage.registry._pull_runner.subprocess.Popen",
-                return_value=pull_download,
-            ) as popen_mock,
-            mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            image_pull.pull_image(run_config)
-        remote_mock.assert_not_called()
-        popen_mock.assert_called_once()
-        run_mock.assert_not_called()
-        output = stdout.getvalue()
-        self.assertIn("Pulling image repo:tag", output)
-        self.assertIn("Pulling fs layer", output)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value=None,
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                ) as remote_mock,
+                mock.patch(
+                    "aicage.registry._pull_runner.subprocess.Popen",
+                    return_value=pull_download,
+                ) as popen_mock,
+                mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                image_pull.pull_image(run_config)
+            remote_mock.assert_not_called()
+            popen_mock.assert_called_once()
+            run_mock.assert_not_called()
+            output = stdout.getvalue()
+            self.assertIn("Pulling image repo:tag", output)
+            self.assertNotIn("Pulling fs layer", output)
+            self.assertIn("Pulling fs layer", log_path.read_text(encoding="utf-8"))
 
         pull_fail = FakeProcess(output="timeout\n", returncode=1)
         inspect_ok = FakeCompleted(returncode=0)
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value=None,
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
-            ) as remote_mock,
-            mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
-            mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_ok),
-            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
-            mock.patch("sys.stdout", new_callable=io.StringIO),
-        ):
-            image_pull.pull_image(run_config)
-        remote_mock.assert_not_called()
-        self.assertIn("Warning", stderr.getvalue())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value=None,
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                ) as remote_mock,
+                mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
+                mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_ok),
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+                mock.patch("sys.stdout", new_callable=io.StringIO),
+            ):
+                image_pull.pull_image(run_config)
+            remote_mock.assert_not_called()
+            self.assertIn("Warning", stderr.getvalue())
 
     def test_pull_image_raises_on_missing_local(self) -> None:
         run_config = self._build_run_config("repo:tag")
         pull_fail = FakeProcess(output="network down\n", returncode=1)
         inspect_fail = FakeCompleted(returncode=1, stderr="missing", stdout="")
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value=None,
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
-            ) as remote_mock,
-            mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
-            mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_fail),
-            mock.patch("sys.stdout", new_callable=io.StringIO),
-        ):
-            with self.assertRaises(CliError):
-                image_pull.pull_image(run_config)
-        remote_mock.assert_not_called()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value=None,
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                ) as remote_mock,
+                mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
+                mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_fail),
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stdout", new_callable=io.StringIO),
+            ):
+                with self.assertRaises(CliError):
+                    image_pull.pull_image(run_config)
+            remote_mock.assert_not_called()
 
     def test_pull_image_skips_when_up_to_date(self) -> None:
         run_config = self._build_run_config("repo:tag")
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value="same",
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
-                return_value="same",
-            ),
-            mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            image_pull.pull_image(run_config)
-        popen_mock.assert_not_called()
-        self.assertEqual("", stdout.getvalue())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value="same",
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
+                    return_value="same",
+                ),
+                mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                image_pull.pull_image(run_config)
+            popen_mock.assert_not_called()
+            self.assertEqual("", stdout.getvalue())
 
     def test_pull_image_skips_when_remote_unknown(self) -> None:
         run_config = self._build_run_config("repo:tag")
-        with (
-            mock.patch(
-                "aicage.registry._pull_decision._local_query.get_local_repo_digest",
-                return_value="local",
-            ),
-            mock.patch(
-                "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
-                return_value=None,
-            ),
-            mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            image_pull.pull_image(run_config)
-        popen_mock.assert_not_called()
-        self.assertEqual("", stdout.getvalue())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    return_value="local",
+                ),
+                mock.patch(
+                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
+                    return_value=None,
+                ),
+                mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            ):
+                image_pull.pull_image(run_config)
+            popen_mock.assert_not_called()
+            self.assertEqual("", stdout.getvalue())

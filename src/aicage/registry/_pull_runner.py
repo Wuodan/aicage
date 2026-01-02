@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from pathlib import Path
 
 from aicage._logging import get_logger
 from aicage.errors import CliError
 
 
-def run_pull(image_ref: str) -> None:
+def run_pull(image_ref: str, log_path: Path) -> None:
     logger = get_logger()
-    print(f"[aicage] Pulling image {image_ref}...")
-    logger.info("Pulling image %s", image_ref)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[aicage] Pulling image {image_ref} (logs: {log_path})...")
+    logger.info("Pulling image %s (logs: %s)", image_ref, log_path)
 
     last_nonempty_line = ""
     pull_process = subprocess.Popen(
@@ -20,13 +22,14 @@ def run_pull(image_ref: str) -> None:
         text=True,
         bufsize=1,
     )
-    if pull_process.stdout is not None:
-        for line in pull_process.stdout:
-            sys.stdout.write(line)
-            sys.stdout.flush()
-            stripped = line.strip()
-            if stripped:
-                last_nonempty_line = stripped
+    with log_path.open("w", encoding="utf-8") as log_handle:
+        if pull_process.stdout is not None:
+            for line in pull_process.stdout:
+                log_handle.write(line)
+                log_handle.flush()
+                stripped = line.strip()
+                if stripped:
+                    last_nonempty_line = stripped
 
     pull_process.wait()
 

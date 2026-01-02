@@ -5,7 +5,7 @@ from aicage.errors import CliError
 from aicage.registry import _local_query
 
 from ._digest import refresh_base_digest
-from ._logs import build_log_path, pull_log_path
+from ._logs import build_log_path
 from ._plan import base_image_ref, base_repository, now_iso, should_build
 from ._runner import run_build
 from ._store import BuildRecord, BuildStore
@@ -21,12 +21,10 @@ def ensure_local_image(run_config: RunConfig) -> None:
 
     base_image = base_image_ref(run_config)
     base_repo = base_repository(run_config)
-    pull_log = pull_log_path(run_config.agent, run_config.base)
     base_digest = refresh_base_digest(
         base_image_ref=base_image,
         base_repository=base_repo,
         global_cfg=run_config.global_cfg,
-        pull_log_path=pull_log,
     )
 
     store = BuildStore()
