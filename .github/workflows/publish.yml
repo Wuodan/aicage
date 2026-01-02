@@ -87,6 +87,8 @@ jobs:
             https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
 
       - name: Build package
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.ref_name }}
         run: |
           python -m pip install --upgrade pip
           python -m pip install build
