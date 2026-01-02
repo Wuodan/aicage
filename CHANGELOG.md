@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.11] - 2026-01-02
+
+### Fixed
+
+- Version checks now default to the published `aicage-image-util:agent-version` tag.
+
+### Changed
+
+- Agent version checks prefer the host toolchain before pulling the util image.
+
 ## [0.5.10] - 2026-01-02
 
 ### Fixed
