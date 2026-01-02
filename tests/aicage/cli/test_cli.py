@@ -4,6 +4,8 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage import cli
+from aicage.cli import _print_config as print_config
+from aicage.cli_types import ParsedArgs
 from aicage.config import ConfigError, RunConfig
 from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
@@ -100,10 +102,10 @@ class MainFlowTests(TestCase):
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
-                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                cli._print_project_config()
+                print_config.print_project_config()
 
         output = stdout.getvalue()
         self.assertIn("Project config path:", output)
@@ -117,10 +119,10 @@ class MainFlowTests(TestCase):
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
-                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                cli._print_project_config()
+                print_config.print_project_config()
 
         self.assertIn("(empty)", stdout.getvalue())
 
@@ -131,21 +133,21 @@ class MainFlowTests(TestCase):
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
-                mock.patch("aicage.cli.SettingsStore", return_value=store),
+                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                cli._print_project_config()
+                print_config.print_project_config()
 
         self.assertIn("agents: {}", stdout.getvalue())
 
     def test_main_config_print(self) -> None:
         with (
             mock.patch(
-                "aicage.cli.parse_cli",
-                return_value=cli.ParsedArgs(False, "", "", [], None, False, "print"),
+                "aicage.cli.entrypoint.parse_cli",
+                return_value=ParsedArgs(False, "", "", [], None, False, "print"),
             ),
-            mock.patch("aicage.cli._print_project_config") as print_mock,
-            mock.patch("aicage.cli.load_run_config") as load_mock,
+            mock.patch("aicage.cli.entrypoint.print_project_config") as print_mock,
+            mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
         ):
             exit_code = cli.main([])
 
@@ -168,17 +170,17 @@ class MainFlowTests(TestCase):
             )
             with (
                 mock.patch(
-                    "aicage.cli.parse_cli",
-                    return_value=cli.ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
+                    "aicage.cli.entrypoint.parse_cli",
+                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
                 ),
-                mock.patch("aicage.cli.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.pull_image"),
-                mock.patch("aicage.cli.build_run_args", return_value=run_args),
+                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
+                mock.patch("aicage.cli.entrypoint.pull_image"),
+                mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch(
-                    "aicage.cli.assemble_docker_run",
+                    "aicage.cli.entrypoint.assemble_docker_run",
                     return_value=["docker", "run", "--flag"],
                 ) as assemble_mock,
-                mock.patch("aicage.cli.subprocess.run") as run_mock,
+                mock.patch("aicage.cli.entrypoint.subprocess.run") as run_mock,
             ):
                 exit_code = cli.main([])
 
@@ -201,13 +203,16 @@ class MainFlowTests(TestCase):
             )
             with (
                 mock.patch(
-                    "aicage.cli.parse_cli",
-                    return_value=cli.ParsedArgs(True, "--cli", "codex", ["--flag"], None, False, None),
+                    "aicage.cli.entrypoint.parse_cli",
+                    return_value=ParsedArgs(True, "--cli", "codex", ["--flag"], None, False, None),
                 ),
-                mock.patch("aicage.cli.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.pull_image"),
-                mock.patch("aicage.cli.build_run_args", return_value=run_args),
-                mock.patch("aicage.cli.assemble_docker_run", return_value=["docker", "run", "cmd"]),
+                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
+                mock.patch("aicage.cli.entrypoint.pull_image"),
+                mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
+                mock.patch(
+                    "aicage.cli.entrypoint.assemble_docker_run",
+                    return_value=["docker", "run", "cmd"],
+                ),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
@@ -226,12 +231,15 @@ class MainFlowTests(TestCase):
             )
             with (
                 mock.patch(
-                    "aicage.cli.parse_cli",
-                    return_value=cli.ParsedArgs(True, "", "codex", [], None, False, None),
+                    "aicage.cli.entrypoint.parse_cli",
+                    return_value=ParsedArgs(True, "", "codex", [], None, False, None),
                 ),
-                mock.patch("aicage.cli.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.pull_image"),
-                mock.patch("aicage.cli.build_run_args", side_effect=CliError("No base images found")),
+                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
+                mock.patch("aicage.cli.entrypoint.pull_image"),
+                mock.patch(
+                    "aicage.cli.entrypoint.build_run_args",
+                    side_effect=CliError("No base images found"),
+                ),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
             ):
                 exit_code = cli.main([])
@@ -242,10 +250,13 @@ class MainFlowTests(TestCase):
     def test_main_handles_config_error(self) -> None:
         with (
             mock.patch(
-                "aicage.cli.parse_cli",
-                return_value=cli.ParsedArgs(False, "", "codex", [], None, False, None),
+                "aicage.cli.entrypoint.parse_cli",
+                return_value=ParsedArgs(False, "", "codex", [], None, False, None),
             ),
-            mock.patch("aicage.cli.load_run_config", side_effect=ConfigError("bad config")),
+            mock.patch(
+                "aicage.cli.entrypoint.load_run_config",
+                side_effect=ConfigError("bad config"),
+            ),
             mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
         ):
             exit_code = cli.main([])
@@ -254,7 +265,7 @@ class MainFlowTests(TestCase):
         self.assertIn("bad config", stderr.getvalue())
 
     def test_main_keyboard_interrupt(self) -> None:
-        with mock.patch("aicage.cli.parse_cli", side_effect=KeyboardInterrupt):
+        with mock.patch("aicage.cli.entrypoint.parse_cli", side_effect=KeyboardInterrupt):
             with mock.patch("sys.stdout", new_callable=io.StringIO):
                 exit_code = cli.main([])
         self.assertEqual(130, exit_code)

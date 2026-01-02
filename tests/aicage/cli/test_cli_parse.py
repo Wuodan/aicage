@@ -1,7 +1,7 @@
 import io
 from unittest import TestCase, mock
 
-from aicage.cli_parse import parse_cli
+from aicage.cli._parse import parse_cli
 from aicage.errors import CliError
 
 

@@ -2,37 +2,17 @@ import shlex
 import subprocess
 import sys
 from collections.abc import Sequence
-from pathlib import Path
 
 from aicage._logging import get_logger
-from aicage.cli_parse import parse_cli
+from aicage.cli._parse import parse_cli
+from aicage.cli._print_config import print_project_config
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError, RunConfig, SettingsStore, load_run_config
+from aicage.config import ConfigError, RunConfig, load_run_config
 from aicage.errors import CliError
 from aicage.registry.image_pull import pull_image
 from aicage.registry.local_build.ensure_local_image import ensure_local_image
 from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
 from aicage.runtime.run_plan import build_run_args
-
-
-def _print_project_config() -> None:
-    logger = get_logger()
-    store = SettingsStore()
-    project_path = Path.cwd().resolve()
-    config_path = store.project_config_path(project_path)
-    logger.info("Printing project config at %s", config_path)
-    print("Project config path:")
-    print(config_path)
-    print()
-    print("Project config content:")
-    if config_path.exists():
-        contents = config_path.read_text(encoding="utf-8").rstrip()
-        if contents:
-            print(contents)
-        else:
-            print("(empty)")
-    else:
-        print("(missing)")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -41,7 +21,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         parsed: ParsedArgs = parse_cli(parsed_argv)
         if parsed.config_action == "print":
-            _print_project_config()
+            print_project_config()
             return 0
         run_config: RunConfig = load_run_config(parsed.agent, parsed)
         logger.info("Resolved run config for agent %s", run_config.agent)
@@ -69,7 +49,3 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"[aicage] {exc}", file=sys.stderr)
         logger.error("CLI error: %s", exc)
         return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
