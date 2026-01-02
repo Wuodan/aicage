@@ -10,7 +10,7 @@ _DEFAULT_STATE_DIR = "~/.aicage/state/local-build"
 
 
 @dataclass(frozen=True)
-class _BuildRecord:
+class BuildRecord:
     agent: str
     base: str
     agent_version: str
@@ -20,11 +20,11 @@ class _BuildRecord:
     built_at: str
 
 
-class _BuildStore:
+class BuildStore:
     def __init__(self, base_dir: Path | None = None) -> None:
         self._base_dir = base_dir or Path(os.path.expanduser(_DEFAULT_STATE_DIR))
 
-    def load(self, agent: str, base: str) -> _BuildRecord | None:
+    def load(self, agent: str, base: str) -> BuildRecord | None:
         path = self._path(agent, base)
         if not path.is_file():
             return None
@@ -32,7 +32,7 @@ class _BuildStore:
         if not isinstance(payload, dict):
             return None
         base_digest = payload.get("base_digest")
-        return _BuildRecord(
+        return BuildRecord(
             agent=str(payload.get("agent", "")),
             base=str(payload.get("base", "")),
             agent_version=str(payload.get("agent_version", "")),
@@ -42,7 +42,7 @@ class _BuildStore:
             built_at=str(payload.get("built_at", "")),
         )
 
-    def save(self, record: _BuildRecord) -> Path:
+    def save(self, record: BuildRecord) -> Path:
         self._base_dir.mkdir(parents=True, exist_ok=True)
         path = self._path(record.agent, record.base)
         payload = {
@@ -58,9 +58,9 @@ class _BuildStore:
         return path
 
     def _path(self, agent: str, base: str) -> Path:
-        filename = f"{_sanitize(agent)}-{base}.yaml"
+        filename = f"{sanitize(agent)}-{base}.yaml"
         return self._base_dir / filename
 
 
-def _sanitize(value: str) -> str:
+def sanitize(value: str) -> str:
     return value.replace("/", "_")

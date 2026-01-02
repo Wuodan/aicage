@@ -30,8 +30,9 @@ jobs:
       - name: Lint
         run: |
           yamllint .
-          ruff check .
           pymarkdown --config .pymarkdown.json scan .
+          ruff check .
+          pyright .
 
       - name: Download latest images metadata
         run: |

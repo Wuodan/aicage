@@ -23,7 +23,7 @@ class LocalBuildRunnerTests(TestCase):
                     return_value=mock.Mock(returncode=0),
                 ) as run_mock,
             ):
-                _runner._run_build(
+                _runner.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     log_path=log_path,
@@ -62,7 +62,7 @@ class LocalBuildRunnerTests(TestCase):
                 ),
                 self.assertRaises(CliError),
             ):
-                _runner._run_build(
+                _runner.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     log_path=log_path,
@@ -73,7 +73,7 @@ class LocalBuildRunnerTests(TestCase):
             "aicage.registry.local_build._runner.subprocess.run",
             return_value=mock.Mock(returncode=0),
         ):
-            exists = _runner._local_image_exists("aicage:claude-ubuntu")
+            exists = _runner.local_image_exists("aicage:claude-ubuntu")
         self.assertTrue(exists)
 
     def test_local_image_exists_false_on_failure(self) -> None:
@@ -81,5 +81,5 @@ class LocalBuildRunnerTests(TestCase):
             "aicage.registry.local_build._runner.subprocess.run",
             return_value=mock.Mock(returncode=1),
         ):
-            exists = _runner._local_image_exists("aicage:claude-ubuntu")
+            exists = _runner.local_image_exists("aicage:claude-ubuntu")
         self.assertFalse(exists)

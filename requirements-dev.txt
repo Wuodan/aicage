@@ -1,9 +1,10 @@
 # Development dependencies for running tests and linters.
 -r requirements.txt
+check-jsonschema
+pyright
 pymarkdownlnt
 pytest
 pytest-cov
 ruff
 yamllint
 yq
-check-jsonschema

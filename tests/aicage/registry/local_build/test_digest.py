@@ -24,7 +24,7 @@ class LocalBuildDigestTests(TestCase):
                 ),
                 mock.patch("aicage.registry.local_build._digest.subprocess.run") as run_mock,
             ):
-                digest = _digest._refresh_base_digest(
+                digest = _digest.refresh_base_digest(
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     base_repository="ghcr.io/aicage/aicage-image-base",
                     global_cfg=global_cfg,
@@ -51,7 +51,7 @@ class LocalBuildDigestTests(TestCase):
                     return_value=mock.Mock(returncode=1),
                 ),
             ):
-                digest = _digest._refresh_base_digest(
+                digest = _digest.refresh_base_digest(
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     base_repository="ghcr.io/aicage/aicage-image-base",
                     global_cfg=global_cfg,
@@ -79,7 +79,7 @@ class LocalBuildDigestTests(TestCase):
                 ),
             ):
                 with self.assertRaises(CliError) as exc:
-                    _digest._refresh_base_digest(
+                    _digest.refresh_base_digest(
                         base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                         base_repository="ghcr.io/aicage/aicage-image-base",
                         global_cfg=global_cfg,
@@ -106,7 +106,7 @@ class LocalBuildDigestTests(TestCase):
                     return_value=mock.Mock(returncode=0),
                 ),
             ):
-                digest = _digest._refresh_base_digest(
+                digest = _digest.refresh_base_digest(
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     base_repository="ghcr.io/aicage/aicage-image-base",
                     global_cfg=global_cfg,

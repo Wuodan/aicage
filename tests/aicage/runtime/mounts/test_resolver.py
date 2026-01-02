@@ -40,10 +40,10 @@ class ResolverTests(TestCase):
             mock.patch("aicage.runtime.mounts.resolver.resolve_ssh_mount", return_value=[ssh_mount]) as ssh_mock,
             mock.patch("aicage.runtime.mounts.resolver.resolve_gpg_mount", return_value=[gpg_mount]) as gpg_mock,
             mock.patch(
-                "aicage.runtime.mounts.resolver._resolve_entrypoint_mount", return_value=[entry_mount]
+                "aicage.runtime.mounts.resolver.resolve_entrypoint_mount", return_value=[entry_mount]
             ) as entry_mock,
             mock.patch(
-                "aicage.runtime.mounts.resolver._resolve_docker_socket_mount", return_value=[docker_mount]
+                "aicage.runtime.mounts.resolver.resolve_docker_socket_mount", return_value=[docker_mount]
             ) as docker_mock,
         ):
             mounts = resolver.resolve_mounts(context, "codex", parsed)
@@ -77,8 +77,8 @@ class ResolverTests(TestCase):
             mock.patch("aicage.runtime.mounts.resolver.resolve_git_config_mount", return_value=[]),
             mock.patch("aicage.runtime.mounts.resolver.resolve_ssh_mount", return_value=[]),
             mock.patch("aicage.runtime.mounts.resolver.resolve_gpg_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver._resolve_entrypoint_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver._resolve_docker_socket_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver.resolve_entrypoint_mount", return_value=[]),
+            mock.patch("aicage.runtime.mounts.resolver.resolve_docker_socket_mount", return_value=[]),
         ):
             resolver.resolve_mounts(context, "codex", None)
 

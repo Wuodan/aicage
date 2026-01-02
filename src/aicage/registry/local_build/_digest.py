@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from aicage.config.global_config import GlobalConfig
 
 
-def _refresh_base_digest(
+def refresh_base_digest(
     base_image_ref: str,
     base_repository: str,
     global_cfg: GlobalConfig,

@@ -52,5 +52,5 @@ Meaning:
 
 ## Linting and tests
 
-- Lint: `yamllint .`, `ruff check .`, `pymarkdown --config .pymarkdown.json scan .`
+- Lint: `yamllint .`, `pymarkdown --config .pymarkdown.json scan .`, `ruff check .`, `pyright .`
 - Tests: `pytest --cov=src --cov-report=term-missing`

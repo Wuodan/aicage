@@ -9,7 +9,7 @@ from aicage.errors import CliError
 from aicage.registry._agent_definition import get_agent_build_root
 
 
-def _run_build(
+def run_build(
     run_config: RunConfig,
     base_image_ref: str,
     log_path: Path,
@@ -43,7 +43,7 @@ def _run_build(
     logger.info("Local image build succeeded for %s", run_config.image_ref)
 
 
-def _local_image_exists(image_ref: str) -> bool:
+def local_image_exists(image_ref: str) -> bool:
     result = subprocess.run(
         ["docker", "image", "inspect", image_ref],
         check=False,

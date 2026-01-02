@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
 from aicage.runtime.mounts._entrypoint import (
-    _resolve_entrypoint_mount,
+    resolve_entrypoint_mount,
     _resolve_entrypoint_path,
     _validate_entrypoint_path,
 )
@@ -36,7 +36,7 @@ class EntrypointMountTests(TestCase):
             mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
             mock.patch("aicage.runtime.mounts._entrypoint.prompt_yes_no", return_value=True),
         ):
-            mounts = _resolve_entrypoint_mount(agent_cfg, "./entrypoint.sh")
+            mounts = resolve_entrypoint_mount(agent_cfg, "./entrypoint.sh")
 
         self.assertEqual(str(entrypoint_path), agent_cfg.entrypoint)
         self.assertEqual(1, len(mounts))
@@ -50,7 +50,7 @@ class EntrypointMountTests(TestCase):
             mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
             mock.patch("aicage.runtime.mounts._entrypoint.prompt_yes_no") as prompt_mock,
         ):
-            mounts = _resolve_entrypoint_mount(agent_cfg, None)
+            mounts = resolve_entrypoint_mount(agent_cfg, None)
 
         prompt_mock.assert_not_called()
         self.assertEqual(1, len(mounts))

@@ -9,6 +9,7 @@ from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig
+from aicage.errors import CliError
 from aicage.registry._agent_definition import get_agent_definition_dir
 from aicage.registry._agent_version_check import AgentVersionChecker
 from aicage.registry.image_selection import select_agent_image
@@ -60,10 +61,14 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
         _persist_docker_args(agent_cfg, parsed)
         store.save_project(project_path, project_cfg)
 
+        base = agent_cfg.base or global_cfg.agents.get(agent, {}).get("base")
+        if base is None:
+            raise CliError(f"Base selection is missing for agent '{agent}'.")
+
         return RunConfig(
             project_path=project_path,
             agent=agent,
-            base=agent_cfg.base,
+            base=base,
             image_ref=image_ref,
             agent_version=agent_version,
             global_cfg=global_cfg,

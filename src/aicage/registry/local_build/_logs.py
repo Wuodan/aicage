@@ -4,19 +4,19 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ._store import _sanitize
+from ._store import sanitize
 
 _DEFAULT_LOG_DIR = "~/.aicage/logs/build"
 
 
-def _build_log_path(agent: str, base: str) -> Path:
+def build_log_path(agent: str, base: str) -> Path:
     log_dir = Path(os.path.expanduser(_DEFAULT_LOG_DIR))
-    return log_dir / f"{_sanitize(agent)}-{base}-{_timestamp()}.log"
+    return log_dir / f"{sanitize(agent)}-{base}-{_timestamp()}.log"
 
 
-def _pull_log_path(agent: str, base: str) -> Path:
+def pull_log_path(agent: str, base: str) -> Path:
     log_dir = Path(os.path.expanduser(_DEFAULT_LOG_DIR))
-    return log_dir / f"{_sanitize(agent)}-{base}-pull-{_timestamp()}.log"
+    return log_dir / f"{sanitize(agent)}-{base}-pull-{_timestamp()}.log"
 
 
 def _timestamp() -> str:

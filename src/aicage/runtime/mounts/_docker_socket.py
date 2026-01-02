@@ -7,7 +7,7 @@ from aicage.runtime.run_args import MountSpec
 _DOCKER_SOCKET_PATH = Path("/run/docker.sock")
 
 
-def _resolve_docker_socket_mount(
+def resolve_docker_socket_mount(
     agent_cfg: AgentConfig,
     cli_docker_socket: bool,
 ) -> list[MountSpec]:

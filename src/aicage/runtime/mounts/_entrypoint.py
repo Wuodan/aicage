@@ -9,7 +9,7 @@ from aicage.runtime.run_args import MountSpec
 _ENTRYPOINT_CONTAINER_PATH = Path("/usr/local/bin/entrypoint.sh")
 
 
-def _resolve_entrypoint_mount(
+def resolve_entrypoint_mount(
     agent_cfg: AgentConfig,
     cli_entrypoint: str | None,
 ) -> list[MountSpec]:

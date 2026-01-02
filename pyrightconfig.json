@@ -1,0 +1,13 @@
+{
+  "reportPrivateUsage": "error",
+  "reportPrivateImportUsage": "error",
+
+  "executionEnvironments": [
+    {
+      "root": "tests",
+      "reportPrivateUsage": "none",
+      "reportPrivateImportUsage": "none",
+      "reportAttributeAccessIssue": "none"
+    }
+  ]
+}

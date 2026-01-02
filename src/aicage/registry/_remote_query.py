@@ -53,14 +53,14 @@ def _parse_reference(image_ref: str) -> str:
     return reference or "latest"
 
 
-def _head_request(url: str, headers: Mapping[str, str]) -> Mapping[str, str] | None:
+def _head_request(url: str, headers: Mapping[str, str]) -> dict[str, str] | None:
     request = urllib.request.Request(url, headers=dict(headers), method="HEAD")
     try:
         with urllib.request.urlopen(request) as response:
-            return response.headers
+            return dict(response.headers)
     except urllib.error.HTTPError as exc:
         if exc.code in {401, 403}:
-            return exc.headers
+            return dict(exc.headers)
         return None
     except urllib.error.URLError:
         return None

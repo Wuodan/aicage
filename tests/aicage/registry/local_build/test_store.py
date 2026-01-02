@@ -2,14 +2,14 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase
 
-from aicage.registry.local_build._store import _BuildRecord, _BuildStore, _sanitize
+from aicage.registry.local_build._store import BuildRecord, BuildStore, sanitize
 
 
 class LocalBuildStoreTests(TestCase):
     def test_save_and_load_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            store = _BuildStore(base_dir=Path(tmp_dir))
-            record = _BuildRecord(
+            store = BuildStore(base_dir=Path(tmp_dir))
+            record = BuildRecord(
                 agent="claude",
                 base="ubuntu",
                 agent_version="1.2.3",
@@ -25,14 +25,14 @@ class LocalBuildStoreTests(TestCase):
 
     def test_load_returns_none_for_missing_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            store = _BuildStore(base_dir=Path(tmp_dir))
+            store = BuildStore(base_dir=Path(tmp_dir))
             loaded = store.load("claude", "ubuntu")
 
         self.assertIsNone(loaded)
 
     def test_load_ignores_non_mapping(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            store = _BuildStore(base_dir=Path(tmp_dir))
+            store = BuildStore(base_dir=Path(tmp_dir))
             record_path = Path(tmp_dir) / "claude-ubuntu.yaml"
             record_path.write_text("- item\n", encoding="utf-8")
             loaded = store.load("claude", "ubuntu")
@@ -40,4 +40,4 @@ class LocalBuildStoreTests(TestCase):
         self.assertIsNone(loaded)
 
     def test_sanitize_replaces_slashes(self) -> None:
-        self.assertEqual("foo_bar", _sanitize("foo/bar"))
+        self.assertEqual("foo_bar", sanitize("foo/bar"))

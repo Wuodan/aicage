@@ -6,10 +6,10 @@ from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
 from aicage.registry import _local_query
 
-from ._digest import _refresh_base_digest
-from ._logs import _build_log_path, _pull_log_path
-from ._runner import _local_image_exists, _run_build
-from ._store import _BuildRecord, _BuildStore
+from ._digest import refresh_base_digest
+from ._logs import build_log_path, pull_log_path
+from ._runner import local_image_exists, run_build
+from ._store import BuildRecord, BuildStore
 
 __all__ = ["ensure_local_image"]
 
@@ -24,15 +24,15 @@ def ensure_local_image(run_config: RunConfig) -> None:
 
     base_image_ref = _base_image_ref(run_config)
     base_repo = _base_repository(run_config)
-    pull_log_path = _pull_log_path(run_config.agent, run_config.base)
-    base_digest = _refresh_base_digest(
+    pull_log = pull_log_path(run_config.agent, run_config.base)
+    base_digest = refresh_base_digest(
         base_image_ref=base_image_ref,
         base_repository=base_repo,
         global_cfg=run_config.global_cfg,
-        pull_log_path=pull_log_path,
+        pull_log_path=pull_log,
     )
 
-    store = _BuildStore()
+    store = BuildStore()
     record = store.load(run_config.agent, run_config.base)
 
     should_build = _should_build(
@@ -43,8 +43,8 @@ def ensure_local_image(run_config: RunConfig) -> None:
     if not should_build:
         return
 
-    log_path = _build_log_path(run_config.agent, run_config.base)
-    _run_build(
+    log_path = build_log_path(run_config.agent, run_config.base)
+    run_build(
         run_config=run_config,
         base_image_ref=base_image_ref,
         log_path=log_path,
@@ -52,7 +52,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
 
     updated_base_digest = _local_query.get_local_repo_digest_for_repo(base_image_ref, base_repo)
     store.save(
-        _BuildRecord(
+        BuildRecord(
             agent=run_config.agent,
             base=run_config.base,
             agent_version=run_config.agent_version,
@@ -66,10 +66,10 @@ def ensure_local_image(run_config: RunConfig) -> None:
 
 def _should_build(
     run_config: RunConfig,
-    record: _BuildRecord | None,
+    record: BuildRecord | None,
     base_digest: str | None,
 ) -> bool:
-    if not _local_image_exists(run_config.image_ref):
+    if not local_image_exists(run_config.image_ref):
         return True
     if record is None:
         return True

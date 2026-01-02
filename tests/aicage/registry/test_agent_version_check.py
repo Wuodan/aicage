@@ -38,7 +38,7 @@ class AgentVersionCheckTests(TestCase):
             ):
                 result = checker.get_version(
                     "custom",
-                    self._agent_metadata("custom"),
+                    self._agent_metadata(True),
                     definition_dir=agent_dir,
                 )
 
@@ -60,7 +60,7 @@ class AgentVersionCheckTests(TestCase):
             with self.assertRaises(CliError):
                 checker.get_version(
                     "custom",
-                    self._agent_metadata("custom"),
+                    self._agent_metadata(True),
                     definition_dir=agent_dir,
                 )
             self.assertFalse((store_dir / "custom.yaml").exists())
