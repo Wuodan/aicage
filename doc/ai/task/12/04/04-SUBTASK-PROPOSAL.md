@@ -57,7 +57,7 @@ Expose a shared function that returns a version string or raises on failure:
 
 ### Persistence of version check results
 
-This proposal defers the concrete storage mechanism until Subtask 05.
+Persist under `~/.aicage/state/version-check/` (exact file layout decided in Subtask 05).
 For Subtask 04, the version check API should return a structured result:
 
 - `agent_name`
@@ -86,7 +86,7 @@ Subtask 05 can then decide where to persist this structure (file, db, etc.).
 - `src/aicage/registry/images_metadata/loader.py`
   - Call `discover_agents(...)` after loading packaged metadata.
 - `src/aicage/config/global_config.py` + `config/config.yaml`
-  - Add `version_check_image` (or similar) for the helper image reference.
+  - Add `version_check_image` (full image ref, default tag `latest`).
 - `src/aicage/registry/image_selection.py`
   - No behavior change; will pass through expanded metadata.
 
@@ -108,8 +108,8 @@ Subtask 05 can then decide where to persist this structure (file, db, etc.).
 
 ## Decisions resolved for this proposal
 
-1. Persist version check results under a subfolder of `~/.aicage/` (exact layout to be decided in
-   Subtask 05).
+1. Persist version check results under `~/.aicage/state/version-check/` (exact file layout decided
+   in Subtask 05).
 2. Custom agents override packaged agent names.
 3. Execute `version.sh` with `/bin/sh` (or `/bin/bash` if required) to tolerate missing `chmod +x`,
    and log a warning about non-executable `version.sh`.
