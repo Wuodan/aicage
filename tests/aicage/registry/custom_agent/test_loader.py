@@ -48,7 +48,7 @@ class CustomAgentLoaderTests(TestCase):
                 custom_agents = load_custom_agents(metadata, "aicage")
 
         agent = custom_agents["custom"]
-        self.assertEqual(custom_dir / "custom", agent.definition_dir)
+        self.assertEqual(custom_dir / "custom", agent.local_definition_dir)
         self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     def test_load_custom_agents_requires_install_and_version(self) -> None:

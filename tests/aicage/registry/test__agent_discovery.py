@@ -43,7 +43,7 @@ class AgentDiscoveryTests(TestCase):
                 discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["codex"]
-        self.assertEqual(custom_dir / "codex", agent.definition_dir)
+        self.assertEqual(custom_dir / "codex", agent.local_definition_dir)
         self.assertEqual({"ubuntu": "aicage:codex-ubuntu"}, agent.valid_bases)
 
     def test_discover_agents_filters_bases(self) -> None:
@@ -75,7 +75,7 @@ class AgentDiscoveryTests(TestCase):
                 discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["custom"]
-        self.assertEqual(custom_dir / "custom", agent.definition_dir)
+        self.assertEqual(custom_dir / "custom", agent.local_definition_dir)
         self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     @staticmethod

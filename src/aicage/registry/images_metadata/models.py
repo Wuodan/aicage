@@ -6,6 +6,7 @@ from typing import Any
 
 import yaml
 
+from aicage.config.resources import find_packaged_path
 from aicage.errors import CliError
 
 
@@ -28,11 +29,10 @@ class AgentMetadata:
     agent_path: str
     agent_full_name: str
     agent_homepage: str
-    build_local: bool
     valid_bases: dict[str, str]
     base_exclude: list[str] | None = None
     base_distro_exclude: list[str] | None = None
-    definition_dir: Path | None = None
+    local_definition_dir: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -139,8 +139,9 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
             agent_homepage=_expect_string(
                 agent_mapping.get("agent_homepage"), f"agent.{name}.agent_homepage"
             ),
-            build_local=_expect_bool(
-                agent_mapping.get("build_local"), f"agent.{name}.build_local"
+            local_definition_dir=_local_definition_dir(
+                name,
+                _expect_bool(agent_mapping.get("build_local"), f"agent.{name}.build_local"),
             ),
             valid_bases=_expect_str_mapping(
                 agent_mapping.get("valid_bases"), f"agent.{name}.valid_bases"
@@ -153,6 +154,13 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
             ),
         )
     return agents
+
+
+def _local_definition_dir(agent_name: str, build_local: bool) -> Path | None:
+    if not build_local:
+        return None
+    dockerfile = find_packaged_path("agent-build/Dockerfile")
+    return dockerfile.parent / "agents" / agent_name
 
 
 def _expect_mapping(value: Any, context: str) -> dict[str, Any]:

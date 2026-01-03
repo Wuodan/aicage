@@ -15,12 +15,6 @@ def get_agent_build_root() -> Path:
 
 
 def get_agent_definition_dir(agent_name: str, agent_metadata: AgentMetadata) -> Path:
-    if agent_metadata.definition_dir is not None:
-        return agent_metadata.definition_dir
-    if not agent_metadata.build_local:
+    if agent_metadata.local_definition_dir is None:
         raise CliError(f"Agent '{agent_name}' does not have local build definitions.")
-
-    agent_dir = get_agent_build_root() / "agents" / agent_name
-    if not agent_dir.is_dir():
-        raise CliError(f"Agent '{agent_name}' is missing build definitions at {agent_dir}.")
-    return agent_dir
+    return agent_metadata.local_definition_dir

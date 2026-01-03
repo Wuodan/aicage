@@ -168,8 +168,8 @@ class EnsureLocalImageTests(TestCase):
                     agent_path="~/.claude",
                     agent_full_name="Claude Code",
                     agent_homepage="https://example.com",
-                    build_local=True,
                     valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
+                    local_definition_dir=Path("/tmp/definition"),
                 )
             },
         )

@@ -32,7 +32,7 @@ def select_agent_image(agent: str, context: ConfigContext) -> str:
     else:
         _validate_base(agent, base, agent_metadata)
 
-    if agent_metadata.build_local:
+    if agent_metadata.local_definition_dir is not None:
         return local_image_ref(context.global_cfg.local_image_repository, agent, base)
 
     return agent_metadata.valid_bases[base]

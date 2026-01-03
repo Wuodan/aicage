@@ -13,7 +13,7 @@ from ._store import BuildRecord, BuildStore
 
 def ensure_local_image(run_config: RunConfig) -> None:
     agent_metadata = run_config.images_metadata.agents[run_config.agent]
-    if not agent_metadata.build_local:
+    if agent_metadata.local_definition_dir is None:
         return
 
     if run_config.agent_version is None:

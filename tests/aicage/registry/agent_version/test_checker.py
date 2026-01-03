@@ -149,6 +149,6 @@ class AgentVersionCheckTests(TestCase):
             agent_path="~/.custom",
             agent_full_name="Custom",
             agent_homepage="https://example.com",
-            build_local=True,
             valid_bases={},
+            local_definition_dir=Path("/tmp/definition"),
         )
