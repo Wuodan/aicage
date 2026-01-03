@@ -18,4 +18,6 @@ RUN --mount=type=bind,source=agents/,target=/tmp/agents,readonly \
     /tmp/agents/${AGENT}/install.sh
 
 ENV AGENT=${AGENT}
-CMD ["sh", "-c", "$AGENT"]
+
+# entrypoint.sh uses this variable
+ENV AICAGE_ENTRYPOINT_CMD=${AGENT}
