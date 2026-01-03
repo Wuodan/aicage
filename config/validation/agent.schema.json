@@ -17,9 +17,9 @@
     "agent_homepage": {
       "type": "string"
     },
-    "redistributable": {
+    "build_local": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "base_exclude": {
       "type": "array",

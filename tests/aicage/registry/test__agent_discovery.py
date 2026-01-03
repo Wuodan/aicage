@@ -43,7 +43,7 @@ class AgentDiscoveryTests(TestCase):
                 discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["codex"]
-        self.assertTrue(agent.is_custom)
+        self.assertEqual(custom_dir / "codex", agent.definition_dir)
         self.assertEqual({"ubuntu": "aicage:codex-ubuntu"}, agent.valid_bases)
 
     def test_discover_agents_filters_bases(self) -> None:
@@ -75,7 +75,7 @@ class AgentDiscoveryTests(TestCase):
                 discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["custom"]
-        self.assertTrue(agent.is_custom)
+        self.assertEqual(custom_dir / "custom", agent.definition_dir)
         self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     @staticmethod
@@ -99,7 +99,7 @@ class AgentDiscoveryTests(TestCase):
                         "agent_path": "~/.codex",
                         "agent_full_name": "Codex CLI",
                         "agent_homepage": "https://example.com",
-                        "redistributable": True,
+                        "build_local": False,
                         "valid_bases": {
                             name: f"ghcr.io/aicage/aicage:codex-{name}" for name in bases
                         },

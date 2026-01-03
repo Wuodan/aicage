@@ -48,7 +48,7 @@ class CustomAgentLoaderTests(TestCase):
                 custom_agents = load_custom_agents(metadata, "aicage")
 
         agent = custom_agents["custom"]
-        self.assertTrue(agent.is_custom)
+        self.assertEqual(custom_dir / "custom", agent.definition_dir)
         self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     def test_load_custom_agents_requires_install_and_version(self) -> None:
@@ -95,7 +95,7 @@ class CustomAgentLoaderTests(TestCase):
                         "agent_path": "~/.codex",
                         "agent_full_name": "Codex CLI",
                         "agent_homepage": "https://example.com",
-                        "redistributable": True,
+                        "build_local": False,
                         "valid_bases": {
                             name: f"ghcr.io/aicage/aicage:codex-{name}" for name in bases
                         },

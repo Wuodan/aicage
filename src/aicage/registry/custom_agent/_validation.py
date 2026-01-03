@@ -30,7 +30,7 @@ def validate_agent_mapping(mapping: dict[str, Any], context: str) -> dict[str, A
             raise CliError(f"{context} contains unsupported keys: {', '.join(unknown)}.")
 
     normalized = dict(mapping)
-    normalized.setdefault("redistributable", False)
+    normalized.setdefault("build_local", True)
 
     for key, value in normalized.items():
         schema_entry = properties.get(key)

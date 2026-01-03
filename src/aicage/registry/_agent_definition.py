@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from aicage.config.resources import find_packaged_path
 from aicage.errors import CliError
-from aicage.registry.custom_agent import DEFAULT_CUSTOM_AGENTS_DIR
 from aicage.registry.images_metadata.models import AgentMetadata
 
 _AGENT_BUILD_DOCKERFILE = "agent-build/Dockerfile"
@@ -17,9 +15,9 @@ def get_agent_build_root() -> Path:
 
 
 def get_agent_definition_dir(agent_name: str, agent_metadata: AgentMetadata) -> Path:
-    if agent_metadata.is_custom:
-        return Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR)) / agent_name
-    if agent_metadata.redistributable:
+    if agent_metadata.definition_dir is not None:
+        return agent_metadata.definition_dir
+    if not agent_metadata.build_local:
         raise CliError(f"Agent '{agent_name}' does not have local build definitions.")
 
     agent_dir = get_agent_build_root() / "agents" / agent_name

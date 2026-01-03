@@ -101,7 +101,7 @@ def _check_agent_version(
     images_metadata: ImagesMetadata,
 ) -> str | None:
     agent_metadata = images_metadata.agents[agent]
-    if agent_metadata.redistributable and not agent_metadata.is_custom:
+    if not agent_metadata.build_local:
         return None
     definition_dir = get_agent_definition_dir(agent, agent_metadata)
     checker = AgentVersionChecker(global_cfg)

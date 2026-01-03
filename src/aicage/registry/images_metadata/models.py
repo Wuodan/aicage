@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -27,11 +28,11 @@ class AgentMetadata:
     agent_path: str
     agent_full_name: str
     agent_homepage: str
-    redistributable: bool
+    build_local: bool
     valid_bases: dict[str, str]
     base_exclude: list[str] | None = None
     base_distro_exclude: list[str] | None = None
-    is_custom: bool = False
+    definition_dir: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -124,7 +125,7 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
                 "agent_path",
                 "agent_full_name",
                 "agent_homepage",
-                "redistributable",
+                "build_local",
                 "valid_bases",
             },
             optional={"base_exclude", "base_distro_exclude"},
@@ -138,8 +139,8 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
             agent_homepage=_expect_string(
                 agent_mapping.get("agent_homepage"), f"agent.{name}.agent_homepage"
             ),
-            redistributable=_expect_bool(
-                agent_mapping.get("redistributable"), f"agent.{name}.redistributable"
+            build_local=_expect_bool(
+                agent_mapping.get("build_local"), f"agent.{name}.build_local"
             ),
             valid_bases=_expect_str_mapping(
                 agent_mapping.get("valid_bases"), f"agent.{name}.valid_bases"

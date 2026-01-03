@@ -83,11 +83,11 @@ def _build_custom_agent(
         agent_path=expect_string(normalized_mapping.get("agent_path"), "agent_path"),
         agent_full_name=expect_string(normalized_mapping.get("agent_full_name"), "agent_full_name"),
         agent_homepage=expect_string(normalized_mapping.get("agent_homepage"), "agent_homepage"),
-        redistributable=normalized_mapping.get("redistributable", False),
+        build_local=True,
         valid_bases=valid_bases,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,
-        is_custom=True,
+        definition_dir=Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR)) / agent_name,
     )
 
 

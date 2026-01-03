@@ -19,8 +19,8 @@ from ._fixtures import build_run_config
 
 
 class EnsureLocalImageTests(TestCase):
-    def test_ensure_local_image_skips_redistributable(self) -> None:
-        run_config = build_run_config(redistributable=True)
+    def test_ensure_local_image_skips_when_not_build_local(self) -> None:
+        run_config = build_run_config(build_local=False)
         with mock.patch(
             "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
         ) as refresh_mock:
@@ -168,9 +168,8 @@ class EnsureLocalImageTests(TestCase):
                     agent_path="~/.claude",
                     agent_full_name="Claude Code",
                     agent_homepage="https://example.com",
-                    redistributable=True,
+                    build_local=True,
                     valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
-                    is_custom=True,
                 )
             },
         )

@@ -11,7 +11,7 @@ class CustomAgentValidationTests(TestCase):
 
     def test_expect_bool_rejects_non_bool(self) -> None:
         with self.assertRaises(CliError):
-            _validation.expect_bool("true", "redistributable")
+            _validation.expect_bool("true", "build_local")
 
     def test_maybe_str_list_rejects_non_string_items(self) -> None:
         with self.assertRaises(CliError):
@@ -24,7 +24,7 @@ class CustomAgentValidationTests(TestCase):
                 context="custom agent",
             )
 
-    def test_validate_agent_mapping_defaults_redistributable(self) -> None:
+    def test_validate_agent_mapping_defaults_build_local(self) -> None:
         payload = _validation.validate_agent_mapping(
             {
                 "agent_path": "~/.custom",
@@ -33,4 +33,4 @@ class CustomAgentValidationTests(TestCase):
             },
             context="custom agent",
         )
-        self.assertFalse(payload["redistributable"])
+        self.assertTrue(payload["build_local"])
