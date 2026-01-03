@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.13] - 2026-01-02
+
+### Added
+
+- Added `local_image_repository` config for consistent local image naming.
+
+### Changed
+
+- Custom and non-redistributable agents now use `local_image_repository` for local image refs.
+
 ## [0.5.12] - 2026-01-02
 
 ### Fixed
