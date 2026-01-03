@@ -152,24 +152,17 @@ class RuntimeConfigTests(TestCase):
                 },
             }
         )
-        with (
-            mock.patch(
-                "aicage.config.runtime_config.get_agent_definition_dir",
-                return_value=Path("/tmp/definition"),
-            ) as definition_mock,
-            mock.patch("aicage.config.runtime_config.AgentVersionChecker") as checker_cls,
-        ):
+        with mock.patch("aicage.config.runtime_config.AgentVersionChecker") as checker_cls:
             checker = checker_cls.return_value
             checker.get_version.return_value = "1.2.3"
             version = runtime_config._check_agent_version("codex", global_cfg, images_metadata)
 
         self.assertEqual("1.2.3", version)
-        definition_mock.assert_called_once_with("codex", images_metadata.agents["codex"])
         checker_cls.assert_called_once_with(global_cfg)
         checker.get_version.assert_called_once_with(
             "codex",
             images_metadata.agents["codex"],
-            Path("/tmp/definition"),
+            images_metadata.agents["codex"].local_definition_dir,
         )
 
     @staticmethod
