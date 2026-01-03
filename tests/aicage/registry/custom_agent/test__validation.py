@@ -17,11 +17,20 @@ class CustomAgentValidationTests(TestCase):
         with self.assertRaises(CliError):
             _validation.maybe_str_list(["ok", ""], "base_exclude")
 
-    def test_expect_keys_rejects_missing_required(self) -> None:
+    def test_validate_agent_mapping_rejects_missing_required(self) -> None:
         with self.assertRaises(CliError):
-            _validation.expect_keys(
+            _validation.validate_agent_mapping(
                 {"agent_path": "~/.custom"},
-                required={"agent_path", "agent_full_name"},
-                optional=set(),
                 context="custom agent",
             )
+
+    def test_validate_agent_mapping_defaults_redistributable(self) -> None:
+        payload = _validation.validate_agent_mapping(
+            {
+                "agent_path": "~/.custom",
+                "agent_full_name": "Custom",
+                "agent_homepage": "https://example.com",
+            },
+            context="custom agent",
+        )
+        self.assertFalse(payload["redistributable"])

@@ -30,11 +30,12 @@ class AgentDiscoveryTests(TestCase):
                         "agent_path: ~/.custom-codex",
                         "agent_full_name: Custom Codex",
                         "agent_homepage: https://example.com",
-                        "redistributable: false",
                     ]
                 ),
                 encoding="utf-8",
             )
+            (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(custom_dir),
@@ -57,7 +58,6 @@ class AgentDiscoveryTests(TestCase):
                         "agent_path: ~/.custom",
                         "agent_full_name: Custom",
                         "agent_homepage: https://example.com",
-                        "redistributable: false",
                         "base_exclude:",
                         "  - alpine",
                         "base_distro_exclude:",
@@ -66,6 +66,8 @@ class AgentDiscoveryTests(TestCase):
                 ),
                 encoding="utf-8",
             )
+            (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(custom_dir),
