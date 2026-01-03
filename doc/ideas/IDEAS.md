@@ -28,3 +28,16 @@ We should add logic to verify we are using signed/provenanced images in:
 
 If the project-folder contains symlinks to outside it's structure, then those fail in containers.  
 To fix this we could collect such symlinks and propose to mount the targets to the containers.
+
+## Support git submodules
+
+Detect when in submodule and suggest to mount the parent repo.  
+Reason: git in container fails without parent repo
+
+## Centralize docker access
+
+Right now docker is used in several places. Centralize that into one clean package.
+
+## Centralize string constants for yaml values
+
+Those strings should be cleanly centralized in one place.
