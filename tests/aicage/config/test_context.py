@@ -20,6 +20,7 @@ class ContextTests(TestCase):
                 image_base_repository="aicage/aicage-image-base",
                 default_image_base="ubuntu",
                 version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
+                local_image_repository="aicage",
                 agents={},
             ),
             images_metadata=self._get_images_metadata(),
@@ -35,6 +36,7 @@ class ContextTests(TestCase):
             image_base_repository="aicage/aicage-image-base",
             default_image_base="ubuntu",
             version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
+            local_image_repository="aicage",
             agents={},
         )
         project_cfg = ProjectConfig(path="/work/project", agents={})
@@ -53,6 +55,7 @@ class ContextTests(TestCase):
         self.assertEqual(global_cfg, context.global_cfg)
         self.assertEqual(project_cfg, context.project_cfg)
         self.assertEqual(self._get_images_metadata(), context.images_metadata)
+        load_metadata.assert_called_once_with("aicage")
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:

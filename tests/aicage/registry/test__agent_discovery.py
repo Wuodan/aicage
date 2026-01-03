@@ -15,7 +15,7 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(missing),
             ):
-                discovered = discover_agents(metadata)
+                discovered = discover_agents(metadata, "aicage")
         self.assertIs(discovered, metadata)
 
     def test_discover_agents_overrides_release_agent(self) -> None:
@@ -39,11 +39,11 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(custom_dir),
             ):
-                discovered = discover_agents(metadata)
+                discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["codex"]
         self.assertTrue(agent.is_custom)
-        self.assertEqual({"ubuntu": "aicage-local:codex-ubuntu"}, agent.valid_bases)
+        self.assertEqual({"ubuntu": "aicage:codex-ubuntu"}, agent.valid_bases)
 
     def test_discover_agents_filters_bases(self) -> None:
         metadata = self._metadata_with_bases(["ubuntu", "fedora", "alpine"])
@@ -70,11 +70,11 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(custom_dir),
             ):
-                discovered = discover_agents(metadata)
+                discovered = discover_agents(metadata, "aicage")
 
         agent = discovered.agents["custom"]
         self.assertTrue(agent.is_custom)
-        self.assertEqual({"ubuntu": "aicage-local:custom-ubuntu"}, agent.valid_bases)
+        self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:

@@ -18,6 +18,7 @@ class GlobalConfigTests(TestCase):
             "image_base_repository": "aicage/aicage-image-base",
             "default_image_base": "ubuntu",
             "version_check_image": "ghcr.io/aicage/aicage-image-util:agent-version",
+            "local_image_repository": "aicage",
             "agents": {"codex": {"base": "ubuntu"}},
         }
         cfg = GlobalConfig.from_mapping(data)

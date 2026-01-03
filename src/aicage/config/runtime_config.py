@@ -40,7 +40,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
 
     with lock_project_config(project_config_path):
         global_cfg = store.load_global()
-        images_metadata = load_images_metadata()
+        images_metadata = load_images_metadata(global_cfg.local_image_repository)
         project_cfg = store.load_project(project_path)
         context = ConfigContext(
             store=store,

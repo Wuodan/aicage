@@ -13,6 +13,7 @@ class GlobalConfig:
     image_base_repository: str
     default_image_base: str
     version_check_image: str
+    local_image_repository: str
     agents: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     @classmethod
@@ -25,6 +26,7 @@ class GlobalConfig:
             "image_base_repository",
             "default_image_base",
             "version_check_image",
+            "local_image_repository",
         )
         missing = [key for key in required if key not in data]
         if missing:
@@ -37,6 +39,7 @@ class GlobalConfig:
             image_base_repository=data["image_base_repository"],
             default_image_base=data["default_image_base"],
             version_check_image=data["version_check_image"],
+            local_image_repository=data["local_image_repository"],
             agents=data.get("agents", {}) or {},
         )
 
@@ -49,5 +52,6 @@ class GlobalConfig:
             "image_base_repository": self.image_base_repository,
             "default_image_base": self.default_image_base,
             "version_check_image": self.version_check_image,
+            "local_image_repository": self.local_image_repository,
             "agents": self.agents,
         }

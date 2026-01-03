@@ -8,6 +8,8 @@ from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
 
+from ._image_refs import local_image_ref
+
 
 def select_agent_image(agent: str, context: ConfigContext) -> str:
     agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
@@ -30,8 +32,8 @@ def select_agent_image(agent: str, context: ConfigContext) -> str:
     else:
         _validate_base(agent, base, agent_metadata)
 
-    if not agent_metadata.redistributable and not agent_metadata.is_custom:
-        return _local_image_ref(agent, base)
+    if not agent_metadata.redistributable or agent_metadata.is_custom:
+        return local_image_ref(context.global_cfg.local_image_repository, agent, base)
 
     return agent_metadata.valid_bases[base]
 
@@ -59,8 +61,3 @@ def _validate_base(
 ) -> None:
     if base not in agent_metadata.valid_bases:
         raise CliError(f"Base '{base}' is not valid for agent '{agent}'.")
-
-
-def _local_image_ref(agent: str, base: str) -> str:
-    tag = f"{agent}-{base}".lower().replace("/", "-")
-    return f"aicage:{tag}"

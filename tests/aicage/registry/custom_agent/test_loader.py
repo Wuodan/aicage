@@ -15,7 +15,7 @@ class CustomAgentLoaderTests(TestCase):
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(missing),
             ):
-                custom_agents = load_custom_agents(metadata)
+                custom_agents = load_custom_agents(metadata, "aicage")
         self.assertEqual({}, custom_agents)
 
     def test_load_custom_agents_builds_bases(self) -> None:
@@ -43,11 +43,11 @@ class CustomAgentLoaderTests(TestCase):
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 str(custom_dir),
             ):
-                custom_agents = load_custom_agents(metadata)
+                custom_agents = load_custom_agents(metadata, "aicage")
 
         agent = custom_agents["custom"]
         self.assertTrue(agent.is_custom)
-        self.assertEqual({"ubuntu": "aicage-local:custom-ubuntu"}, agent.valid_bases)
+        self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:

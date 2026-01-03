@@ -24,7 +24,7 @@ def build_config_context() -> ConfigContext:
     store = SettingsStore()
     project_path = Path.cwd().resolve()
     global_cfg = store.load_global()
-    images_metadata = load_images_metadata()
+    images_metadata = load_images_metadata(global_cfg.local_image_repository)
     project_cfg = store.load_project(project_path)
     return ConfigContext(
         store=store,
@@ -32,5 +32,3 @@ def build_config_context() -> ConfigContext:
         global_cfg=global_cfg,
         images_metadata=images_metadata,
     )
-
-

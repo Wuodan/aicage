@@ -16,7 +16,7 @@ class ImagesMetadataLoaderTests(TestCase):
                 "aicage.registry.images_metadata.loader.find_packaged_path",
                 return_value=path,
             ):
-                metadata = load_images_metadata()
+                metadata = load_images_metadata("aicage")
             self.assertEqual("0.3.3", metadata.aicage_image.version)
 
     def test_load_images_metadata_raises_without_file(self) -> None:
@@ -29,7 +29,7 @@ class ImagesMetadataLoaderTests(TestCase):
                 ),
                 self.assertRaises(CliError),
             ):
-                load_images_metadata()
+                load_images_metadata("aicage")
 
 
 def _valid_payload() -> str:

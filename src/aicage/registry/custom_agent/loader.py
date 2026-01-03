@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 
 from aicage.errors import CliError
+from aicage.registry._image_refs import local_image_ref
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 
 from ._validation import expect_bool, expect_keys, expect_string, maybe_str_list
@@ -15,7 +16,10 @@ DEFAULT_CUSTOM_AGENTS_DIR = "~/.aicage/custom/agent"
 _AGENT_DEFINITION_FILES = ("agent.yml", "agent.yaml")
 
 
-def load_custom_agents(images_metadata: ImagesMetadata) -> dict[str, AgentMetadata]:
+def load_custom_agents(
+    images_metadata: ImagesMetadata,
+    local_image_repository: str,
+) -> dict[str, AgentMetadata]:
     agents_dir = Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR))
     if not agents_dir.is_dir():
         return {}
@@ -31,6 +35,7 @@ def load_custom_agents(images_metadata: ImagesMetadata) -> dict[str, AgentMetada
             agent_name=agent_name,
             agent_mapping=agent_mapping,
             images_metadata=images_metadata,
+            local_image_repository=local_image_repository,
         )
     return custom_agents
 
@@ -59,6 +64,7 @@ def _build_custom_agent(
     agent_name: str,
     agent_mapping: dict[str, Any],
     images_metadata: ImagesMetadata,
+    local_image_repository: str,
 ) -> AgentMetadata:
     expect_keys(
         agent_mapping,
@@ -73,6 +79,7 @@ def _build_custom_agent(
         images_metadata=images_metadata,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,
+        local_image_repository=local_image_repository,
     )
     return AgentMetadata(
         agent_path=expect_string(agent_mapping.get("agent_path"), "agent_path"),
@@ -91,6 +98,7 @@ def _build_valid_bases(
     images_metadata: ImagesMetadata,
     base_exclude: list[str] | None,
     base_distro_exclude: list[str] | None,
+    local_image_repository: str,
 ) -> dict[str, str]:
     valid_bases: dict[str, str] = {}
     base_exclude_set = _normalize_exclude(base_exclude)
@@ -104,13 +112,8 @@ def _build_valid_bases(
             base_distro_exclude_set,
         ):
             continue
-        valid_bases[base_name] = _custom_image_ref(agent_name, base_name)
+        valid_bases[base_name] = local_image_ref(local_image_repository, agent_name, base_name)
     return valid_bases
-
-
-def _custom_image_ref(agent_name: str, base_name: str) -> str:
-    tag = f"{agent_name}-{base_name}".lower().replace("/", "-")
-    return f"aicage-local:{tag}"
 
 
 def _is_base_excluded(
