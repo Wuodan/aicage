@@ -47,7 +47,7 @@ Those strings should be cleanly centralized in one place.
 To largely automate my manual tests
 
 Examples:
-- docker not installed
+- docker not installed (ok, a unit-test can cover that)
 - npm not installed but used in a version.sh (local agents or local custom agents)
 - happy case process for actions user can do:
   - local agents
