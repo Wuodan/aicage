@@ -1,5 +1,9 @@
+# Warning: This is just a working copy
+# This file is generated with releases of aicage-image and overwritten for each release of aicage with
+# https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
+
 aicage-image:
-  version: 0.5.13
+  version: 0.6.0
 aicage-image-base:
   version: 0.5.13
 bases:
@@ -50,6 +54,7 @@ agent:
     agent_path: ~/.claude
     agent_full_name: Claude Code
     agent_homepage: https://claude.com/product/claude-code
+    # Build locally because the license does not allow redistributing prebuilt images.
     build_local: true
     valid_bases:
       act: aicage:claude-act
@@ -105,6 +110,7 @@ agent:
     agent_path: ~/.factory
     agent_full_name: Factory CLI
     agent_homepage: https://factory.ai/product/cli
+    # Build locally because the license does not allow redistributing prebuilt images.
     build_local: true
     valid_bases:
       act: aicage:droid-act
