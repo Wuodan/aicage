@@ -1,7 +1,7 @@
 aicage-image:
-  version: 0.5.10
+  version: 0.5.13
 aicage-image-base:
-  version: 0.5.7
+  version: 0.5.13
 bases:
   act:
     root_image: ghcr.io/catthehacker/ubuntu:act-latest
@@ -52,13 +52,13 @@ agent:
     agent_homepage: https://claude.com/product/claude-code
     redistributable: false
     valid_bases:
-      act: ghcr.io/aicage/aicage:claude-act
-      alpine: ghcr.io/aicage/aicage:claude-alpine
-      debian: ghcr.io/aicage/aicage:claude-debian
-      fedora: ghcr.io/aicage/aicage:claude-fedora
-      minimal: ghcr.io/aicage/aicage:claude-minimal
-      node: ghcr.io/aicage/aicage:claude-node
-      ubuntu: ghcr.io/aicage/aicage:claude-ubuntu
+      act: aicage:claude-act
+      alpine: aicage:claude-alpine
+      debian: aicage:claude-debian
+      fedora: aicage:claude-fedora
+      minimal: aicage:claude-minimal
+      node: aicage:claude-node
+      ubuntu: aicage:claude-ubuntu
   codex:
     agent_path: ~/.codex
     agent_full_name: Codex CLI
@@ -107,13 +107,13 @@ agent:
     agent_homepage: https://factory.ai/product/cli
     redistributable: false
     valid_bases:
-      act: ghcr.io/aicage/aicage:droid-act
-      alpine: ghcr.io/aicage/aicage:droid-alpine
-      debian: ghcr.io/aicage/aicage:droid-debian
-      fedora: ghcr.io/aicage/aicage:droid-fedora
-      minimal: ghcr.io/aicage/aicage:droid-minimal
-      node: ghcr.io/aicage/aicage:droid-node
-      ubuntu: ghcr.io/aicage/aicage:droid-ubuntu
+      act: aicage:droid-act
+      alpine: aicage:droid-alpine
+      debian: aicage:droid-debian
+      fedora: aicage:droid-fedora
+      minimal: aicage:droid-minimal
+      node: aicage:droid-node
+      ubuntu: aicage:droid-ubuntu
   gemini:
     agent_path: ~/.gemini
     agent_full_name: Gemini CLI
