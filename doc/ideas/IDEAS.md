@@ -65,3 +65,11 @@ only for debugging anyway.
 
 When aicage uses the util-image, it does a docker-run which pulls the image. But the user is kept waiting wondering
 what's going on. On my Raspberry Pi 4 this takes a while.
+
+## Put agent command in agent.yml
+
+Right now with `agents/<AGENT>`, `AGENT` is the command of the agent. This was done for simplicity in early stages of
+development. But by now this:
+- prevents having an agent with a second config (also locally)
+- is ugly
+- the code is mature enough by now to change this
