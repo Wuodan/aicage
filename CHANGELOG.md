@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-01-04
+
+### Fixed
+
+- Synced the packaged Dockerfile with the updated `entrypoint.sh` from `aicage-image`.
+
+## [0.6.0] - 2026-01-03
+
+### Added
+
+- Support custom local agents under `~/.aicage/custom/agent/` with schema validation and local builds.
+
 ## [0.5.14] - 2026-01-03
 
 ### Changed
@@ -88,10 +100,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release series: `aicage` CLI + image build/publish tooling via submodules.
 
 ## [Planned]
-
-### [0.6.x]
-
-- Custom local agents built against aicage base images.
 
 ### [0.7.x]
 
