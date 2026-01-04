@@ -56,9 +56,14 @@ jobs:
       - name: Test
         run: pytest --cov=src --cov-report=term-missing
 
+  integration:
+    name: Integration
+    needs: test
+    uses: ./.github/workflows/integration-test.yml
+
   publish:
     name: Publish to PyPI
-    needs: test
+    needs: integration
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment:
