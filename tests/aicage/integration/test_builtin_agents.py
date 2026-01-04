@@ -1,4 +1,5 @@
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -77,6 +78,10 @@ def _base_digest_available(record: BuildRecord) -> bool:
     return digest is not None
 
 
+def _ensure_base_image(record: BuildRecord) -> None:
+    subprocess.run(["docker", "pull", record.base_image], check=True, capture_output=True)
+
+
 def test_builtin_agent_runs(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _require_integration()
     _, workspace, env = _setup_workspace(monkeypatch, tmp_path, "codex")
@@ -104,20 +109,19 @@ def test_local_builtin_agent_rebuilds(monkeypatch: pytest.MonkeyPatch, tmp_path:
     assert updated.built_at != "2000-01-01T00:00:00+00:00"
     assert updated.agent_version != "0.0.0"
 
-    if _base_digest_available(updated):
-        _force_record(
-            store,
-            updated,
-            base_digest="sha256:old",
-            built_at="2000-01-02T00:00:00+00:00",
-        )
-        _run_agent(env, workspace, "claude")
-        refreshed = store.load("claude", "ubuntu")
-        assert refreshed is not None
-        assert refreshed.built_at != "2000-01-02T00:00:00+00:00"
-        assert refreshed.base_digest != "sha256:old"
-    else:
-        pytest.skip("Base image digest unavailable; cannot verify base digest rebuild.")
+    _ensure_base_image(updated)
+    assert _base_digest_available(updated)
+    _force_record(
+        store,
+        updated,
+        base_digest="sha256:old",
+        built_at="2000-01-02T00:00:00+00:00",
+    )
+    _run_agent(env, workspace, "claude")
+    refreshed = store.load("claude", "ubuntu")
+    assert refreshed is not None
+    assert refreshed.built_at != "2000-01-02T00:00:00+00:00"
+    assert refreshed.base_digest != "sha256:old"
 
 
 def test_custom_agent_rebuilds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -143,17 +147,16 @@ def test_custom_agent_rebuilds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) 
     assert updated.built_at != "2000-01-03T00:00:00+00:00"
     assert updated.agent_version != "0.0.0"
 
-    if _base_digest_available(updated):
-        _force_record(
-            store,
-            updated,
-            base_digest="sha256:old",
-            built_at="2000-01-04T00:00:00+00:00",
-        )
-        _run_agent(env, workspace, "forge")
-        refreshed = store.load("forge", "ubuntu")
-        assert refreshed is not None
-        assert refreshed.built_at != "2000-01-04T00:00:00+00:00"
-        assert refreshed.base_digest != "sha256:old"
-    else:
-        pytest.skip("Base image digest unavailable; cannot verify base digest rebuild.")
+    _ensure_base_image(updated)
+    assert _base_digest_available(updated)
+    _force_record(
+        store,
+        updated,
+        base_digest="sha256:old",
+        built_at="2000-01-04T00:00:00+00:00",
+    )
+    _run_agent(env, workspace, "forge")
+    refreshed = store.load("forge", "ubuntu")
+    assert refreshed is not None
+    assert refreshed.built_at != "2000-01-04T00:00:00+00:00"
+    assert refreshed.base_digest != "sha256:old"
