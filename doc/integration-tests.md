@@ -27,9 +27,10 @@ own job. The release workflow `/.github/workflows/publish.yml` calls the reusabl
 
 ## Current integration tests
 
-### Built-in agents
+### Remote built-in agents
 
-File: `tests/aicage/integration/test_builtin_agents.py`
+Files: `tests/aicage/integration/remote_builtin/test_run.py`,
+`tests/aicage/integration/remote_builtin/test_pull_newer.py`
 
 - `test_builtin_agent_runs`
   - Uses the built-in `codex` agent and runs `aicage codex --version`.
@@ -39,33 +40,47 @@ File: `tests/aicage/integration/test_builtin_agents.py`
   - Uses the built-in `copilot` agent.
   - Tags a locally built dummy image with the same name:tag as the remote image.
   - Runs `aicage copilot -c "echo ok"` with docker args preseeded to `--entrypoint=/bin/sh`, then verifies the local
-    image ID changes and a repo
-    digest is present.
+    image ID changes and a repo digest is present.
+
+### Local built-in agents
+
+Files: `tests/aicage/integration/local_builtin/test_rebuild_agent_version.py`,
+`tests/aicage/integration/local_builtin/test_rebuild_base_digest.py`
 
 - `test_local_builtin_agent_rebuilds`
   - Uses the built-in `claude` agent (local build required).
   - Runs `aicage claude --version` to build and validate the image once.
   - Forces a rebuild by editing the build record to use an outdated `agent_version`, then runs again and asserts that
     the build record updates.
-  - Forces a rebuild by editing the build record `base_digest`, pulls the base image to ensure a digest is present, then
-    runs again and asserts that the build record updates.
+
+- `test_local_builtin_agent_rebuilds_on_base_digest`
+  - Uses the built-in `claude` agent (local build required).
+  - Runs `aicage claude --version` to build and validate the image once.
+  - Forces a rebuild by editing the build record `base_digest`, then runs again and asserts that the build record
+    updates.
+
+### Local custom agents
+
+Files: `tests/aicage/integration/local_custom/test_build_and_version.py`,
+`tests/aicage/integration/local_custom/test_rebuild_agent_version.py`,
+`tests/aicage/integration/local_custom/test_rebuild_base_digest.py`
+
+- `test_custom_agent_build_and_version`
+  - Copies the `forge` sample from `doc/sample/custom/agents/forge` into the sandboxed custom agent directory.
+  - Runs `aicage forge --version` in a pseudo-TTY and asserts non-empty output.
+  - Confirms a build record exists for the custom agent.
 
 - `test_custom_agent_rebuilds`
   - Uses the custom `forge` agent from `doc/sample/custom/agents/forge`.
   - Runs `aicage forge --version` to build and validate the image once.
   - Forces a rebuild by editing the build record to use an outdated `agent_version`, then runs again and asserts that
     the build record updates.
-  - Forces a rebuild by editing the build record `base_digest`, pulls the base image to ensure a digest is present, then
-    runs again and asserts that the build record updates.
 
-### Custom agent build sample
-
-File: `tests/aicage/integration/test_custom_agent_build.py`
-
-- `test_custom_agent_build_and_version`
-  - Copies the `forge` sample from `doc/sample/custom/agents/forge` into the sandboxed custom agent directory.
-  - Runs `aicage forge --version` in a pseudo-TTY and asserts non-empty output.
-  - Confirms a build record exists for the custom agent.
+- `test_custom_agent_rebuilds_on_base_digest`
+  - Uses the custom `forge` agent from `doc/sample/custom/agents/forge`.
+  - Runs `aicage forge --version` to build and validate the image once.
+  - Forces a rebuild by editing the build record `base_digest`, then runs again and asserts that the build record
+    updates.
 
 ### Version check fallback
 
@@ -83,6 +98,6 @@ File: `tests/aicage/integration/test_version_check.py`
 
 ## Expected failures (current)
 
-- `tests/aicage/integration/test_builtin_agents.py`
+- `tests/aicage/integration/remote_builtin/test_pull_newer.py`
   - `test_builtin_agent_pulls_newer_digest` currently fails because `aicage` does not yet pull a newer remote image
     when a local image with the same tag exists. This is intentional to capture the missing behavior.
