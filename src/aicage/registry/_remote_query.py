@@ -39,7 +39,10 @@ def get_remote_repo_digest_for_repo(
     response_headers = _head_request(url, headers)
     if response_headers is None:
         return None
-    return response_headers.get("Docker-Content-Digest")
+    digest = response_headers.get("Docker-Content-Digest")
+    if digest:
+        return digest
+    return response_headers.get("docker-content-digest")
 
 
 def _parse_reference(image_ref: str) -> str:
