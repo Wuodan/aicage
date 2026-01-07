@@ -56,7 +56,7 @@ Examples:
   - custom bases
   - combinations of those with or without npm installed, util-image used or not, etc
 
-## Replace remove `aicage --entrypoint`
+## Replace remove `aicage --aicage-entrypoint`
 
 This overrides the same parameter to docker run. And with `docker run --entrypoint` user can do the same. We have it
 only for debugging anyway.

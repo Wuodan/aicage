@@ -45,6 +45,7 @@ def run_cli_pty(args: list[str], env: dict[str, str], cwd: Path) -> tuple[int, s
 def build_cli_env(home_dir: Path) -> dict[str, str]:
     env = dict(os.environ)
     env["HOME"] = str(home_dir)
+    (home_dir / ".gitconfig").touch(exist_ok=True)
     repo_root = Path(__file__).resolve().parents[3]
     env["PYTHONPATH"] = str(repo_root / "src")
     for key in list(env):

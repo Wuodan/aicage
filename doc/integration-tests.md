@@ -35,6 +35,13 @@ File: `tests/aicage/integration/test_builtin_agents.py`
   - Uses the built-in `codex` agent and runs `aicage codex --version`.
   - Ensures the CLI can pull and run a prebuilt image and that the version output is non-empty.
 
+- `test_builtin_agent_pulls_newer_digest`
+  - Uses the built-in `copilot` agent.
+  - Tags a locally built dummy image with the same name:tag as the remote image.
+  - Runs `aicage copilot -c "echo ok"` with docker args preseeded to `--entrypoint=/bin/sh`, then verifies the local
+    image ID changes and a repo
+    digest is present.
+
 - `test_local_builtin_agent_rebuilds`
   - Uses the built-in `claude` agent (local build required).
   - Runs `aicage claude --version` to build and validate the image once.

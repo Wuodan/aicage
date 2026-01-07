@@ -77,7 +77,7 @@ class ParseCliTests(TestCase):
         parsed = parse_cli(
             [
                 "--docker",
-                "--entrypoint",
+                "--aicage-entrypoint",
                 "/tmp/entrypoint.sh",
                 "--dry-run",
                 "--",
