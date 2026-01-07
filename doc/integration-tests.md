@@ -83,9 +83,6 @@ File: `tests/aicage/integration/test_version_check.py`
 
 ## Expected failures (current)
 
-- `tests/aicage/integration/test_custom_agent_build.py`
-  - `test_custom_agent_build_and_version` currently fails because custom agent builds use the wrong Docker build
-    context. This is a known bug and is intentionally left to surface in integration testing.
 - `tests/aicage/integration/test_builtin_agents.py`
   - `test_builtin_agent_pulls_newer_digest` currently fails because `aicage` does not yet pull a newer remote image
     when a local image with the same tag exists. This is intentional to capture the missing behavior.
