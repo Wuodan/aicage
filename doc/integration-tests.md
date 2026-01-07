@@ -80,3 +80,12 @@ File: `tests/aicage/integration/test_version_check.py`
 - Integration tests are intentionally slow and require Docker and network access.
 - The tests run with `HOME` set to a temporary directory to avoid writing to real user state.
 - The `forge` sample files are used as-is and should remain a valid example for users.
+
+## Expected failures (current)
+
+- `tests/aicage/integration/test_custom_agent_build.py`
+  - `test_custom_agent_build_and_version` currently fails because custom agent builds use the wrong Docker build
+    context. This is a known bug and is intentionally left to surface in integration testing.
+- `tests/aicage/integration/test_builtin_agents.py`
+  - `test_builtin_agent_pulls_newer_digest` currently fails because `aicage` does not yet pull a newer remote image
+    when a local image with the same tag exists. This is intentional to capture the missing behavior.
