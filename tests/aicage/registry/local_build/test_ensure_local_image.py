@@ -101,7 +101,8 @@ class EnsureLocalImageTests(TestCase):
             payload = yaml.safe_load(record_path.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", payload[_AGENT_VERSION_KEY])
 
-    def test_ensure_local_image_skips_when_up_to_date(self) -> None:
+    @staticmethod
+    def test_ensure_local_image_skips_when_up_to_date() -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             state_dir = Path(tmp_dir) / "state"
             log_dir = Path(tmp_dir) / "logs"

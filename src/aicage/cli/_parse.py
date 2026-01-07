@@ -16,7 +16,11 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     """
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
-    parser.add_argument("--aicage-entrypoint", dest="entrypoint", help="Override the container entrypoint with a host path.")
+    parser.add_argument(
+        "--aicage-entrypoint",
+        dest="entrypoint",
+        help="Override the container entrypoint with a host path.",
+    )
     parser.add_argument("--docker", action="store_true", help="Mount the host Docker socket into the container.")
     parser.add_argument("--config", help="Perform config actions such as 'print'.")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit.")

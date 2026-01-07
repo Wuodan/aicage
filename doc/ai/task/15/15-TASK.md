@@ -32,5 +32,5 @@ You shall follow this order:
 5. Run linters as in the pipeline `.github/workflows/publish.yml` or `scripts/lint.sh` (does the same)
 6. Present me the change for review
 7. Interactively react to my review feedback
-9. Do not commit any changes unless explicitly instructed by the user. Remind him about it when you think committing
+8. Do not commit any changes unless explicitly instructed by the user. Remind him about it when you think committing
    is due.

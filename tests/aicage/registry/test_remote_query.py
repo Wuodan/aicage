@@ -55,7 +55,8 @@ class RemoteQueryTests(TestCase):
             )
         self.assertEqual("sha256:remote", digest)
 
-    def _global_config(self) -> GlobalConfig:
+    @staticmethod
+    def _global_config() -> GlobalConfig:
         return GlobalConfig(
             image_registry="ghcr.io",
             image_registry_api_url="https://ghcr.io/v2",
