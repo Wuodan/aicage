@@ -1,3 +1,5 @@
+import urllib.error
+from email.message import Message
 from unittest import TestCase, mock
 
 from aicage.config.global_config import GlobalConfig
@@ -54,6 +56,111 @@ class RemoteQueryTests(TestCase):
                 self._global_config(),
             )
         self.assertEqual("sha256:remote", digest)
+
+    def test_get_remote_repo_digest_returns_none_on_missing_reference(self) -> None:
+        with mock.patch(
+            "aicage.registry._remote_query.fetch_pull_token_for_repository",
+        ) as token_mock:
+            digest = _remote_query.get_remote_repo_digest_for_repo(
+                "ghcr.io/aicage/aicage",
+                "aicage/aicage",
+                self._global_config(),
+            )
+        self.assertIsNone(digest)
+        token_mock.assert_not_called()
+
+    def test_get_remote_repo_digest_returns_none_on_missing_headers(self) -> None:
+        with (
+            mock.patch(
+                "aicage.registry._remote_query.fetch_pull_token_for_repository",
+                return_value="abc",
+            ),
+            mock.patch(
+                "aicage.registry._remote_query._head_request",
+                return_value=None,
+            ),
+        ):
+            digest = _remote_query.get_remote_repo_digest_for_repo(
+                "ghcr.io/aicage/aicage:tag",
+                "aicage/aicage",
+                self._global_config(),
+            )
+        self.assertIsNone(digest)
+
+    def test_get_remote_repo_digest_accepts_lowercase_header(self) -> None:
+        with (
+            mock.patch(
+                "aicage.registry._remote_query.fetch_pull_token_for_repository",
+                return_value="abc",
+            ),
+            mock.patch(
+                "aicage.registry._remote_query._head_request",
+                return_value={"docker-content-digest": "sha256:lower"},
+            ),
+        ):
+            digest = _remote_query.get_remote_repo_digest_for_repo(
+                "ghcr.io/aicage/aicage:tag",
+                "aicage/aicage",
+                self._global_config(),
+            )
+        self.assertEqual("sha256:lower", digest)
+
+    def test_parse_reference_accepts_digest(self) -> None:
+        reference = _remote_query._parse_reference("ghcr.io/aicage/aicage@sha256:abc")
+        self.assertEqual("sha256:abc", reference)
+
+    def test_parse_reference_accepts_tag(self) -> None:
+        reference = _remote_query._parse_reference("ghcr.io/aicage/aicage:tag")
+        self.assertEqual("tag", reference)
+
+    def test_parse_reference_rejects_missing_tag(self) -> None:
+        reference = _remote_query._parse_reference("ghcr.io/aicage/aicage")
+        self.assertIsNone(reference)
+
+    def test_parse_reference_rejects_empty_tag(self) -> None:
+        reference = _remote_query._parse_reference("ghcr.io/aicage/aicage:")
+        self.assertIsNone(reference)
+
+    def test_head_request_returns_headers_on_auth_error(self) -> None:
+        headers = Message()
+        headers["Docker-Content-Digest"] = "sha256:abc"
+        error = urllib.error.HTTPError(
+            url="https://example.test",
+            code=401,
+            msg="unauthorized",
+            hdrs=headers,
+            fp=None,
+        )
+        with mock.patch(
+            "aicage.registry._remote_query.urllib.request.urlopen",
+            side_effect=error,
+        ):
+            result = _remote_query._head_request("https://example.test", {"Accept": "x"})
+        self.assertEqual({"Docker-Content-Digest": "sha256:abc"}, result)
+
+    def test_head_request_returns_none_on_other_errors(self) -> None:
+        headers = Message()
+        error = urllib.error.HTTPError(
+            url="https://example.test",
+            code=404,
+            msg="missing",
+            hdrs=headers,
+            fp=None,
+        )
+        with mock.patch(
+            "aicage.registry._remote_query.urllib.request.urlopen",
+            side_effect=error,
+        ):
+            result = _remote_query._head_request("https://example.test", {"Accept": "x"})
+        self.assertIsNone(result)
+
+    def test_head_request_returns_none_on_url_error(self) -> None:
+        with mock.patch(
+            "aicage.registry._remote_query.urllib.request.urlopen",
+            side_effect=urllib.error.URLError("boom"),
+        ):
+            result = _remote_query._head_request("https://example.test", {"Accept": "x"})
+        self.assertIsNone(result)
 
     @staticmethod
     def _global_config() -> GlobalConfig:

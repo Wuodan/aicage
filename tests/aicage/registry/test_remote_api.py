@@ -4,6 +4,17 @@ from aicage.registry import _remote_api
 
 
 class RemoteApiTests(TestCase):
+    def test_fetch_pull_token_returns_token(self) -> None:
+        def fake_fetch_json(url: str, headers: dict[str, str] | None):
+            return {"token": "abc"}, {}
+
+        with mock.patch("aicage.registry._remote_api._fetch_json", fake_fetch_json):
+            token = _remote_api.fetch_pull_token_for_repository(
+                mock.Mock(image_registry_api_token_url="https://example.test/token"),
+                "repo",
+            )
+        self.assertEqual("abc", token)
+
     def test_fetch_pull_token_missing_token(self) -> None:
         def fake_fetch_json(url: str, headers: dict[str, str] | None):
             return {}, {}
@@ -16,3 +27,38 @@ class RemoteApiTests(TestCase):
                         image_repository="repo",
                     )
                 )
+
+    def test_fetch_json_raises_on_request_failure(self) -> None:
+        with mock.patch(
+            "aicage.registry._remote_api.urllib.request.urlopen",
+            side_effect=Exception("boom"),
+        ):
+            with self.assertRaises(_remote_api.RegistryDiscoveryError):
+                _remote_api._fetch_json("https://example.test/api", None)
+
+    def test_fetch_json_raises_on_invalid_json(self) -> None:
+        response = mock.Mock()
+        response.read.return_value = b"not-json"
+        response.headers = {}
+        response.__enter__ = mock.Mock(return_value=response)
+        response.__exit__ = mock.Mock(return_value=None)
+        with mock.patch(
+            "aicage.registry._remote_api.urllib.request.urlopen",
+            return_value=response,
+        ):
+            with self.assertRaises(_remote_api.RegistryDiscoveryError):
+                _remote_api._fetch_json("https://example.test/api", None)
+
+    def test_fetch_json_returns_payload_and_headers(self) -> None:
+        response = mock.Mock()
+        response.read.return_value = b"{\"token\": \"abc\"}"
+        response.headers = {"x-test": "1"}
+        response.__enter__ = mock.Mock(return_value=response)
+        response.__exit__ = mock.Mock(return_value=None)
+        with mock.patch(
+            "aicage.registry._remote_api.urllib.request.urlopen",
+            return_value=response,
+        ):
+            data, headers = _remote_api._fetch_json("https://example.test/api", None)
+        self.assertEqual({"token": "abc"}, data)
+        self.assertEqual({"x-test": "1"}, headers)

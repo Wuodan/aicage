@@ -7,6 +7,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
 from aicage.registry import image_selection
+from aicage.registry.image_selection.models import ImageSelection
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -24,7 +25,9 @@ from aicage.registry.images_metadata.models import (
     AGENT_PATH_KEY,
     BUILD_LOCAL_KEY,
     ImagesMetadata,
+    _ImageReleaseInfo,
 )
+from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
 
 
 class ImageSelectionTests(TestCase):
@@ -101,6 +104,133 @@ class ImageSelectionTests(TestCase):
 
             self.assertEqual("aicage:claude-ubuntu", selection.image_ref)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
+
+    def test_resolve_uses_fresh_selection_when_image_ref_has_no_base(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+        )
+        agent_cfg = AgentConfig(image_ref="aicage:codex-ubuntu")
+        context.project_cfg.agents["codex"] = agent_cfg
+        with mock.patch(
+            "aicage.registry.image_selection.selection._fresh_selection",
+            return_value=ImageSelection(
+                image_ref="aicage:codex-ubuntu",
+                base="ubuntu",
+                extensions=[],
+                base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            ),
+        ) as fresh_mock:
+            image_selection.select_agent_image("codex", context)
+        fresh_mock.assert_called_once()
+
+    def test_resolve_resets_on_missing_extensions(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+        )
+        agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=["extra"])
+        context.project_cfg.agents["codex"] = agent_cfg
+        with (
+            mock.patch(
+                "aicage.registry.image_selection.selection.ensure_extensions_exist",
+                return_value=True,
+            ),
+            mock.patch(
+                "aicage.registry.image_selection.selection._fresh_selection",
+                return_value=ImageSelection(
+                    image_ref="aicage:codex-ubuntu",
+                    base="ubuntu",
+                    extensions=[],
+                    base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+                ),
+            ) as fresh_mock,
+        ):
+            image_selection.select_agent_image("codex", context)
+        fresh_mock.assert_called_once()
+
+    def test_resolve_uses_stored_image_ref(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+        )
+        agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=[])
+        context.project_cfg.agents["codex"] = agent_cfg
+        selection = image_selection.select_agent_image("codex", context)
+        self.assertEqual("aicage:codex-ubuntu", selection.image_ref)
+
+    def test_resolve_raises_when_agent_missing(self) -> None:
+        context = ConfigContext(
+            store=mock.Mock(),
+            project_cfg=ProjectConfig(path="/tmp/project", agents={}),
+            global_cfg=self._global_config(),
+            images_metadata=ImagesMetadata(
+                aicage_image=_ImageReleaseInfo(version="0.3.3"),
+                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
+                bases={},
+                agents={},
+            ),
+        )
+        with self.assertRaises(CliError):
+            image_selection.select_agent_image("codex", context)
+
+    def test_fresh_selection_accepts_extended_choice(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+        )
+        extended = [
+            ExtendedImageOption(
+                name="custom",
+                base="ubuntu",
+                description="Custom",
+                extensions=["extra"],
+                image_ref="aicage-extended:codex-ubuntu-extra",
+            )
+        ]
+        with (
+            mock.patch(
+                "aicage.registry.image_selection.selection.load_extended_image_options",
+                return_value=extended,
+            ),
+            mock.patch(
+                "aicage.registry.image_selection.selection.prompt_for_image_choice",
+                return_value=ImageChoice(kind="extended", value="custom"),
+            ),
+            mock.patch(
+                "aicage.registry.image_selection.selection.resolve_extended_image",
+                return_value=extended[0],
+            ),
+            mock.patch(
+                "aicage.registry.image_selection.selection.apply_extended_selection",
+                return_value=ImageSelection(
+                    image_ref="aicage-extended:codex-ubuntu-extra",
+                    base="ubuntu",
+                    extensions=["extra"],
+                    base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+                ),
+            ) as apply_mock,
+        ):
+            selection = image_selection.select_agent_image("codex", context)
+        self.assertEqual("aicage-extended:codex-ubuntu-extra", selection.image_ref)
+        apply_mock.assert_called_once()
+
+    def test_fresh_selection_raises_on_empty_bases(self) -> None:
+        context = self._build_context(
+            mock.Mock(),
+            Path("/tmp/project"),
+            bases=["ubuntu"],
+        )
+        with mock.patch(
+            "aicage.registry.image_selection.selection._available_bases",
+            return_value=[],
+        ):
+            with self.assertRaises(CliError):
+                image_selection.select_agent_image("codex", context)
 
     @staticmethod
     def _build_context(
