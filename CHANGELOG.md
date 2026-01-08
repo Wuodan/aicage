@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-01-08
+
+### Changed
+
+- Local builds now validate base image updates by checking base layers in final images, removing stored base digest
+  state.
+
+### Internal
+
+- Consolidated YAML path constants and refreshed integration/CI helpers for clearer test and pipeline output.
+
 ## [0.6.3] - 2026-01-07
 
 ### Fixed
