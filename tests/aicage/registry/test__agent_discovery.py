@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.paths import AGENT_DEFINITION_FILENAME
+from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES
 from aicage.registry._agent_discovery import discover_agents
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
@@ -44,7 +44,7 @@ class AgentDiscoveryTests(TestCase):
             custom_dir = Path(tmp_dir)
             agent_dir = custom_dir / "codex"
             agent_dir.mkdir()
-            (agent_dir / AGENT_DEFINITION_FILENAME).write_text(
+            (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
                 "\n".join(
                     [
                         f"{AGENT_PATH_KEY}: ~/.custom-codex",
@@ -72,7 +72,7 @@ class AgentDiscoveryTests(TestCase):
             custom_dir = Path(tmp_dir)
             agent_dir = custom_dir / "custom"
             agent_dir.mkdir()
-            (agent_dir / AGENT_DEFINITION_FILENAME).write_text(
+            (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
                 "\n".join(
                     [
                         f"{AGENT_PATH_KEY}: ~/.custom",
