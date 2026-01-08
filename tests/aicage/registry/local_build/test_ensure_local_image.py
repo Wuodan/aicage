@@ -17,7 +17,6 @@ from aicage.registry.local_build import ensure_local_image as ensure_local_image
 from aicage.registry.local_build._store import (
     _AGENT_KEY,
     _AGENT_VERSION_KEY,
-    _BASE_DIGEST_KEY,
     _BASE_IMAGE_KEY,
     _BASE_KEY,
     _BUILT_AT_KEY,
@@ -89,10 +88,6 @@ class EnsureLocalImageTests(TestCase):
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.run_build"
                 ) as build_mock,
-                mock.patch(
-                    "aicage.registry.local_build.ensure_local_image._local_query.get_local_repo_digest_for_repo",
-                    return_value="sha256:base",
-                ),
             ):
                 ensure_local_image_module.ensure_local_image(run_config)
 
@@ -116,7 +111,6 @@ class EnsureLocalImageTests(TestCase):
                         _BASE_KEY: "ubuntu",
                         _AGENT_VERSION_KEY: "1.2.3",
                         _BASE_IMAGE_KEY: "ghcr.io/aicage/aicage-image-base:ubuntu",
-                        _BASE_DIGEST_KEY: "sha256:base",
                         _IMAGE_REF_KEY: "aicage:claude-ubuntu",
                         _BUILT_AT_KEY: "2024-01-01T00:00:00+00:00",
                     }

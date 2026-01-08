@@ -6,8 +6,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.registry import _local_query
-from aicage.registry.local_build._store import BuildRecord, BuildStore
+from aicage.registry.local_build._store import BuildStore
 
 from .._helpers import build_cli_env, run_cli_pty
 
@@ -45,31 +44,27 @@ def _run_agent(env: dict[str, str], workspace: Path, agent_name: str) -> None:
     assert output_lines[-1]
 
 
-def _force_record(store: BuildStore, record: BuildRecord, *, base_digest: str, built_at: str) -> None:
-    updated = BuildRecord(
-        agent=record.agent,
-        base=record.base,
-        agent_version=record.agent_version,
-        base_image=record.base_image,
-        base_digest=base_digest,
-        image_ref=record.image_ref,
-        built_at=built_at,
+def _replace_final_image(image_ref: str, tmp_path: Path) -> None:
+    build_dir = tmp_path / "override"
+    build_dir.mkdir(exist_ok=True)
+    dockerfile = build_dir / "Dockerfile"
+    dockerfile.write_text("FROM alpine:latest\nRUN echo replaced\n", encoding="utf-8")
+    subprocess.run(
+        [
+            "docker",
+            "build",
+            "--no-cache",
+            "--pull",
+            "--tag",
+            image_ref,
+            str(build_dir),
+        ],
+        check=True,
+        capture_output=True,
     )
-    store.save(updated)
 
 
-def _ensure_base_image(record: BuildRecord) -> None:
-    subprocess.run(["docker", "pull", record.base_image], check=True, capture_output=True)
-
-
-def _base_digest_available(record: BuildRecord) -> bool:
-    cfg = SettingsStore().load_global()
-    repository = f"{cfg.image_registry}/{cfg.image_base_repository}"
-    digest = _local_query.get_local_repo_digest_for_repo(record.base_image, repository)
-    return digest is not None
-
-
-def test_local_builtin_agent_rebuilds_on_base_digest(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_local_builtin_agent_rebuilds_on_base_layer(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _require_integration()
     workspace, env = _setup_workspace(monkeypatch, tmp_path, "claude")
     _run_agent(env, workspace, "claude")
@@ -78,16 +73,8 @@ def test_local_builtin_agent_rebuilds_on_base_digest(monkeypatch: pytest.MonkeyP
     record = store.load("claude", "ubuntu")
     assert record is not None
 
-    _ensure_base_image(record)
-    assert _base_digest_available(record)
-    _force_record(
-        store,
-        record,
-        base_digest="sha256:old",
-        built_at="2000-01-02T00:00:00+00:00",
-    )
+    _replace_final_image(record.image_ref, tmp_path)
     _run_agent(env, workspace, "claude")
     updated = store.load("claude", "ubuntu")
     assert updated is not None
-    assert updated.built_at != "2000-01-02T00:00:00+00:00"
-    assert updated.base_digest != "sha256:old"
+    assert updated.built_at != record.built_at

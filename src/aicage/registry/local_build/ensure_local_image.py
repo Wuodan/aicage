@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
-from aicage.registry import _local_query
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
@@ -21,7 +20,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
 
     base_image = base_image_ref(run_config)
     base_repo = base_repository(run_config)
-    base_digest = refresh_base_digest(
+    refresh_base_digest(
         base_image_ref=base_image,
         base_repository=base_repo,
         global_cfg=run_config.global_cfg,
@@ -33,7 +32,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
     needs_build = should_build(
         run_config=run_config,
         record=record,
-        base_digest=base_digest,
+        base_image_ref=base_image,
     )
     if not needs_build:
         return
@@ -45,14 +44,12 @@ def ensure_local_image(run_config: RunConfig) -> None:
         log_path=log_path,
     )
 
-    updated_base_digest = _local_query.get_local_repo_digest_for_repo(base_image, base_repo)
     store.save(
         BuildRecord(
             agent=run_config.agent,
             base=run_config.base,
             agent_version=run_config.agent_version,
             base_image=base_image,
-            base_digest=updated_base_digest,
             image_ref=run_config.image_ref,
             built_at=now_iso(),
         )

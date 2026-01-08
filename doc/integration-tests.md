@@ -45,7 +45,7 @@ Files: `tests/aicage/integration/remote_builtin/test_run.py`,
 ### Local built-in agents
 
 Files: `tests/aicage/integration/local_builtin/test_rebuild_agent_version.py`,
-`tests/aicage/integration/local_builtin/test_rebuild_base_digest.py`
+`tests/aicage/integration/local_builtin/test_rebuild_base_layer.py`
 
 - `test_local_builtin_agent_rebuilds`
   - Uses the built-in `claude` agent (local build required).
@@ -53,17 +53,16 @@ Files: `tests/aicage/integration/local_builtin/test_rebuild_agent_version.py`,
   - Forces a rebuild by editing the build record to use an outdated `agent_version`, then runs again and asserts that
     the build record updates.
 
-- `test_local_builtin_agent_rebuilds_on_base_digest`
+- `test_local_builtin_agent_rebuilds_on_base_layer`
   - Uses the built-in `claude` agent (local build required).
   - Runs `aicage claude --version` to build and validate the image once.
-  - Forces a rebuild by editing the build record `base_digest`, then runs again and asserts that the build record
-    updates.
+  - Replaces the final image tag with a dummy image, then runs again and asserts that the build record updates.
 
 ### Local custom agents
 
 Files: `tests/aicage/integration/local_custom/test_build_and_version.py`,
 `tests/aicage/integration/local_custom/test_rebuild_agent_version.py`,
-`tests/aicage/integration/local_custom/test_rebuild_base_digest.py`
+`tests/aicage/integration/local_custom/test_rebuild_base_layer.py`
 
 - `test_custom_agent_build_and_version`
   - Copies the `forge` sample from `doc/sample/custom/agents/forge` into the sandboxed custom agent directory.
@@ -76,11 +75,10 @@ Files: `tests/aicage/integration/local_custom/test_build_and_version.py`,
   - Forces a rebuild by editing the build record to use an outdated `agent_version`, then runs again and asserts that
     the build record updates.
 
-- `test_custom_agent_rebuilds_on_base_digest`
+- `test_custom_agent_rebuilds_on_base_layer`
   - Uses the custom `forge` agent from `doc/sample/custom/agents/forge`.
   - Runs `aicage forge --version` to build and validate the image once.
-  - Forces a rebuild by editing the build record `base_digest`, then runs again and asserts that the build record
-    updates.
+  - Replaces the final image tag with a dummy image, then runs again and asserts that the build record updates.
 
 ### Version check fallback
 

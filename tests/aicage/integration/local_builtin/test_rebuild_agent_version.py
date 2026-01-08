@@ -49,7 +49,6 @@ def _force_record(store: BuildStore, record: BuildRecord, *, agent_version: str,
         base=record.base,
         agent_version=agent_version,
         base_image=record.base_image,
-        base_digest=record.base_digest,
         image_ref=record.image_ref,
         built_at=built_at,
     )

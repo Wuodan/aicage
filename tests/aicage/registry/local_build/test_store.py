@@ -14,7 +14,6 @@ class LocalBuildStoreTests(TestCase):
                 base="ubuntu",
                 agent_version="1.2.3",
                 base_image="ghcr.io/aicage/aicage-image-base:ubuntu",
-                base_digest="sha256:base",
                 image_ref="aicage:claude-ubuntu",
                 built_at="2024-01-01T00:00:00+00:00",
             )

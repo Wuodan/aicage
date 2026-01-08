@@ -21,10 +21,10 @@
   - `tests/aicage/integration/remote_builtin/test_run.py`
   - `tests/aicage/integration/remote_builtin/test_pull_newer.py`
   - `tests/aicage/integration/local_builtin/test_rebuild_agent_version.py`
-  - `tests/aicage/integration/local_builtin/test_rebuild_base_digest.py`
+  - `tests/aicage/integration/local_builtin/test_rebuild_base_layer.py`
   - `tests/aicage/integration/local_custom/test_build_and_version.py`
   - `tests/aicage/integration/local_custom/test_rebuild_agent_version.py`
-  - `tests/aicage/integration/local_custom/test_rebuild_base_digest.py`
+  - `tests/aicage/integration/local_custom/test_rebuild_base_layer.py`
   - `doc/integration-tests.md`
   - `.github/workflows/integration-test.yml`
   - `.github/workflows/publish.yml`
