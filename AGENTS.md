@@ -52,12 +52,8 @@ Meaning:
 
 ## Linting
 
-Linters:
-- `yamllint .`
-- `pymarkdown --config .pymarkdown.json scan .`
-- `ruff check .`
-- `pyright .`
-- `rg -n --glob '*.py' '__all__' src`
+Linters
+- use `scripts/lint.sh`
 
 ## Tests
 

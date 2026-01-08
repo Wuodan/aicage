@@ -4,10 +4,15 @@ set -euo pipefail
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
-source .venv/bin/activate
-
 yamllint .
-pymarkdown --config .pymarkdown.json scan .
+pymarkdown \
+  --config .pymarkdown.json scan \
+  --recurse \
+  --exclude './.venv/' \
+  --exclude './aicage-image/' \
+  --exclude './aicage-image-base/' \
+  --exclude './aicage-image-util/' \
+  .
 ruff check .
 pyright .
 # Ignore generated version metadata from setuptools-scm.
