@@ -9,7 +9,7 @@ import yaml
 from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
-from aicage.registry.agent_version._store import _VERSION_KEY
+from aicage.registry.agent_version.store import _VERSION_KEY
 from aicage.registry.images_metadata.models import AgentMetadata
 
 

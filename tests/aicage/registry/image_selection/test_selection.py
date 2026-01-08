@@ -55,7 +55,7 @@ class ImageSelectionTests(TestCase):
                 bases=["alpine", "ubuntu"],
             )
             with mock.patch(
-                "aicage.registry.image_selection.prompt_for_base", return_value="alpine"
+                "aicage.registry.image_selection.selection.prompt_for_base", return_value="alpine"
             ):
                 image_selection.select_agent_image("codex", context)
 

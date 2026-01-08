@@ -1,0 +1,46 @@
+from dataclasses import dataclass
+
+from aicage.errors import CliError
+
+from .tty import ensure_tty_for_prompt
+
+
+@dataclass(frozen=True)
+class ExtensionOption:
+    name: str
+    description: str
+
+
+def prompt_for_extensions(options: list[ExtensionOption]) -> list[str]:
+    if not options:
+        return []
+    ensure_tty_for_prompt()
+    print("Select extensions to add (comma-separated numbers or names, empty for none):")
+    for idx, option in enumerate(options, start=1):
+        print(f"  {idx}) {option.name}: {option.description}")
+    response = input("Enter selection: ").strip()
+    if not response:
+        return []
+    requested = [item.strip() for item in response.split(",") if item.strip()]
+    selection: list[str] = []
+    seen: set[str] = set()
+    for item in requested:
+        extension_id = _resolve_extension_choice(item, options)
+        if extension_id in seen:
+            raise CliError(f"Duplicate extension '{extension_id}' selected.")
+        seen.add(extension_id)
+        selection.append(extension_id)
+    return selection
+
+
+def _resolve_extension_choice(response: str, options: list[ExtensionOption]) -> str:
+    if response.isdigit():
+        idx = int(response)
+        if idx < 1 or idx > len(options):
+            raise CliError(f"Invalid selection '{response}'. Pick a number between 1 and {len(options)}.")
+        return options[idx - 1].name
+    for option in options:
+        if option.name == response:
+            return option.name
+    valid = ", ".join(option.name for option in options)
+    raise CliError(f"Invalid extension '{response}'. Valid options: {valid}")

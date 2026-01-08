@@ -20,6 +20,8 @@ def get_remote_repo_digest_for_repo(
     global_cfg: GlobalConfig,
 ) -> str | None:
     reference = _parse_reference(image_ref)
+    if reference is None:
+        return None
     try:
         token = fetch_pull_token_for_repository(global_cfg, repository)
     except RegistryDiscoveryError:
@@ -45,15 +47,18 @@ def get_remote_repo_digest_for_repo(
     return response_headers.get("docker-content-digest")
 
 
-def _parse_reference(image_ref: str) -> str:
-    reference = "latest"
+def _parse_reference(image_ref: str) -> str | None:
     if "@" in image_ref:
         _, reference = image_ref.split("@", 1)
     else:
         last_colon = image_ref.rfind(":")
         if last_colon > image_ref.rfind("/"):
             reference = image_ref[last_colon + 1 :]
-    return reference or "latest"
+        else:
+            return None
+    if not reference:
+        return None
+    return reference
 
 
 def _head_request(url: str, headers: Mapping[str, str]) -> dict[str, str] | None:

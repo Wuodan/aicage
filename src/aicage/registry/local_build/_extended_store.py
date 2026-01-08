@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
 
+from aicage.paths import DEFAULT_LOCAL_EXTENDED_STATE_DIR
 from ._store import sanitize
-
-_DEFAULT_STATE_DIR = "~/.aicage/state/local-extended"
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
 _IMAGE_REF_KEY: str = "image_ref"
@@ -31,7 +29,7 @@ class ExtendedBuildRecord:
 
 class ExtendedBuildStore:
     def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or Path(os.path.expanduser(_DEFAULT_STATE_DIR))
+        self._base_dir = base_dir or DEFAULT_LOCAL_EXTENDED_STATE_DIR.expanduser()
 
     def load(self, image_ref: str) -> ExtendedBuildRecord | None:
         path = self._path(image_ref)

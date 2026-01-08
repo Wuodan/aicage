@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import yaml
 
-from aicage.registry.agent_version._store import (
+from aicage.registry.agent_version.store import (
     _AGENT_KEY,
     _CHECKED_AT_KEY,
     _VERSION_KEY,

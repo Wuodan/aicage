@@ -42,8 +42,8 @@ class EnsureLocalImageTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store._DEFAULT_STATE_DIR",
-                    str(state_dir),
+                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    state_dir,
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
@@ -70,8 +70,8 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store._DEFAULT_STATE_DIR",
-                    str(state_dir),
+                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    state_dir,
                 ),
                 mock.patch(
                     "aicage.registry.local_build._logs._DEFAULT_LOG_DIR",
@@ -120,8 +120,8 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store._DEFAULT_STATE_DIR",
-                    str(state_dir),
+                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    state_dir,
                 ),
                 mock.patch(
                     "aicage.registry.local_build._logs._DEFAULT_LOG_DIR",

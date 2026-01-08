@@ -1,12 +1,10 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
 
 from aicage.config.context import ConfigContext
-from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
+from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
 from aicage.registry._extended_images import (
     ExtendedImageConfig,
@@ -14,34 +12,22 @@ from aicage.registry._extended_images import (
     load_extended_images,
     write_extended_image_config,
 )
-from aicage.registry._extensions import ExtensionMetadata, load_extensions
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
+from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry._image_refs import local_image_ref
+from aicage.registry.images_metadata.models import AgentMetadata
 from aicage.runtime.prompts import (
-    BaseSelectionRequest,
     ExtendedImageOption,
     ExtensionOption,
-    ImageChoice,
-    ImageChoiceRequest,
     ensure_tty_for_prompt,
-    prompt_for_base,
     prompt_for_extensions,
-    prompt_for_image_choice,
     prompt_for_image_ref,
 )
 
-from ._image_refs import local_image_ref
+from .models import ImageSelection
 
 
 @dataclass(frozen=True)
-class ImageSelection:
-    image_ref: str
-    base: str
-    extensions: list[str]
-    base_image_ref: str
-
-
-@dataclass(frozen=True)
-class _ExtensionSelectionContext:
+class ExtensionSelectionContext:
     agent: str
     base: str
     agent_cfg: AgentConfig
@@ -50,129 +36,7 @@ class _ExtensionSelectionContext:
     context: ConfigContext
 
 
-def select_agent_image(agent: str, context: ConfigContext) -> ImageSelection:
-    agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
-    agent_metadata = _require_agent_metadata(agent, context.images_metadata)
-    base = agent_cfg.base or context.global_cfg.agents.get(agent, {}).get(AGENT_BASE_KEY)
-    extensions = load_extensions()
-
-    if agent_cfg.image_ref:
-        if base is None:
-            return _fresh_selection(agent, context, agent_metadata, extensions)
-        _validate_base(agent, base, agent_metadata)
-        if agent_cfg.extensions:
-            reset = _ensure_extensions_exist(
-                agent=agent,
-                project_config_path=context.store.project_config_path(Path(context.project_cfg.path)),
-                agent_cfg=agent_cfg,
-                extensions=extensions,
-                context=context,
-            )
-            if reset:
-                return _fresh_selection(agent, context, agent_metadata, extensions)
-        return ImageSelection(
-            image_ref=agent_cfg.image_ref,
-            base=base,
-            extensions=list(agent_cfg.extensions),
-            base_image_ref=_base_image_ref(agent_metadata, agent, base, context),
-        )
-
-    if not base:
-        return _fresh_selection(agent, context, agent_metadata, extensions)
-
-    _validate_base(agent, base, agent_metadata)
-    return _handle_extension_selection(
-        _ExtensionSelectionContext(
-            agent=agent,
-            base=base,
-            agent_cfg=agent_cfg,
-            agent_metadata=agent_metadata,
-            extensions=extensions,
-            context=context,
-        )
-    )
-
-
-def _require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:
-    agent_metadata = images_metadata.agents.get(agent)
-    if not agent_metadata:
-        raise CliError(f"Agent '{agent}' is missing from images metadata.")
-    return agent_metadata
-
-
-def _available_bases(
-    agent: str,
-    agent_metadata: AgentMetadata,
-) -> list[str]:
-    if not agent_metadata.valid_bases:
-        raise CliError(f"Agent '{agent}' does not define any valid bases.")
-    return sorted(agent_metadata.valid_bases)
-
-
-def _validate_base(
-    agent: str,
-    base: str,
-    agent_metadata: AgentMetadata,
-) -> None:
-    if base not in agent_metadata.valid_bases:
-        raise CliError(f"Base '{base}' is not valid for agent '{agent}'.")
-
-
-def _fresh_selection(
-    agent: str,
-    context: ConfigContext,
-    agent_metadata: AgentMetadata,
-    extensions: dict[str, ExtensionMetadata],
-) -> ImageSelection:
-    available_bases = _available_bases(agent, agent_metadata)
-    if not available_bases:
-        raise CliError(f"No base images found for agent '{agent}' in metadata.")
-
-    extended_images = _load_extended_images(agent, agent_metadata, extensions)
-    request = ImageChoiceRequest(
-        agent=agent,
-        context=context,
-        agent_metadata=agent_metadata,
-        extended_options=extended_images,
-    )
-    choice = (
-        prompt_for_image_choice(request)
-        if extended_images
-        else ImageChoice(kind="base", value=prompt_for_base(_base_request(request)))
-    )
-    if choice.kind == "extended":
-        selected = _resolve_extended_image(choice.value, extended_images)
-        return _apply_extended_selection(
-            agent=agent,
-            agent_cfg=context.project_cfg.agents.setdefault(agent, AgentConfig()),
-            selected=selected,
-            agent_metadata=agent_metadata,
-            context=context,
-        )
-    base = choice.value
-    agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
-    agent_cfg.base = base
-    return _handle_extension_selection(
-        _ExtensionSelectionContext(
-            agent=agent,
-            base=base,
-            agent_cfg=agent_cfg,
-            agent_metadata=agent_metadata,
-            extensions=extensions,
-            context=context,
-        )
-    )
-
-
-def _base_request(request: ImageChoiceRequest) -> BaseSelectionRequest:
-    return BaseSelectionRequest(
-        agent=request.agent,
-        context=request.context,
-        agent_metadata=request.agent_metadata,
-    )
-
-
-def _handle_extension_selection(selection: _ExtensionSelectionContext) -> ImageSelection:
+def handle_extension_selection(selection: ExtensionSelectionContext) -> ImageSelection:
     agent_cfg = selection.agent_cfg
     agent_cfg.base = selection.base
     extension_options = [
@@ -201,7 +65,7 @@ def _handle_extension_selection(selection: _ExtensionSelectionContext) -> ImageS
         )
     else:
         agent_cfg.extensions = []
-        agent_cfg.image_ref = _base_image_ref(
+        agent_cfg.image_ref = base_image_ref(
             selection.agent_metadata,
             selection.agent,
             selection.base,
@@ -215,7 +79,7 @@ def _handle_extension_selection(selection: _ExtensionSelectionContext) -> ImageS
         image_ref=agent_cfg.image_ref or "",
         base=selection.base,
         extensions=list(agent_cfg.extensions),
-        base_image_ref=_base_image_ref(
+        base_image_ref=base_image_ref(
             selection.agent_metadata,
             selection.agent,
             selection.base,
@@ -224,18 +88,7 @@ def _handle_extension_selection(selection: _ExtensionSelectionContext) -> ImageS
     )
 
 
-def _base_image_ref(
-    agent_metadata: AgentMetadata,
-    agent: str,
-    base: str,
-    context: ConfigContext,
-) -> str:
-    if agent_metadata.local_definition_dir is not None:
-        return local_image_ref(context.global_cfg.local_image_repository, agent, base)
-    return agent_metadata.valid_bases[base]
-
-
-def _load_extended_images(
+def load_extended_image_options(
     agent: str,
     agent_metadata: AgentMetadata,
     extensions: dict[str, ExtensionMetadata],
@@ -259,7 +112,7 @@ def _load_extended_images(
     return options
 
 
-def _resolve_extended_image(
+def resolve_extended_image(
     name: str,
     options: list[ExtendedImageOption],
 ) -> ExtendedImageOption:
@@ -269,7 +122,7 @@ def _resolve_extended_image(
     raise CliError(f"Unknown extended image '{name}'.")
 
 
-def _apply_extended_selection(
+def apply_extended_selection(
     agent: str,
     agent_cfg: AgentConfig,
     selected: ExtendedImageOption,
@@ -284,21 +137,11 @@ def _apply_extended_selection(
         image_ref=selected.image_ref,
         base=selected.base,
         extensions=list(selected.extensions),
-        base_image_ref=_base_image_ref(agent_metadata, agent, selected.base, context),
+        base_image_ref=base_image_ref(agent_metadata, agent, selected.base, context),
     )
 
 
-def _default_extended_image_ref(agent: str, base: str, extensions: list[str]) -> str:
-    tag = "-".join([agent, base, *extensions]).lower().replace("/", "-")
-    return f"aicage-extended:{tag}"
-
-
-def _extended_image_name(image_ref: str) -> str:
-    _, _, tag = image_ref.rpartition(":")
-    return tag or image_ref
-
-
-def _ensure_extensions_exist(
+def ensure_extensions_exist(
     agent: str,
     project_config_path: Path,
     agent_cfg: AgentConfig,
@@ -312,6 +155,27 @@ def _ensure_extensions_exist(
     if reset:
         return True
     return False
+
+
+def base_image_ref(
+    agent_metadata: AgentMetadata,
+    agent: str,
+    base: str,
+    context: ConfigContext,
+) -> str:
+    if agent_metadata.local_definition_dir is not None:
+        return local_image_ref(context.global_cfg.local_image_repository, agent, base)
+    return agent_metadata.valid_bases[base]
+
+
+def _default_extended_image_ref(agent: str, base: str, extensions: list[str]) -> str:
+    tag = "-".join([agent, base, *extensions]).lower().replace("/", "-")
+    return f"aicage-extended:{tag}"
+
+
+def _extended_image_name(image_ref: str) -> str:
+    _, _, tag = image_ref.rpartition(":")
+    return tag or image_ref
 
 
 def _handle_missing_extensions(

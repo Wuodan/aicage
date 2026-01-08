@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from logging import Logger
 from pathlib import Path
 
 from aicage._logging import get_logger
@@ -23,6 +24,7 @@ def run_extended_build(
 
     dockerfile_builtin = find_packaged_path("extension-build/Dockerfile")
     current_image_ref = base_image_ref
+    intermediate_refs: list[str] = []
     with log_path.open("w", encoding="utf-8") as log_handle:
         for idx, extension in enumerate(extensions):
             target_ref = (
@@ -30,6 +32,8 @@ def run_extended_build(
                 if idx == len(extensions) - 1
                 else _intermediate_image_ref(run_config, extension, idx)
             )
+            if target_ref != run_config.image_ref:
+                intermediate_refs.append(target_ref)
             dockerfile_path = extension.dockerfile_path or dockerfile_builtin
             command = [
                 "docker",
@@ -56,6 +60,7 @@ def run_extended_build(
                     f"Extended image build failed for {run_config.image_ref}. See log at {log_path}."
                 )
             current_image_ref = target_ref
+    _cleanup_intermediate_images(intermediate_refs, logger)
     logger.info("Extended image build succeeded for %s", run_config.image_ref)
 
 
@@ -69,5 +74,17 @@ def _intermediate_image_ref(run_config: RunConfig, extension: ExtensionMetadata,
 def _parse_image_ref(image_ref: str) -> tuple[str, str]:
     repository, sep, tag = image_ref.rpartition(":")
     if not sep:
-        return image_ref, "latest"
+        raise CliError(f"Image ref '{image_ref}' is missing a tag.")
     return repository, tag
+
+
+def _cleanup_intermediate_images(intermediate_refs: list[str], logger: Logger) -> None:
+    for image_ref in intermediate_refs:
+        result = subprocess.run(
+            ["docker", "image", "rm", "-f", image_ref],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if result.returncode != 0:
+            logger.info("Failed to remove intermediate image %s", image_ref)

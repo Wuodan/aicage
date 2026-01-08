@@ -10,7 +10,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata
 
-from ._store import VersionCheckStore
+from .store import VersionCheckStore
 
 
 class AgentVersionChecker:

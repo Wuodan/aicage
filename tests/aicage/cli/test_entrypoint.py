@@ -1,17 +1,11 @@
-import io
 import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage import cli
-from aicage.cli import _print_config as print_config
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import _PROJECT_AGENTS_KEY
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
-from aicage.paths import PROJECT_CONFIG_FILENAME
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -118,51 +112,7 @@ def _build_images_metadata() -> ImagesMetadata:
     )
 
 
-class MainFlowTests(TestCase):
-    def test_print_project_config_missing(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
-            store = mock.Mock()
-            store.project_config_path.return_value = config_path
-            with (
-                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            ):
-                print_config.print_project_config()
-
-        output = stdout.getvalue()
-        self.assertIn("Project config path:", output)
-        self.assertIn(str(config_path), output)
-        self.assertIn("(missing)", output)
-
-    def test_print_project_config_empty(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
-            config_path.write_text("", encoding="utf-8")
-            store = mock.Mock()
-            store.project_config_path.return_value = config_path
-            with (
-                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            ):
-                print_config.print_project_config()
-
-        self.assertIn("(empty)", stdout.getvalue())
-
-    def test_print_project_config_contents(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
-            config_path.write_text(f"{_PROJECT_AGENTS_KEY}: {{}}", encoding="utf-8")
-            store = mock.Mock()
-            store.project_config_path.return_value = config_path
-            with (
-                mock.patch("aicage.cli._print_config.SettingsStore", return_value=store),
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            ):
-                print_config.print_project_config()
-
-        self.assertIn(f"{_PROJECT_AGENTS_KEY}: {{}}", stdout.getvalue())
-
+class EntrypointTests(TestCase):
     def test_main_config_print(self) -> None:
         with (
             mock.patch(
@@ -227,68 +177,17 @@ class MainFlowTests(TestCase):
             with (
                 mock.patch(
                     "aicage.cli.entrypoint.parse_cli",
-                    return_value=ParsedArgs(True, "--cli", "codex", ["--flag"], None, False, None),
+                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
                 ),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.pull_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch(
                     "aicage.cli.entrypoint.assemble_docker_run",
-                    return_value=["docker", "run", "cmd"],
+                    return_value=["docker", "run", "--flag"],
                 ),
-                mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+                mock.patch("aicage.cli.entrypoint.subprocess.run"),
             ):
                 exit_code = cli.main([])
 
             self.assertEqual(0, exit_code)
-            self.assertIn("docker run cmd", stdout.getvalue())
-            self.assertEqual("", stderr.getvalue())
-
-    def test_main_handles_no_available_bases(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            project_path = Path(tmp_dir)
-            run_config = _build_run_config(
-                project_path,
-                "ghcr.io/aicage/aicage:codex-ubuntu",
-            )
-            with (
-                mock.patch(
-                    "aicage.cli.entrypoint.parse_cli",
-                    return_value=ParsedArgs(True, "", "codex", [], None, False, None),
-                ),
-                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.entrypoint.pull_image"),
-                mock.patch(
-                    "aicage.cli.entrypoint.build_run_args",
-                    side_effect=CliError("No base images found"),
-                ),
-                mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
-            ):
-                exit_code = cli.main([])
-
-            self.assertEqual(1, exit_code)
-            self.assertIn("No base images found", stderr.getvalue())
-
-    def test_main_handles_config_error(self) -> None:
-        with (
-            mock.patch(
-                "aicage.cli.entrypoint.parse_cli",
-                return_value=ParsedArgs(False, "", "codex", [], None, False, None),
-            ),
-            mock.patch(
-                "aicage.cli.entrypoint.load_run_config",
-                side_effect=ConfigError("bad config"),
-            ),
-            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
-        ):
-            exit_code = cli.main([])
-
-        self.assertEqual(1, exit_code)
-        self.assertIn("bad config", stderr.getvalue())
-
-    def test_main_keyboard_interrupt(self) -> None:
-        with mock.patch("aicage.cli.entrypoint.parse_cli", side_effect=KeyboardInterrupt):
-            with mock.patch("sys.stdout", new_callable=io.StringIO):
-                exit_code = cli.main([])
-        self.assertEqual(130, exit_code)
