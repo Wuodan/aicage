@@ -67,7 +67,7 @@ RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly \
 
 When extensions are selected, the default local image tag is:
 
-```
+```text
 aicage-extended:<agent>-<base>-<ext1>-<ext2>
 ```
 

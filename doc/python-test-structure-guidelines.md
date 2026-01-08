@@ -1,18 +1,19 @@
 # Python Test Structure Guidelines
 
-You are generating **unit and integration tests** for a Python project that follows **clean architecture**, **small modules**, and **explicit visibility**.
+You are generating **unit and integration tests** for a Python project that follows
+**clean architecture**, **small modules**, and **explicit visibility**.
 
 ## Core Rules
 
-1. **Tests MUST live in packages**
+1. Tests MUST live in packages
    - Always include `__init__.py` in test directories.
    - Do NOT create flat, package-less `tests/` layouts.
 
-2. **Mirror the production package structure**
+2. Mirror the production package structure
    - If code lives in `src/myapp/core/logic.py`
    - Tests go in `tests/core/test_logic.py`
 
-3. **Tests are architecture-aware**
+3. Tests are architecture-aware
    - Respect module boundaries.
    - Do not mix unrelated layers in the same test file.
 

@@ -7,9 +7,13 @@
 
 ## Changes
 
-- Key decisions (why): Replace redistributable with build_local in metadata; custom agents default to local builds; simplify runtime logic by using local_definition_dir instead of multiple booleans.
-- User-visible behavior changes: Users can define local agents under ~/.aicage/custom/agent/ and they are discovered, validated, version-checked, and built locally.
-- Internal behavior changes: Custom agent validation uses packaged schema; missing install.sh/version.sh fails fast; local build path is selected via local_definition_dir; release workflows in aicage-image now use build_local for filtering.
+- Key decisions (why): Replace redistributable with build_local in metadata; custom agents default to
+  local builds; simplify runtime logic by using local_definition_dir instead of multiple booleans.
+- User-visible behavior changes: Users can define local agents under ~/.aicage/custom/agent/ and they
+  are discovered, validated, version-checked, and built locally.
+- Internal behavior changes: Custom agent validation uses packaged schema; missing
+  install.sh/version.sh fails fast; local build path is selected via local_definition_dir; release
+  workflows in aicage-image now use build_local for filtering.
 - Files and modules with major changes:
   - src/aicage/registry/custom_agent/_validation.py
   - src/aicage/registry/custom_agent/loader.py
@@ -23,7 +27,9 @@
 
 ## Testing and validation
 
-- Tests run: pytest --cov=src --cov-report=term-missing; yamllint .; pymarkdown --config .pymarkdown.json scan .; ruff check .; pyright .; rg -n --glob '*.py' '__all__' src.
+- Tests run: pytest --cov=src --cov-report=term-missing; yamllint .;
+  pymarkdown --config .pymarkdown.json scan .; ruff check .; pyright .;
+  rg -n --glob '*.py' '__all__' src.
 - Gaps or skipped tests and why: None.
 
 ## Follow-ups
@@ -35,4 +41,5 @@
 ## Notes
 
 - Lessons learned: Keep workflow filters aligned when renaming metadata fields.
-- Review feedback to carry forward: Avoid redundant guards; keep changes minimal; do not paste code blocks in chat; only commit on explicit request.
+- Review feedback to carry forward: Avoid redundant guards; keep changes minimal; do not paste code
+  blocks in chat; only commit on explicit request.

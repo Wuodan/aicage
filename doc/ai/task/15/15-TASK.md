@@ -16,6 +16,7 @@ digest is contained in the local final image, rather than trusting stored text s
 the logic used by `aicage-image`’s refresh workflow.
 
 Constraints:
+
 - Use real remote digests for base images, not stored text values.
 - Avoid adding new config fields unless explicitly asked.
 - Keep changes minimal and consistent with existing code structure.

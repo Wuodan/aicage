@@ -67,15 +67,16 @@ the final-images.
 
 I want to solve several problems nicely, all require building and maintaining images on user's PC.  
 It also seems tricky to align the configuration and processes for the following changes so they
- don't interfere with each other and can be nicely combined.
+don't interfere with each other and can be nicely combined.
 
 ### Non-redistributable agents
 
 Some coding-agents cannot be legally redistributed as binaries. Their license does not allow that.  
-But I think it's legal to provide installer scripts so the building of final-images from our base-images happens locally
-on user's PC.  
+But I think it's legal to provide installer scripts so the building of final-images from our
+base-images happens locally on user's PC.  
 The installation of those agents is trivial as well as the Dockerfile for it.  
-Basically the `Dockerfile` and an `agents/<agent>/` folder from `aicage-image` would be enough to build.  
+Basically the `Dockerfile` and an `agents/<agent>/` folder from `aicage-image` would be enough to
+build.  
 
 It would take careful integration into the current `aicage` process of determining final-images for a given agent but
 should be possible with good planning.
@@ -86,7 +87,8 @@ should be possible with good planning.
    - Either as `agents/<AGENT>/` with a special flag in their `agents/<AGENT>/agent.yml`.
    - Or in a separate folder structure like `agents-non-redistributable/<AGENT>/`.
 2. Testing: I really want those additional agents tested in CI pipelines.
-   Important: We cannot push images with those agents to repositories (at least not public ones but better not at all).  
+   Important: We cannot push images with those agents to repositories (at least not public ones but
+   better not at all).  
    But without persisting the final-images with those agents, the current mechanism for to detect when final-images must
    be rebuilt does not work.
    Suggest something to detect changes in base-images and agent-version to test agent-base image combinations for those
@@ -135,36 +137,38 @@ Behavior:
 Some users will definitely want to add packages to final images.
 
 Example:
-To test GitHub pipelines, I missed `act` installed in the final image `ghcr.io/aicage/aicage:codex-fedora`.  
+To test GitHub pipelines, I missed `act` installed in the final image
+`ghcr.io/aicage/aicage:codex-fedora`.  
 But for sure I will not add this to all base-images as `act` is not common enough.
 
 #### Extensions for final-images: Basic solution idea
 
 ##### Extensions for final-images: Local extension configuration
 
-Users can locally define extensions to final-images, for example in a `~/.aicage/custom/extension/<EXTENSION>/` folder, with
-one such folder per extension.
+Users can locally define extensions to final-images, for example in a
+`~/.aicage/custom/extension/<EXTENSION>/` folder, with one such folder per extension.
 
 Contents of `~/.aicage/custom/extension/<EXTENSION>/`:
 - Dockerfile (optional):
   - Used to build the final image. If not present, `aicage` uses a builtin Dockerfile for this.
-  - This needs good documentation for users writing this with an example and all possible ARG variables and similar well
-    described in a dedicated Markdown document in project `aicage`.
+  - This needs good documentation for users writing this with an example and all possible ARG
+    variables and similar well described in a dedicated Markdown document in project `aicage`.
 - Installation scripts:
   - One or several (documented execution in alphabetical order) installation scripts which install
     or setup things during the image build.
-  - Prefer `RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly` over script copying in the builtin
-    Dockerfile.
+  - Prefer `RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly` over script
+    copying in the builtin Dockerfile.
   - In the built-in Dockerfile, handle cases where the install-scripts are not executable (copy-chmod or error-exit).
 - `extension.yml`:
   - Contains metadata for the extension like a description and display name.
 
->  The installation scripts and the process is base-image agnostic meaning there is not configuration to which base-
-    or final-image an extension shall be applied. Meaning: installation-scripts typically call the package manager of 
-    a distro (dnf, apt, etc.) and this does not work for all final-images as they might be based on another distro.  
-    But this is ok as users typically chose a base matching their host OS.  
-    If they really need an extension on several distros, then they can either define the extension twice with separate
-    extension names or handle distros in their extension installation-scripts.
+> The installation scripts and the process is base-image agnostic meaning there is not configuration
+> to which base- or final-image an extension shall be applied. Meaning: installation-scripts
+> typically call the package manager of a distro (dnf, apt, etc.) and this does not work for all
+> final-images as they might be based on another distro.  
+> But this is ok as users typically chose a base matching their host OS.  
+> If they really need an extension on several distros, then they can either define the extension
+> twice with separate extension names or handle distros in their extension installation-scripts.
 
 ##### Extensions for final-images: Local extended final images
 
@@ -173,24 +177,27 @@ A final-image (agent+base) together with a set of extensions and a name for the 
 
 Such a configuration shall be stored in `~/.aicage/custom/image-extended/<CUSTOM_FINAL_IMAGE>/`.
 
-When user is asked for a base-image to an agent, those extended-final-images shall be included if they are built for the
-agent. When user selects such an extended-final-image, he shall not be asked for extensions to it.
+When user is asked for a base-image to an agent, those extended-final-images shall be included if
+they are built for the agent. When user selects such an extended-final-image, he shall not be asked
+for extensions to it.
 
 ##### Extensions for final-images: Processes in `aicage`
 
 ###### Extensions for final-images: Image selection process
 
-1. On first call of `aicage <AGENT>` with an agent in a project folder, the user is currently asked for a base-image to
-   the agent to get the final-image (agent+base combo) . That is stored as config for subsequent runs with same agent
-   and same project folder.
-2. When a normal base-image is selected and extensions are defined in `~/.aicage/custom/extension/<EXTENSION>/`, then
-   `aicage` shall let user select 0-n of them.
+1. On first call of `aicage <AGENT>` with an agent in a project folder, the user is currently asked
+   for a base-image to the agent to get the final-image (agent+base combo). That is stored as config
+   for subsequent runs with same agent and same project folder.
+2. When a normal base-image is selected and extensions are defined in
+   `~/.aicage/custom/extension/<EXTENSION>/`, then `aicage` shall let user select 0-n of them.
 3. The image name for the local image shall be `aicage-extended` without the docker registry.  
    Example:  
-   Aicage final image name is 'ghcr.io/aicage/aicage', the custom extended images are named just `aicage-extended`.
-4. As image tag, aicage shall take the final-image tag and append something like '-extensions' and -<EXTENSION> for
-   each extension.
-5. Aicage shall then store the configuration for the `~/.aicage/custom/image-extended/<CUSTOM_FINAL_IMAGE>/`
+   Aicage final image name is 'ghcr.io/aicage/aicage', the custom extended images are named just
+   `aicage-extended`.
+4. As image tag, aicage shall take the final-image tag and append something like `-extensions` and
+   `-EXTENSION` for each extension.
+5. Aicage shall then store the configuration for the
+   `~/.aicage/custom/image-extended/<CUSTOM_FINAL_IMAGE>/`
 
 ###### Extensions for final-images: Image building/updating process
 
@@ -204,7 +211,8 @@ For local extended final images this must be a bit different:
 
 #### Extensions for final-images: Documentation
 
-As this is user oriented and users must add exact config files in an exact structure, this must be very well documented
+As this is user oriented and users must add exact config files in an exact structure, this must be
+very well documented
 for end-users with examples, etc.
 
 Additional information for `aicage` developers can be a bit sparse as it should only contain what is not covered in the
@@ -285,7 +293,7 @@ So this shall be split into several subtasks from early on with these steps and 
 Don't forget to read AGENTS.md and always use the existing venv.
 
 You shall follow this order:
-1. Read documentation and code to understand the task. 
+1. Read documentation and code to understand the task.
 2. Ask me questions if something is not clear to you
 3. Present me with an implementation solution - this needs my approval
 4. Implement the change autonomously including a loop of running-tests, fixing bugs, running tests
