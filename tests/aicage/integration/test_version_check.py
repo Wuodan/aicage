@@ -9,12 +9,9 @@ from aicage.config.config_store import SettingsStore
 from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.images_metadata.models import AgentMetadata
 
+from ._helpers import require_integration
+
 pytestmark = pytest.mark.integration
-
-
-def _require_integration() -> None:
-    if not os.environ.get("AICAGE_RUN_INTEGRATION"):
-        pytest.skip("Set AICAGE_RUN_INTEGRATION=1 to run integration tests.")
 
 
 def _write_executable(path: Path, content: str) -> None:
@@ -39,7 +36,7 @@ def test_version_check_falls_back_to_builder(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    _require_integration()
+    require_integration()
     home_dir = tmp_path / "home"
     home_dir.mkdir()
     monkeypatch.setenv("HOME", str(home_dir))
