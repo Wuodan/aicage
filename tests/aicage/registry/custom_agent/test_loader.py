@@ -33,7 +33,7 @@ class CustomAgentLoaderTests(TestCase):
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(missing),
+                missing,
             ):
                 custom_agents = load_custom_agents(metadata, "aicage")
         self.assertEqual({}, custom_agents)
@@ -62,7 +62,7 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(custom_dir),
+                custom_dir,
             ):
                 custom_agents = load_custom_agents(metadata, "aicage")
 
@@ -88,7 +88,7 @@ class CustomAgentLoaderTests(TestCase):
             )
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(custom_dir),
+                custom_dir,
             ):
                 with self.assertRaises(CliError):
                     load_custom_agents(metadata, "aicage")

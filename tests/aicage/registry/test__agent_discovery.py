@@ -32,7 +32,7 @@ class AgentDiscoveryTests(TestCase):
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(missing),
+                missing,
             ):
                 discovered = discover_agents(metadata, "aicage")
         self.assertIs(discovered, metadata)
@@ -57,7 +57,7 @@ class AgentDiscoveryTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(custom_dir),
+                custom_dir,
             ):
                 discovered = discover_agents(metadata, "aicage")
 
@@ -89,7 +89,7 @@ class AgentDiscoveryTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
                 "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                str(custom_dir),
+                custom_dir,
             ):
                 discovered = discover_agents(metadata, "aicage")
 

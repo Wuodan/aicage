@@ -3,10 +3,10 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
-from aicage.config import SettingsStore, runtime_config
+from aicage.config import SettingsStore
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig, AgentMounts
-from aicage.config.runtime_config import RunConfig, load_run_config
+from aicage.config.runtime_config import RunConfig, _check_agent_version, load_run_config
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
@@ -172,7 +172,7 @@ class RuntimeConfigTests(TestCase):
         with mock.patch("aicage.config.runtime_config.AgentVersionChecker") as checker_cls:
             checker = checker_cls.return_value
             checker.get_version.return_value = "1.2.3"
-            version = runtime_config._check_agent_version("codex", global_cfg, images_metadata)
+            version = _check_agent_version("codex", global_cfg, images_metadata)
 
         self.assertEqual("1.2.3", version)
         checker_cls.assert_called_once_with(global_cfg)

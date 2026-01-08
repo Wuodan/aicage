@@ -11,6 +11,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
+from aicage.paths import DEFAULT_CUSTOM_AGENTS_DIR
 from aicage.registry.local_build._layers import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
@@ -170,6 +171,10 @@ def build_cli_env(home_dir: Path) -> dict[str, str]:
         if key == "AGENT" or key.startswith("AICAGE_"):
             env.pop(key, None)
     return env
+
+
+def custom_agents_dir() -> Path:
+    return DEFAULT_CUSTOM_AGENTS_DIR.expanduser()
 
 
 def copy_forge_sample(target_dir: Path) -> None:

@@ -7,7 +7,8 @@ from aicage._logging import get_logger
 from aicage.cli._parse import parse_cli
 from aicage.cli._print_config import print_project_config
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError, RunConfig, load_run_config
+from aicage.config import ConfigError
+from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.errors import CliError
 from aicage.registry.image_pull import pull_image
 from aicage.registry.local_build.ensure_local_image import ensure_local_image

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from aicage.errors import CliError
+from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
 from aicage.registry._image_refs import local_image_ref
 from aicage.registry.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
@@ -20,15 +20,12 @@ from aicage.registry.images_metadata.models import (
 
 from ._validation import ensure_required_files, expect_string, maybe_str_list, validate_agent_mapping
 
-DEFAULT_CUSTOM_AGENTS_DIR = "~/.aicage/custom/agents"
-_AGENT_DEFINITION_FILES = ("agent.yml", "agent.yaml")
-
 
 def load_custom_agents(
     images_metadata: ImagesMetadata,
     local_image_repository: str,
 ) -> dict[str, AgentMetadata]:
-    agents_dir = Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR))
+    agents_dir = DEFAULT_CUSTOM_AGENTS_DIR.expanduser()
     if not agents_dir.is_dir():
         return {}
 
@@ -50,11 +47,11 @@ def load_custom_agents(
 
 
 def _find_agent_definition(agent_dir: Path) -> Path:
-    for filename in _AGENT_DEFINITION_FILES:
+    for filename in CUSTOM_AGENT_DEFINITION_FILES:
         candidate = agent_dir / filename
         if candidate.is_file():
             return candidate
-    expected = ", ".join(_AGENT_DEFINITION_FILES)
+    expected = ", ".join(CUSTOM_AGENT_DEFINITION_FILES)
     raise CliError(f"Custom agent '{agent_dir.name}' is missing {expected}.")
 
 
@@ -94,7 +91,7 @@ def _build_custom_agent(
         valid_bases=valid_bases,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,
-        local_definition_dir=Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR)) / agent_name,
+        local_definition_dir=DEFAULT_CUSTOM_AGENTS_DIR.expanduser() / agent_name,
     )
 
 

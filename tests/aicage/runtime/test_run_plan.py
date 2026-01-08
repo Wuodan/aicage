@@ -2,8 +2,8 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
-from aicage.config import RunConfig
 from aicage.config.global_config import GlobalConfig
+from aicage.config.runtime_config import RunConfig
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,

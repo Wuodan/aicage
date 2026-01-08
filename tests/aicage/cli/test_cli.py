@@ -6,9 +6,10 @@ from unittest import TestCase, mock
 from aicage import cli
 from aicage.cli import _print_config as print_config
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError, RunConfig
+from aicage.config import ConfigError
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import _PROJECT_AGENTS_KEY
+from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,

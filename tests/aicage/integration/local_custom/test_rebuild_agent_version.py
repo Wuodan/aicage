@@ -1,13 +1,12 @@
-import os
 from pathlib import Path
 
 import pytest
 
-from aicage.registry.custom_agent.loader import DEFAULT_CUSTOM_AGENTS_DIR
 from aicage.registry.local_build._store import BuildStore
 
 from .._helpers import (
     copy_forge_sample,
+    custom_agents_dir,
     force_record_agent_version,
     require_integration,
     run_agent_version,
@@ -20,7 +19,7 @@ pytestmark = pytest.mark.integration
 def test_custom_agent_rebuilds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     require_integration()
     workspace, env = setup_workspace(monkeypatch, tmp_path, "forge")
-    agent_dir = Path(os.path.expanduser(DEFAULT_CUSTOM_AGENTS_DIR)) / "forge"
+    agent_dir = custom_agents_dir() / "forge"
     copy_forge_sample(agent_dir)
 
     run_agent_version(env, workspace, "forge")
