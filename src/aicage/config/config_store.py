@@ -7,12 +7,13 @@ from typing import Any
 
 import yaml
 
+from aicage.paths import CONFIG_FILENAME
+
 from .errors import ConfigError
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path
 
-_CONFIG_FILENAME = "config.yaml"
 _DEFAULT_BASE_DIR = "~/.aicage"
 _PROJECTS_SUBDIR = "projects"
 
@@ -66,7 +67,7 @@ class SettingsStore:
         """
         Returns the path to the packaged global config file.
         """
-        return find_packaged_path(_CONFIG_FILENAME)
+        return find_packaged_path(CONFIG_FILENAME)
 
     def project_config_path(self, project_realpath: Path) -> Path:
         """

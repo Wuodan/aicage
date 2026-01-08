@@ -16,6 +16,7 @@ from aicage.config.global_config import (
     _VERSION_CHECK_IMAGE_KEY,
 )
 from aicage.config.project_config import AgentConfig, AgentMounts
+from aicage.paths import CONFIG_FILENAME
 
 
 class ConfigStoreTests(TestCase):
@@ -24,7 +25,7 @@ class ConfigStoreTests(TestCase):
             base_dir = Path(tmp_dir)
             packaged_dir = base_dir / "packaged"
             packaged_dir.mkdir(parents=True, exist_ok=True)
-            packaged_config = packaged_dir / "config.yaml"
+            packaged_config = packaged_dir / CONFIG_FILENAME
             packaged_config.write_text(
                 yaml.safe_dump(
                     {

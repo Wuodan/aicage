@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.errors import CliError
+from aicage.paths import AGENT_DEFINITION_FILENAME
 from aicage.registry.custom_agent.loader import load_custom_agents
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
@@ -44,7 +45,7 @@ class CustomAgentLoaderTests(TestCase):
             custom_dir = Path(tmp_dir)
             agent_dir = custom_dir / "custom"
             agent_dir.mkdir()
-            (agent_dir / "agent.yml").write_text(
+            (agent_dir / AGENT_DEFINITION_FILENAME).write_text(
                 "\n".join(
                     [
                         f"{AGENT_PATH_KEY}: ~/.custom",
@@ -76,7 +77,7 @@ class CustomAgentLoaderTests(TestCase):
             custom_dir = Path(tmp_dir)
             agent_dir = custom_dir / "custom"
             agent_dir.mkdir()
-            (agent_dir / "agent.yml").write_text(
+            (agent_dir / AGENT_DEFINITION_FILENAME).write_text(
                 "\n".join(
                     [
                         f"{AGENT_PATH_KEY}: ~/.custom",

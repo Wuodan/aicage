@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.errors import CliError
+from aicage.paths import IMAGES_METADATA_FILENAME
 from aicage.registry.images_metadata.loader import load_images_metadata
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
@@ -27,7 +28,7 @@ class ImagesMetadataLoaderTests(TestCase):
     def test_load_images_metadata_reads_local_file(self) -> None:
         payload = _valid_payload()
         with tempfile.TemporaryDirectory() as tmp_dir:
-            path = Path(tmp_dir) / "images-metadata.yaml"
+            path = Path(tmp_dir) / IMAGES_METADATA_FILENAME
             path.write_text(payload, encoding="utf-8")
             with mock.patch(
                 "aicage.registry.images_metadata.loader.find_packaged_path",
@@ -38,7 +39,7 @@ class ImagesMetadataLoaderTests(TestCase):
 
     def test_load_images_metadata_raises_without_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            missing = Path(tmp_dir) / "images-metadata.yaml"
+            missing = Path(tmp_dir) / IMAGES_METADATA_FILENAME
             with (
                 mock.patch(
                     "aicage.registry.images_metadata.loader.find_packaged_path",

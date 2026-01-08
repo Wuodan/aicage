@@ -2,5 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+CONFIG_FILENAME: str = "config.yaml"
+PROJECT_CONFIG_FILENAME: str = "project.yaml"
+IMAGES_METADATA_FILENAME: str = "images-metadata.yaml"
+AGENT_DEFINITION_FILENAME: str = "agent.yaml"
+
 DEFAULT_CUSTOM_AGENTS_DIR: Path = Path("~/.aicage/custom/agents")
-CUSTOM_AGENT_DEFINITION_FILES: tuple[str, str] = ("agent.yml", "agent.yaml")
+CUSTOM_AGENT_DEFINITION_FILES: tuple[str, str] = (
+    AGENT_DEFINITION_FILENAME,
+    "agent.yml",
+)

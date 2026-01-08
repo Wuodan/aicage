@@ -11,6 +11,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import _PROJECT_AGENTS_KEY
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
+from aicage.paths import PROJECT_CONFIG_FILENAME
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -118,7 +119,7 @@ def _build_images_metadata() -> ImagesMetadata:
 class MainFlowTests(TestCase):
     def test_print_project_config_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
@@ -134,7 +135,7 @@ class MainFlowTests(TestCase):
 
     def test_print_project_config_empty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
             config_path.write_text("", encoding="utf-8")
             store = mock.Mock()
             store.project_config_path.return_value = config_path
@@ -148,7 +149,7 @@ class MainFlowTests(TestCase):
 
     def test_print_project_config_contents(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / PROJECT_CONFIG_FILENAME
             config_path.write_text(f"{_PROJECT_AGENTS_KEY}: {{}}", encoding="utf-8")
             store = mock.Mock()
             store.project_config_path.return_value = config_path
