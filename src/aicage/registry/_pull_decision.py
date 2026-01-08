@@ -7,14 +7,14 @@ from aicage.registry import _local_query, _remote_query
 
 
 @dataclass(frozen=True)
-class PullDecision:
+class _PullDecision:
     should_pull: bool
 
 
-def decide_pull(run_config: RunConfig) -> PullDecision:
+def decide_pull(run_config: RunConfig) -> _PullDecision:
     local_digest = _local_query.get_local_repo_digest(run_config)
     if local_digest is None:
-        return PullDecision(should_pull=True)
+        return _PullDecision(should_pull=True)
 
     remote_digest = _remote_query.get_remote_repo_digest_for_repo(
         run_config.image_ref,
@@ -22,6 +22,6 @@ def decide_pull(run_config: RunConfig) -> PullDecision:
         run_config.global_cfg,
     )
     if remote_digest is None:
-        return PullDecision(should_pull=False)
+        return _PullDecision(should_pull=False)
 
-    return PullDecision(should_pull=local_digest != remote_digest)
+    return _PullDecision(should_pull=local_digest != remote_digest)

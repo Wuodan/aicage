@@ -13,7 +13,7 @@ class RegistryDiscoveryError(Exception):
     """Raised when registry discovery fails."""
 
 
-def fetch_pull_token(global_cfg: GlobalConfig) -> str:
+def _fetch_pull_token(global_cfg: GlobalConfig) -> str:
     return fetch_pull_token_for_repository(global_cfg, global_cfg.image_repository)
 
 

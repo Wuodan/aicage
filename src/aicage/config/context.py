@@ -20,7 +20,7 @@ class ConfigContext:
         return f"{self.global_cfg.image_registry}/{self.global_cfg.image_repository}"
 
 
-def build_config_context() -> ConfigContext:
+def _build_config_context() -> ConfigContext:
     store = SettingsStore()
     project_path = Path.cwd().resolve()
     global_cfg = store.load_global()

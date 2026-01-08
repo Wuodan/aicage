@@ -10,7 +10,7 @@ class RemoteApiTests(TestCase):
 
         with mock.patch("aicage.registry._remote_api._fetch_json", fake_fetch_json):
             with self.assertRaises(_remote_api.RegistryDiscoveryError):
-                _remote_api.fetch_pull_token(
+                _remote_api._fetch_pull_token(
                     mock.Mock(
                         image_registry_api_token_url="https://example.test/token",
                         image_repository="repo",

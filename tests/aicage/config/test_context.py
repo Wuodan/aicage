@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.context import ConfigContext, build_config_context
+from aicage.config.context import ConfigContext, _build_config_context
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import ProjectConfig
 from aicage.registry.images_metadata.models import (
@@ -67,7 +67,7 @@ class ContextTests(TestCase):
             store.load_project.return_value = project_cfg
             load_metadata.return_value = self._get_images_metadata()
 
-            context = build_config_context()
+            context = _build_config_context()
 
         self.assertEqual(global_cfg, context.global_cfg)
         self.assertEqual(project_cfg, context.project_cfg)

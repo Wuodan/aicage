@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.project_config import AgentConfig, AgentMounts
+from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.runtime.mounts import _ssh_keys
 
 
@@ -13,7 +13,7 @@ class SshKeyTests(TestCase):
         self.assertEqual(Path("/home/user/.ssh"), path)
 
     def test_resolve_ssh_mount_prompts_when_preference_missing(self) -> None:
-        agent_cfg = AgentConfig(mounts=AgentMounts())
+        agent_cfg = AgentConfig(mounts=_AgentMounts())
         with tempfile.TemporaryDirectory() as tmp_dir:
             ssh_dir = Path(tmp_dir) / ".ssh"
             ssh_dir.mkdir()

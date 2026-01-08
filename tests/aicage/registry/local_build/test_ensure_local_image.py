@@ -9,9 +9,9 @@ from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import (
     AgentMetadata,
-    BaseMetadata,
-    ImageReleaseInfo,
     ImagesMetadata,
+    _BaseMetadata,
+    _ImageReleaseInfo,
 )
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
 from aicage.registry.local_build._store import (
@@ -157,10 +157,10 @@ class EnsureLocalImageTests(TestCase):
             agents={},
         )
         images_metadata = ImagesMetadata(
-            aicage_image=ImageReleaseInfo(version="0.3.3"),
-            aicage_image_base=ImageReleaseInfo(version="0.3.3"),
+            aicage_image=_ImageReleaseInfo(version="0.3.3"),
+            aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
             bases={
-                "ubuntu": BaseMetadata(
+                "ubuntu": _BaseMetadata(
                     root_image="ubuntu:latest",
                     base_image_distro="Ubuntu",
                     base_image_description="Default",

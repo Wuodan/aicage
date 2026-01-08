@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.project_config import AgentConfig, AgentMounts
+from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.runtime.mounts import _git_config, _gpg, _ssh_keys
 
 
@@ -26,7 +26,7 @@ class MountResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             ssh_dir = Path(tmp_dir) / ".ssh"
             ssh_dir.mkdir()
-            agent_cfg = AgentConfig(mounts=AgentMounts(ssh=True))
+            agent_cfg = AgentConfig(mounts=_AgentMounts(ssh=True))
 
             with (
                 mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
@@ -44,7 +44,7 @@ class MountResolutionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             gpg_home = Path(tmp_dir) / ".gnupg"
             gpg_home.mkdir()
-            agent_cfg = AgentConfig(mounts=AgentMounts(gnupg=True))
+            agent_cfg = AgentConfig(mounts=_AgentMounts(gnupg=True))
 
             with (
                 mock.patch("aicage.runtime.mounts._gpg.is_commit_signing_enabled", return_value=True),

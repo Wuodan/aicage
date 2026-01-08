@@ -18,7 +18,7 @@ class CustomAgentValidationTests(TestCase):
 
     def test_expect_bool_rejects_non_bool(self) -> None:
         with self.assertRaises(CliError):
-            _validation.expect_bool("true", BUILD_LOCAL_KEY)
+            _validation._expect_bool("true", BUILD_LOCAL_KEY)
 
     def test_maybe_str_list_rejects_non_string_items(self) -> None:
         with self.assertRaises(CliError):

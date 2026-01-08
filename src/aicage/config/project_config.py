@@ -19,14 +19,14 @@ _MOUNT_DOCKER_KEY: str = "docker"
 
 
 @dataclass
-class AgentMounts:
+class _AgentMounts:
     gitconfig: bool | None = None
     gnupg: bool | None = None
     ssh: bool | None = None
     docker: bool | None = None
 
     @classmethod
-    def from_mapping(cls, data: dict[str, Any]) -> "AgentMounts":
+    def from_mapping(cls, data: dict[str, Any]) -> "_AgentMounts":
         return cls(
             gitconfig=data.get(_MOUNT_GITCONFIG_KEY),
             gnupg=data.get(_MOUNT_GNUPG_KEY),
@@ -52,13 +52,13 @@ class AgentConfig:
     base: str | None = None
     docker_args: str = ""
     entrypoint: str | None = None
-    mounts: AgentMounts = field(default_factory=AgentMounts)
+    mounts: _AgentMounts = field(default_factory=_AgentMounts)
     image_ref: str | None = None
     extensions: list[str] = field(default_factory=list)
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "AgentConfig":
-        mounts = AgentMounts.from_mapping(data.get(_AGENT_MOUNTS_KEY, {}) or {})
+        mounts = _AgentMounts.from_mapping(data.get(_AGENT_MOUNTS_KEY, {}) or {})
         return cls(
             base=data.get(AGENT_BASE_KEY),
             docker_args=data.get(_DOCKER_ARGS_KEY, "") or "",

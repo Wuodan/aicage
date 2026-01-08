@@ -5,7 +5,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import ProjectConfig
 from aicage.registry.image_selection.extensions.refs import base_image_ref
-from aicage.registry.images_metadata.models import AgentMetadata, ImageReleaseInfo, ImagesMetadata
+from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 
 
 class ExtensionRefsTests(TestCase):
@@ -54,8 +54,8 @@ class ExtensionRefsTests(TestCase):
                 agents={},
             ),
             images_metadata=ImagesMetadata(
-                aicage_image=ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=ImageReleaseInfo(version="0.3.3"),
+                aicage_image=_ImageReleaseInfo(version="0.3.3"),
+                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
                 bases={},
                 agents={},
             ),

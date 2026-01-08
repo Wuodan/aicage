@@ -15,7 +15,7 @@ from aicage.config.global_config import (
     _LOCAL_IMAGE_REPOSITORY_KEY,
     _VERSION_CHECK_IMAGE_KEY,
 )
-from aicage.config.project_config import AgentConfig, AgentMounts
+from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.paths import CONFIG_FILENAME
 
 
@@ -66,7 +66,7 @@ class ConfigStoreTests(TestCase):
             project_cfg.agents["codex"] = AgentConfig(
                 base="fedora",
                 docker_args="--add-host=host.docker.internal:host-gateway",
-                mounts=AgentMounts(),
+                mounts=_AgentMounts(),
             )
             store.save_project(project_path, project_cfg)
 

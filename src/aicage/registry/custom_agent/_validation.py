@@ -63,7 +63,7 @@ def _validate_value(value: Any, schema_entry: dict[str, Any], context: str) -> N
         expect_string(value, context)
         return
     if schema_type == "boolean":
-        expect_bool(value, context)
+        _expect_bool(value, context)
         return
     if schema_type == "array":
         _expect_str_list(value, context, schema_entry)
@@ -88,7 +88,7 @@ def expect_string(value: Any, context: str) -> str:
     return value
 
 
-def expect_bool(value: Any, context: str) -> bool:
+def _expect_bool(value: Any, context: str) -> bool:
     if not isinstance(value, bool):
         raise CliError(f"{context} must be a boolean.")
     return value

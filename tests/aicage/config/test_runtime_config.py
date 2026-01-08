@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 from aicage.cli_types import ParsedArgs
 from aicage.config import SettingsStore
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import AgentConfig, AgentMounts
+from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.config.runtime_config import RunConfig, _check_agent_version, load_run_config
 from aicage.errors import CliError
 from aicage.registry.image_selection import ImageSelection
@@ -43,7 +43,7 @@ class RuntimeConfigTests(TestCase):
             project_cfg.agents["codex"] = AgentConfig(
                 base="ubuntu",
                 docker_args="--project",
-                mounts=AgentMounts(gitconfig=True),
+                        mounts=_AgentMounts(gitconfig=True),
             )
             store.save_project(project_path, project_cfg)
 

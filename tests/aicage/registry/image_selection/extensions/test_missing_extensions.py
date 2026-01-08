@@ -7,7 +7,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry._extensions import ExtensionMetadata
 from aicage.registry.image_selection.extensions.missing_extensions import ensure_extensions_exist
-from aicage.registry.images_metadata.models import ImageReleaseInfo, ImagesMetadata
+from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 
 
 class MissingExtensionsTests(TestCase):
@@ -82,8 +82,8 @@ class MissingExtensionsTests(TestCase):
                 agents={},
             ),
             images_metadata=ImagesMetadata(
-                aicage_image=ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=ImageReleaseInfo(version="0.3.3"),
+                aicage_image=_ImageReleaseInfo(version="0.3.3"),
+                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
                 bases={},
                 agents={},
             ),

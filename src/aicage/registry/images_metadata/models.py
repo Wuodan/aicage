@@ -32,12 +32,12 @@ BASE_DISTRO_EXCLUDE_KEY: str = "base_distro_exclude"
 
 
 @dataclass(frozen=True)
-class ImageReleaseInfo:
+class _ImageReleaseInfo:
     version: str
 
 
 @dataclass(frozen=True)
-class BaseMetadata:
+class _BaseMetadata:
     root_image: str
     base_image_distro: str
     base_image_description: str
@@ -58,9 +58,9 @@ class AgentMetadata:
 
 @dataclass(frozen=True)
 class ImagesMetadata:
-    aicage_image: ImageReleaseInfo
-    aicage_image_base: ImageReleaseInfo
-    bases: dict[str, BaseMetadata]
+    aicage_image: _ImageReleaseInfo
+    aicage_image_base: _ImageReleaseInfo
+    bases: dict[str, _BaseMetadata]
     agents: dict[str, AgentMetadata]
 
     @classmethod
@@ -93,15 +93,15 @@ class ImagesMetadata:
         )
 
 
-def _parse_release_info(value: Any, context: str) -> ImageReleaseInfo:
+def _parse_release_info(value: Any, context: str) -> _ImageReleaseInfo:
     mapping = _expect_mapping(value, context)
     _expect_keys(mapping, required={_VERSION_KEY}, optional=set(), context=context)
-    return ImageReleaseInfo(version=_expect_string(mapping.get(_VERSION_KEY), f"{context}.{_VERSION_KEY}"))
+    return _ImageReleaseInfo(version=_expect_string(mapping.get(_VERSION_KEY), f"{context}.{_VERSION_KEY}"))
 
 
-def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
+def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
     mapping = _expect_mapping(value, _BASES_KEY)
-    bases: dict[str, BaseMetadata] = {}
+    bases: dict[str, _BaseMetadata] = {}
     for name, base_value in mapping.items():
         if not isinstance(name, str):
             raise CliError("Images metadata base keys must be strings.")
@@ -118,7 +118,7 @@ def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
             optional=set(),
             context=f"{_BASES_KEY}.{name}",
         )
-        bases[name] = BaseMetadata(
+        bases[name] = _BaseMetadata(
             root_image=_expect_string(
                 base_mapping.get(_ROOT_IMAGE_KEY),
                 f"{_BASES_KEY}.{name}.{_ROOT_IMAGE_KEY}",
