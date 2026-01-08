@@ -34,7 +34,7 @@ class EntrypointMountTests(TestCase):
         with (
             mock.patch("aicage.runtime.mounts._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
             mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
-            mock.patch("aicage.runtime.mounts._entrypoint.prompt_yes_no", return_value=True),
+            mock.patch("aicage.runtime.mounts._entrypoint.prompt_persist_entrypoint", return_value=True),
         ):
             mounts = resolve_entrypoint_mount(agent_cfg, "./entrypoint.sh")
 
@@ -48,7 +48,7 @@ class EntrypointMountTests(TestCase):
         with (
             mock.patch("aicage.runtime.mounts._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
             mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
-            mock.patch("aicage.runtime.mounts._entrypoint.prompt_yes_no") as prompt_mock,
+            mock.patch("aicage.runtime.mounts._entrypoint.prompt_persist_entrypoint") as prompt_mock,
         ):
             mounts = resolve_entrypoint_mount(agent_cfg, None)
 

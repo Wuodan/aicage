@@ -15,7 +15,7 @@ from aicage.registry.image_selection import select_agent_image
 from aicage.registry.images_metadata.loader import load_images_metadata
 from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.mounts import resolve_mounts
-from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.prompts import prompt_persist_docker_args
 from aicage.runtime.run_args import MountSpec
 
 
@@ -86,15 +86,7 @@ def _persist_docker_args(agent_cfg: AgentConfig, parsed: ParsedArgs | None) -> N
     if existing == parsed.docker_args:
         return
 
-    if existing:
-        question = (
-            f"Persist docker run args '{parsed.docker_args}' for this project "
-            f"(replacing '{existing}')?"
-        )
-    else:
-        question = f"Persist docker run args '{parsed.docker_args}' for this project?"
-
-    if prompt_yes_no(question, default=True):
+    if prompt_persist_docker_args(parsed.docker_args, existing):
         agent_cfg.docker_args = parsed.docker_args
 
 

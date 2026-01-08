@@ -3,6 +3,12 @@ from .base import BaseSelectionRequest as BaseSelectionRequest
 from .base import available_bases as available_bases
 from .base import base_options as base_options
 from .base import prompt_for_base as prompt_for_base
+from .confirm import prompt_mount_git_config as prompt_mount_git_config
+from .confirm import prompt_mount_gpg_keys as prompt_mount_gpg_keys
+from .confirm import prompt_mount_ssh_keys as prompt_mount_ssh_keys
+from .confirm import prompt_persist_docker_args as prompt_persist_docker_args
+from .confirm import prompt_persist_docker_socket as prompt_persist_docker_socket
+from .confirm import prompt_persist_entrypoint as prompt_persist_entrypoint
 from .confirm import prompt_yes_no as prompt_yes_no
 from .extensions import ExtensionOption as ExtensionOption
 from .extensions import prompt_for_extensions as prompt_for_extensions

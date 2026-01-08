@@ -3,7 +3,7 @@ from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
-from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.prompts import prompt_persist_entrypoint
 from aicage.runtime.run_args import MountSpec
 
 _ENTRYPOINT_CONTAINER_PATH = Path("/usr/local/bin/entrypoint.sh")
@@ -28,7 +28,7 @@ def resolve_entrypoint_mount(
     ]
 
     if cli_entrypoint and agent_cfg.entrypoint is None:
-        if prompt_yes_no(f"Persist entrypoint '{entrypoint_path}' for this project?", default=True):
+        if prompt_persist_entrypoint(entrypoint_path):
             agent_cfg.entrypoint = str(entrypoint_path)
 
     return mounts

@@ -22,7 +22,10 @@ class SshKeyTests(TestCase):
                 mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
                 mock.patch("aicage.runtime.mounts._ssh_keys.resolve_signing_format", return_value="ssh"),
                 mock.patch("aicage.runtime.mounts._ssh_keys._default_ssh_dir", return_value=ssh_dir),
-                mock.patch("aicage.runtime.mounts._ssh_keys.prompt_yes_no", return_value=False) as prompt_mock,
+                mock.patch(
+                    "aicage.runtime.mounts._ssh_keys.prompt_mount_ssh_keys",
+                    return_value=False,
+                ) as prompt_mock,
             ):
                 mounts = _ssh_keys.resolve_ssh_mount(Path("/repo"), agent_cfg)
 

@@ -109,7 +109,7 @@ class RuntimeConfigTests(TestCase):
                         base_image_ref="ref",
                     ),
                 ),
-                mock.patch("aicage.config.runtime_config.prompt_yes_no", return_value=True),
+                mock.patch("aicage.config.runtime_config.prompt_persist_docker_args", return_value=True),
             ):
                 run_config = load_run_config("codex", parsed)
 

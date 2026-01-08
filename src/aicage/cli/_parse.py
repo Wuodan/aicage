@@ -6,7 +6,7 @@ from aicage._logging import get_logger
 from aicage.cli_types import ParsedArgs
 from aicage.errors import CliError
 
-_MIN_REMAINING_FOR_DOCKER_ARGS = 2
+_MIN_REMAINING_WITH_AGENT = 2
 
 
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
@@ -106,6 +106,8 @@ def _parse_agent_section(
     if not remaining:
         raise CliError("Missing arguments. Provide an agent name (and optional docker args).")
     first: str = remaining[0]
-    if len(remaining) >= _MIN_REMAINING_FOR_DOCKER_ARGS and (first.startswith("-") or "=" in first):
+    if first.startswith("-") or "=" in first:
+        if len(remaining) < _MIN_REMAINING_WITH_AGENT:
+            raise CliError("Missing agent name after docker args. Use '--' before the agent.")
         return first, remaining[1], remaining[2:]
     return "", first, remaining[1:]

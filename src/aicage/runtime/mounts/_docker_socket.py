@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.prompts import prompt_persist_docker_socket
 from aicage.runtime.run_args import MountSpec
 
 _DOCKER_SOCKET_PATH = Path("/run/docker.sock")
@@ -24,7 +24,7 @@ def resolve_docker_socket_mount(
     ]
 
     if cli_docker_socket and mounts_cfg.docker is None:
-        if prompt_yes_no("Persist mounting the Docker socket for this project?", default=True):
+        if prompt_persist_docker_socket():
             mounts_cfg.docker = True
 
     return mounts

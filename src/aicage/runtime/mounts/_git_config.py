@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.prompts import prompt_mount_git_config
 from aicage.runtime.run_args import MountSpec
 
 from ._exec import capture_stdout
@@ -31,9 +31,7 @@ def resolve_git_config_mount(agent_cfg: AgentConfig) -> list[MountSpec]:
     mounts_cfg = agent_cfg.mounts
     pref = mounts_cfg.gitconfig
     if pref is None:
-        pref = prompt_yes_no(
-            f"Mount Git config from '{git_config}' so Git uses your usual name/email?", default=True
-        )
+        pref = prompt_mount_git_config(git_config)
         mounts_cfg.gitconfig = pref
 
     if pref:

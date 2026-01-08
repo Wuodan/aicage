@@ -15,7 +15,7 @@ class MountResolutionTests(TestCase):
 
             with (
                 mock.patch("aicage.runtime.mounts._git_config._resolve_git_config_path", return_value=gitconfig),
-                mock.patch("aicage.runtime.mounts._git_config.prompt_yes_no", return_value=True),
+                mock.patch("aicage.runtime.mounts._git_config.prompt_mount_git_config", return_value=True),
             ):
                 mounts = _git_config.resolve_git_config_mount(agent_cfg)
 
@@ -32,7 +32,7 @@ class MountResolutionTests(TestCase):
                 mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
                 mock.patch("aicage.runtime.mounts._ssh_keys.resolve_signing_format", return_value="ssh"),
                 mock.patch("aicage.runtime.mounts._ssh_keys._default_ssh_dir", return_value=ssh_dir),
-                mock.patch("aicage.runtime.mounts._ssh_keys.prompt_yes_no") as prompt_mock,
+                mock.patch("aicage.runtime.mounts._ssh_keys.prompt_mount_ssh_keys") as prompt_mock,
             ):
                 mounts = _ssh_keys.resolve_ssh_mount(Path("/repo"), agent_cfg)
 
@@ -50,7 +50,7 @@ class MountResolutionTests(TestCase):
                 mock.patch("aicage.runtime.mounts._gpg.is_commit_signing_enabled", return_value=True),
                 mock.patch("aicage.runtime.mounts._gpg.resolve_signing_format", return_value=None),
                 mock.patch("aicage.runtime.mounts._gpg._resolve_gpg_home", return_value=gpg_home),
-                mock.patch("aicage.runtime.mounts._gpg.prompt_yes_no") as prompt_mock,
+                mock.patch("aicage.runtime.mounts._gpg.prompt_mount_gpg_keys") as prompt_mock,
             ):
                 mounts = _gpg.resolve_gpg_mount(Path("/repo"), agent_cfg)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_yes_no
+from aicage.runtime.prompts import prompt_mount_gpg_keys
 from aicage.runtime.run_args import MountSpec
 
 from ._exec import capture_stdout
@@ -31,9 +31,7 @@ def resolve_gpg_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountS
     mounts_cfg = agent_cfg.mounts
     pref = mounts_cfg.gnupg
     if pref is None:
-        pref = prompt_yes_no(
-            f"Mount GnuPG keys from '{gpg_home}' so Git signing works like on your host?", default=True
-        )
+        pref = prompt_mount_gpg_keys(gpg_home)
         mounts_cfg.gnupg = pref
 
     if pref:
