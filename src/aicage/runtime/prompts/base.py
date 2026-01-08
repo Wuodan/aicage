@@ -5,7 +5,7 @@ from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata
 
-from .tty import ensure_tty_for_prompt
+from ._tty import ensure_tty_for_prompt
 
 
 @dataclass(frozen=True)

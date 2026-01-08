@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from aicage.errors import CliError
 
-from .tty import ensure_tty_for_prompt
+from ._tty import ensure_tty_for_prompt
 
 
 @dataclass(frozen=True)

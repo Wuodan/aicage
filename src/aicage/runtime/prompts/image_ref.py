@@ -1,4 +1,4 @@
-from .tty import ensure_tty_for_prompt
+from ._tty import ensure_tty_for_prompt
 
 
 def prompt_for_image_ref(default_ref: str) -> str:

@@ -25,7 +25,6 @@ from aicage.registry.images_metadata.models import (
 )
 from aicage.runtime.prompts import (
     BaseSelectionRequest,
-    ensure_tty_for_prompt,
     prompt_for_base,
     prompt_yes_no,
 )
@@ -35,7 +34,7 @@ class PromptTests(TestCase):
     def test_prompt_requires_tty(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=False):
             with self.assertRaises(CliError):
-                ensure_tty_for_prompt()
+                prompt_yes_no("Continue?", default=False)
 
     def test_prompt_validates_choice(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch(

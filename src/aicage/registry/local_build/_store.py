@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 
 from aicage.paths import DEFAULT_LOCAL_BUILD_STATE_DIR
+
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
 _AGENT_VERSION_KEY: str = "agent_version"

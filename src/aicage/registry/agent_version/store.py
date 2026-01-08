@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 
 from aicage.paths import DEFAULT_VERSION_CHECK_STATE_DIR
+
 _AGENT_KEY: str = "agent"
 _VERSION_KEY: str = "version"
 _CHECKED_AT_KEY: str = "checked_at"

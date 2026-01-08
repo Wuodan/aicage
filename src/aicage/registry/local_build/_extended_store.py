@@ -6,7 +6,9 @@ from pathlib import Path
 import yaml
 
 from aicage.paths import DEFAULT_LOCAL_EXTENDED_STATE_DIR
+
 from ._store import sanitize
+
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
 _IMAGE_REF_KEY: str = "image_ref"

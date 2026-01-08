@@ -5,8 +5,8 @@ from aicage.config.context import ConfigContext
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata
 
+from ._tty import ensure_tty_for_prompt
 from .base import BaseOption, available_bases, base_options
-from .tty import ensure_tty_for_prompt
 
 
 @dataclass(frozen=True)

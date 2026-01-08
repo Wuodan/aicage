@@ -1,6 +1,6 @@
 from aicage._logging import get_logger
 
-from .tty import ensure_tty_for_prompt
+from ._tty import ensure_tty_for_prompt
 
 
 def prompt_yes_no(question: str, default: bool = False) -> bool:

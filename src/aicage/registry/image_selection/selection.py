@@ -15,15 +15,15 @@ from aicage.runtime.prompts import (
     prompt_for_image_choice,
 )
 
-from .extensions import (
-    ExtensionSelectionContext,
+from .extensions.context import ExtensionSelectionContext
+from .extensions.extended_images import (
     apply_extended_selection,
-    base_image_ref,
-    ensure_extensions_exist,
-    handle_extension_selection,
     load_extended_image_options,
     resolve_extended_image,
 )
+from .extensions.handler import handle_extension_selection
+from .extensions.missing_extensions import ensure_extensions_exist
+from .extensions.refs import base_image_ref
 from .models import ImageSelection
 
 
