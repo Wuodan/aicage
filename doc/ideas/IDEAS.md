@@ -73,3 +73,8 @@ development. But by now this:
 - prevents having an agent with a second config (also locally)
 - is ugly
 - the code is mature enough by now to change this
+
+## Avoid `chmod` on users shell scripts
+
+We use `chmod` if the users config has non-executable `*.sh` scripts. But we might avoid changing those by `chmod` by 
+running them as arguments to `sh` (or `bash` if available on host).
