@@ -8,6 +8,9 @@ class VisibilityRulesTests(TestCase):
         src_dir = repo_root / "src"
         violations = []
         for path in src_dir.rglob("*.py"):
+            if path.name == "_version.py":
+                # Generated file from setuptools-scm; allow __all__ in version metadata.
+                continue
             if "__all__" in path.read_text(encoding="utf-8"):
                 violations.append(path.relative_to(repo_root))
 

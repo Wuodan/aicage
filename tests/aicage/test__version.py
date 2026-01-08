@@ -11,5 +11,5 @@ class VersionModuleTests(TestCase):
             module = importlib.import_module("aicage._version")
         except ImportError:
             return
-        self.assertFalse(hasattr(module, "__all__"))
+        # Generated file from setuptools-scm; allow __all__ in version metadata.
         self.assertIsInstance(module.__version__, str)

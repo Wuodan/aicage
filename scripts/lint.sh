@@ -10,7 +10,8 @@ yamllint .
 pymarkdown --config .pymarkdown.json scan .
 ruff check .
 pyright .
-if rg -n --glob '*.py' '__all__' src; then
+# Ignore generated version metadata from setuptools-scm.
+if rg -n --glob '*.py' --glob '!src/aicage/_version.py' '__all__' src; then
   echo "Found __all__ usage in src; remove it to satisfy visibility checks."
   exit 1
 fi
