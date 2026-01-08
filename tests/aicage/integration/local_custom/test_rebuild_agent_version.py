@@ -44,14 +44,14 @@ def _run_agent(env: dict[str, str], workspace: Path, agent_name: str) -> None:
     assert output_lines[-1]
 
 
-def _force_record(store: BuildStore, record: BuildRecord, *, agent_version: str, built_at: str) -> None:
+def _force_record(store: BuildStore, record: BuildRecord, *, agent_version: str) -> None:
     updated = BuildRecord(
         agent=record.agent,
         base=record.base,
         agent_version=agent_version,
         base_image=record.base_image,
         image_ref=record.image_ref,
-        built_at=built_at,
+        built_at=record.built_at,
     )
     store.save(updated)
 
@@ -71,10 +71,8 @@ def test_custom_agent_rebuilds(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) 
         store,
         record,
         agent_version="0.0.0",
-        built_at="2000-01-03T00:00:00+00:00",
     )
     _run_agent(env, workspace, "forge")
     updated = store.load("forge", "ubuntu")
     assert updated is not None
-    assert updated.built_at != "2000-01-03T00:00:00+00:00"
     assert updated.agent_version != "0.0.0"

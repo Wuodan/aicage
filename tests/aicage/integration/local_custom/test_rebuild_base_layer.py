@@ -7,6 +7,7 @@ import pytest
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry.custom_agent.loader import DEFAULT_CUSTOM_AGENTS_DIR
+from aicage.registry.local_build._layers import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildStore
 
 from .._helpers import build_cli_env, copy_forge_sample, run_cli_pty
@@ -80,4 +81,8 @@ def test_custom_agent_rebuilds_on_base_layer(monkeypatch: pytest.MonkeyPatch, tm
     _run_agent(env, workspace, "forge")
     updated = store.load("forge", "ubuntu")
     assert updated is not None
-    assert updated.built_at != record.built_at
+    base_layers = get_local_rootfs_layers(record.base_image)
+    assert base_layers is not None
+    final_layers = get_local_rootfs_layers(record.image_ref)
+    assert final_layers is not None
+    assert base_layers[-1] in final_layers
