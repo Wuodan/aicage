@@ -69,7 +69,8 @@ preferences and credentials.
 - `--docker` mounts `/run/docker.sock` into the container to enable Docker-in-Docker workflows.
 - `--config print` prints the project config path and its contents.
 
-Configuration file formats are documented in [CONFIG.md](CONFIG.md).
+Configuration file formats are documented in [CONFIG.md](CONFIG.md). Extension authoring is documented in
+[doc/extensions.md](doc/extensions.md).
 
 ## Why cage agents?
 

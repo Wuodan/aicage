@@ -50,6 +50,8 @@ class DockerInvocationTests(TestCase):
             agent="codex",
             base="ubuntu",
             image_ref=image_ref,
+            base_image_ref=image_ref,
+            extensions=[],
             agent_version=None,
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",

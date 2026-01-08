@@ -80,6 +80,17 @@ Files: `tests/aicage/integration/local_custom/test_build_and_version.py`,
   - Runs `aicage forge --version` to build and validate the image once.
   - Replaces the final image tag with a dummy image, then runs again and asserts that the build record updates.
 
+### Extensions
+
+Files: `tests/aicage/integration/extensions/test_build.py`
+
+- `test_extension_builds_and_runs`
+  - Copies the `marker` sample extension from `doc/sample/custom/extensions/marker` into the sandboxed extension
+    directory.
+  - Preseeds the project config with the extension and an `aicage-extended` image tag.
+  - Runs `aicage codex -c "test -f /usr/local/share/aicage-extensions/marker.txt"` with an entrypoint override
+    and verifies the marker file exists in the container.
+
 ### Version check fallback
 
 File: `tests/aicage/integration/test_version_check.py`

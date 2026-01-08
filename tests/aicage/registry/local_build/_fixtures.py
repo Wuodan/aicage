@@ -31,6 +31,8 @@ def build_run_config(
         agent="claude",
         base="ubuntu",
         image_ref="aicage:claude-ubuntu",
+        base_image_ref="aicage:claude-ubuntu",
+        extensions=[],
         agent_version=agent_version,
         global_cfg=GlobalConfig(
             image_registry="ghcr.io",

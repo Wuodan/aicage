@@ -40,3 +40,4 @@ class LocalBuildStoreTests(TestCase):
 
     def test_sanitize_replaces_slashes(self) -> None:
         self.assertEqual("foo_bar", sanitize("foo/bar"))
+        self.assertEqual("foo_bar", sanitize("foo:bar"))

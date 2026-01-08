@@ -39,3 +39,8 @@ Run after Subtask 08. This is the final integration and cleanup pass.
 ## Notes
 
 Follow the Task/SubTask Workflow in doc/ai/task/12/12-TASK.md and include a subtask summary at completion.
+
+Deferred items to revisit:
+
+- Add a CLI flow to change or reset base/extension selection for a project without manual config edits.
+- Re-evaluate whether a project should allow multiple images per agent (would affect selection and config schema).

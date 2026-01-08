@@ -39,6 +39,8 @@ agents:
     base: string
     docker_args: string
     entrypoint: string
+    image_ref: string
+    extensions: [string]
     mounts:
       gitconfig: bool
       gnupg: bool
@@ -61,6 +63,8 @@ Used under `agents.<agent>` in the project config.
 | `base`             | string | Always   | Image base to use for this agent in this project.        |
 | `docker_args`      | string | Optional | Persisted `docker run` args for this agent.              |
 | `entrypoint`       | string | Optional | Persisted host path to an executable entrypoint script.  |
+| `image_ref`        | string | Optional | Selected image ref (prebuilt or extended).               |
+| `extensions`       | list   | Optional | Ordered list of selected extensions for this agent.      |
 | `mounts`           | map    | Optional | Host resource mount preferences.                         |
 | `mounts.gitconfig` | bool   | Optional | Mount the host Git config file.                          |
 | `mounts.gnupg`     | bool   | Optional | Mount the host GnuPG home for Git signing.               |

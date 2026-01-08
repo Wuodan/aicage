@@ -25,6 +25,8 @@ class RunConfig:
     agent: str
     base: str
     image_ref: str
+    base_image_ref: str
+    extensions: list[str]
     agent_version: str | None
     global_cfg: GlobalConfig
     images_metadata: ImagesMetadata
@@ -47,7 +49,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
             global_cfg=global_cfg,
             images_metadata=images_metadata,
         )
-        image_ref = select_agent_image(agent, context)
+        selection = select_agent_image(agent, context)
         agent_version = _check_agent_version(agent, global_cfg, images_metadata)
         agent_cfg = project_cfg.agents.setdefault(agent, AgentConfig())
 
@@ -66,7 +68,9 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
             project_path=project_path,
             agent=agent,
             base=base,
-            image_ref=image_ref,
+            image_ref=selection.image_ref,
+            base_image_ref=selection.base_image_ref,
+            extensions=list(selection.extensions),
             agent_version=agent_version,
             global_cfg=global_cfg,
             images_metadata=images_metadata,

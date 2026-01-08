@@ -11,7 +11,7 @@ includes current and planned behavior.
 | Final image (prebuilt)         | Agent version or base image changes             | CI build on change + publish, runtime pull on use  | CI + client   |
 | Final image (build_local=true) | Agent version or base image changes             | Local rebuild on run when changes are detected     | Client        |
 | Local custom agent             | Agent version or base image changes             | Local rebuild on run when changes are detected     | Client        |
-| Local extension (planned)      | Extension scripts or base/final image changes   | Local rebuild on run when changes are detected     | Client        |
+| Local extension                | Extension scripts or base/final image changes   | Local rebuild on run when changes are detected     | Client        |
 | Local custom base (planned)    | Custom base definition or root image changes    | Local rebuild on run when changes are detected     | Client        |
 
 ## Artifact responsibilities
@@ -22,7 +22,7 @@ includes current and planned behavior.
 | Final image (prebuilt)               | base image + agents/<AGENT>                  | Registry (ghcr.io)  | Agent version + base image updates           |
 | Local final image (build_local=true) | base image + packaged agent-build/<AGENT>    | Local Docker engine | Agent version + base image digest change     |
 | Local final image (custom agent)     | base image + ~/.aicage/custom/agents/<AGENT> | Local Docker engine | Agent version + base image digest change     |
-| Local extended image (planned)       | final image + extensions                     | Local Docker engine | Extension changes + base/final image updates |
+| Local extended image            | final image + extensions                     | Local Docker engine | Extension changes + base/final image updates |
 | Local custom base image (planned)    | custom base definition                       | Local Docker engine | Definition changes + root image updates      |
 
 ## Notes

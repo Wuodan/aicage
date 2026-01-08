@@ -8,6 +8,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig, AgentMounts
 from aicage.config.runtime_config import RunConfig, _check_agent_version, load_run_config
 from aicage.errors import CliError
+from aicage.registry.image_selection import ImageSelection
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -99,7 +100,15 @@ class RuntimeConfigTests(TestCase):
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
                 ),
-                mock.patch("aicage.config.runtime_config.select_agent_image", return_value="ref"),
+                mock.patch(
+                    "aicage.config.runtime_config.select_agent_image",
+                    return_value=ImageSelection(
+                        image_ref="ref",
+                        base="ubuntu",
+                        extensions=[],
+                        base_image_ref="ref",
+                    ),
+                ),
                 mock.patch("aicage.config.runtime_config.prompt_yes_no", return_value=True),
             ):
                 run_config = load_run_config("codex", parsed)
@@ -128,7 +137,15 @@ class RuntimeConfigTests(TestCase):
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
                 ),
-                mock.patch("aicage.config.runtime_config.select_agent_image", return_value="ref"),
+                mock.patch(
+                    "aicage.config.runtime_config.select_agent_image",
+                    return_value=ImageSelection(
+                        image_ref="ref",
+                        base="ubuntu",
+                        extensions=[],
+                        base_image_ref="ref",
+                    ),
+                ),
             ):
                 with self.assertRaises(CliError):
                     load_run_config("codex")

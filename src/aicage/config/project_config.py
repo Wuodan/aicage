@@ -9,6 +9,8 @@ _DOCKER_ARGS_KEY: str = "docker_args"
 AGENT_BASE_KEY: str = "base"
 _AGENT_ENTRYPOINT_KEY: str = "entrypoint"
 _AGENT_MOUNTS_KEY: str = "mounts"
+_AGENT_IMAGE_REF_KEY: str = "image_ref"
+_AGENT_EXTENSIONS_KEY: str = "extensions"
 
 _MOUNT_GITCONFIG_KEY: str = "gitconfig"
 _MOUNT_GNUPG_KEY: str = "gnupg"
@@ -51,6 +53,8 @@ class AgentConfig:
     docker_args: str = ""
     entrypoint: str | None = None
     mounts: AgentMounts = field(default_factory=AgentMounts)
+    image_ref: str | None = None
+    extensions: list[str] = field(default_factory=list)
 
     @classmethod
     def from_mapping(cls, data: dict[str, Any]) -> "AgentConfig":
@@ -60,6 +64,8 @@ class AgentConfig:
             docker_args=data.get(_DOCKER_ARGS_KEY, "") or "",
             entrypoint=data.get(_AGENT_ENTRYPOINT_KEY),
             mounts=mounts,
+            image_ref=data.get(_AGENT_IMAGE_REF_KEY),
+            extensions=_read_str_list(data.get(_AGENT_EXTENSIONS_KEY)),
         )
 
     def to_mapping(self) -> dict[str, Any]:
@@ -73,6 +79,10 @@ class AgentConfig:
         mounts = self.mounts.to_mapping()
         if mounts:
             payload[_AGENT_MOUNTS_KEY] = mounts
+        if self.image_ref:
+            payload[_AGENT_IMAGE_REF_KEY] = self.image_ref
+        if self.extensions:
+            payload[_AGENT_EXTENSIONS_KEY] = list(self.extensions)
         return payload
 
 
@@ -98,3 +108,9 @@ class ProjectConfig:
     def to_mapping(self) -> dict[str, Any]:
         agents_payload = {name: cfg.to_mapping() for name, cfg in self.agents.items()}
         return {_PROJECT_PATH_KEY: self.path, _PROJECT_AGENTS_KEY: agents_payload}
+
+
+def _read_str_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str) and item]

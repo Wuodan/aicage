@@ -1,0 +1,77 @@
+# Extensions
+
+Extensions allow installing additional tools into an existing final image. Extensions are defined locally under
+`~/.aicage/custom/extension/` and are applied in the order selected by the user.
+Extensions are base-image agnostic; scripts should handle distribution differences if needed.
+
+## Directory layout
+
+Each extension lives in its own directory:
+
+```text
+~/.aicage/custom/extension/<EXTENSION>/
+├─ extension.yml (or extension.yaml)
+├─ Dockerfile        # optional
+└─ scripts/
+   ├─ 01-setup.sh
+   └─ 02-install.sh
+```
+
+Only scripts in the `scripts/` directory are executed. Scripts run in alphabetical order.
+The extension id is the directory name and is used when selecting extensions.
+
+## extension.yml
+
+`extension.yml` (or `extension.yaml`) must contain the following keys:
+
+```yaml
+name: "Display name"
+description: "Short description of what the extension adds."
+```
+
+No additional keys are supported.
+
+## Scripts
+
+Scripts are executed inside the image build. Use shell scripts (`*.sh`) and avoid interactive prompts.
+Scripts run with `bash` and `set -e` enabled by the built-in Dockerfile. Non-executable scripts are made
+executable before running.
+
+## Dockerfile (optional)
+
+If `Dockerfile` is present, it is used instead of the built-in Dockerfile. The build context is the extension
+directory. The following build args are provided:
+
+- `BASE_IMAGE`: the image to extend (the current image in the extension chain)
+- `EXTENSION`: the extension id (directory name)
+
+Custom Dockerfiles are responsible for running any scripts if needed.
+
+## Extended images
+
+When extensions are selected, the default local image tag is:
+
+```
+aicage-extended:<agent>-<base>-<ext1>-<ext2>
+```
+
+The project config stores the selected base, extensions, and image ref for reuse on subsequent runs.
+
+## Example
+
+`extension.yml`:
+
+```yaml
+name: "Marker extension"
+description: "Creates a marker file in the image."
+```
+
+`scripts/01-marker.sh`:
+
+```bash
+#!/usr/bin/env bash
+set -e
+
+mkdir -p /usr/local/share/aicage-extensions
+echo "marker" > /usr/local/share/aicage-extensions/marker.txt
+```

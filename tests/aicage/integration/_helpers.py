@@ -11,7 +11,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.paths import DEFAULT_CUSTOM_AGENTS_DIR
+from aicage.paths import DEFAULT_CUSTOM_AGENTS_DIR, DEFAULT_CUSTOM_EXTENSIONS_DIR
 from aicage.registry.local_build._layers import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
@@ -183,6 +183,18 @@ def copy_forge_sample(target_dir: Path) -> None:
     copytree(source_dir, target_dir, dirs_exist_ok=True)
     _make_executable(target_dir / "install.sh")
     _make_executable(target_dir / "version.sh")
+
+
+def custom_extensions_dir() -> Path:
+    return DEFAULT_CUSTOM_EXTENSIONS_DIR.expanduser()
+
+
+def copy_marker_extension_sample(target_dir: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[3]
+    source_dir = repo_root / "doc/sample/custom/extensions/marker"
+    copytree(source_dir, target_dir, dirs_exist_ok=True)
+    for script in (target_dir / "scripts").glob("*.sh"):
+        _make_executable(script)
 
 
 def _make_executable(path: Path) -> None:

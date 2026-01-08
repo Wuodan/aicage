@@ -41,9 +41,8 @@ class ImageSelectionTests(TestCase):
             context.project_cfg.agents["codex"] = AgentConfig(base="debian")
             selection = image_selection.select_agent_image("codex", context)
 
-            self.assertIsInstance(selection, str)
-            self.assertEqual("ghcr.io/aicage/aicage:codex-debian", selection)
-            store.save_project.assert_not_called()
+            self.assertEqual("ghcr.io/aicage/aicage:codex-debian", selection.image_ref)
+            store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_prompts_and_marks_dirty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -100,8 +99,8 @@ class ImageSelectionTests(TestCase):
             context.project_cfg.agents["claude"] = AgentConfig(base="ubuntu")
             selection = image_selection.select_agent_image("claude", context)
 
-            self.assertEqual("aicage:claude-ubuntu", selection)
-            store.save_project.assert_not_called()
+            self.assertEqual("aicage:claude-ubuntu", selection.image_ref)
+            store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     @staticmethod
     def _build_context(

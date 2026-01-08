@@ -183,6 +183,8 @@ class EnsureLocalImageTests(TestCase):
             agent="claude",
             base="ubuntu",
             image_ref="aicage:claude-ubuntu",
+            base_image_ref="aicage:claude-ubuntu",
+            extensions=[],
             agent_version="1.2.3",
             global_cfg=global_cfg,
             images_metadata=images_metadata,
