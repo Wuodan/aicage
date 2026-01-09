@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Local extensions under `~/.aicage/custom/extension/` with extension metadata, scripts, and optional Dockerfile.
+- Local extensions under `~/.aicage/custom/extensions/` with extension metadata, scripts, and optional Dockerfile.
 - Extended final images with local config under `~/.aicage/custom/image-extended/`.
 - Image selection flow to pick base images or extended images and apply extensions.
 - Local build/update pipeline for extended images with build logs and stored metadata.

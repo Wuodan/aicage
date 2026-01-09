@@ -12,7 +12,7 @@ CUSTOM_AGENT_DEFINITION_FILES: tuple[str, str] = (
     "agent.yml",
 )
 
-DEFAULT_CUSTOM_EXTENSIONS_DIR: Path = Path("~/.aicage/custom/extension")
+DEFAULT_CUSTOM_EXTENSIONS_DIR: Path = Path("~/.aicage/custom/extensions")
 CUSTOM_EXTENSION_DEFINITION_FILES: tuple[str, str] = (
     "extension.yaml",
     "extension.yml",

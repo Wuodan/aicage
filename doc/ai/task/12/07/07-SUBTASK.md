@@ -21,7 +21,7 @@ keeps earlier subtasks focused.
 
 ## Scope
 
-- Discover extensions under ~/.aicage/custom/extension/.
+- Discover extensions under ~/.aicage/custom/extensions/.
 - Implement extension selection and extended image naming rules.
 - Build/update extended images based on upstream final image updates.
 - Add end-user documentation for extension.yml, Dockerfile, and scripts.

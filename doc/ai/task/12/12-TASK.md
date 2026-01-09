@@ -146,9 +146,9 @@ But for sure I will not add this to all base-images as `act` is not common enoug
 ##### Extensions for final-images: Local extension configuration
 
 Users can locally define extensions to final-images, for example in a
-`~/.aicage/custom/extension/<EXTENSION>/` folder, with one such folder per extension.
+`~/.aicage/custom/extensions/<EXTENSION>/` folder, with one such folder per extension.
 
-Contents of `~/.aicage/custom/extension/<EXTENSION>/`:
+Contents of `~/.aicage/custom/extensions/<EXTENSION>/`:
 - Dockerfile (optional):
   - Used to build the final image. If not present, `aicage` uses a builtin Dockerfile for this.
   - This needs good documentation for users writing this with an example and all possible ARG
@@ -189,7 +189,7 @@ for extensions to it.
    for a base-image to the agent to get the final-image (agent+base combo). That is stored as config
    for subsequent runs with same agent and same project folder.
 2. When a normal base-image is selected and extensions are defined in
-   `~/.aicage/custom/extension/<EXTENSION>/`, then `aicage` shall let user select 0-n of them.
+   `~/.aicage/custom/extensions/<EXTENSION>/`, then `aicage` shall let user select 0-n of them.
 3. The image name for the local image shall be `aicage-extended` without the docker registry.  
    Example:  
    Aicage final image name is 'ghcr.io/aicage/aicage', the custom extended images are named just
