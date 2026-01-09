@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from aicage.config.runtime_config import RunConfig
+from aicage.docker.build import run_extended_build
 from aicage.errors import CliError
-from aicage.registry._extensions import ExtensionMetadata, extension_hash, load_extensions
 from aicage.registry._hashing import new_hasher
+from aicage.registry.extensions import ExtensionMetadata, extension_hash, load_extensions
 from aicage.registry.image_pull import pull_image
 from aicage.registry.local_build.ensure_local_image import ensure_local_image
 
 from ._extended_plan import should_build_extended
-from ._extended_runner import run_extended_build
 from ._extended_store import ExtendedBuildRecord, ExtendedBuildStore
 from ._logs import build_log_path_for_image
 from ._plan import now_iso

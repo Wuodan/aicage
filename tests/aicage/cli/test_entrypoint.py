@@ -149,17 +149,12 @@ class EntrypointTests(TestCase):
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.pull_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
-                mock.patch(
-                    "aicage.cli.entrypoint.assemble_docker_run",
-                    return_value=["docker", "run", "--flag"],
-                ) as assemble_mock,
-                mock.patch("aicage.cli.entrypoint.subprocess.run") as run_mock,
+                mock.patch("aicage.cli.entrypoint.run_container") as run_mock,
             ):
                 exit_code = cli.main([])
 
             self.assertEqual(0, exit_code)
-            assemble_mock.assert_called_once()
-            run_mock.assert_called_once_with(["docker", "run", "--flag"], check=True)
+            run_mock.assert_called_once_with(run_args)
 
     def test_main_prompts_and_saves_base(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -182,11 +177,7 @@ class EntrypointTests(TestCase):
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.pull_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
-                mock.patch(
-                    "aicage.cli.entrypoint.assemble_docker_run",
-                    return_value=["docker", "run", "--flag"],
-                ),
-                mock.patch("aicage.cli.entrypoint.subprocess.run"),
+                mock.patch("aicage.cli.entrypoint.run_container"),
             ):
                 exit_code = cli.main([])
 

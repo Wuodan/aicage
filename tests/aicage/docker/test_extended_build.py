@@ -5,15 +5,15 @@ from unittest import TestCase, mock
 
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
-from aicage.registry._extensions import ExtensionMetadata
-from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
-from aicage.registry.local_build._extended_runner import (
+from aicage.docker.build import (
     _cleanup_intermediate_images,
     _intermediate_image_ref,
     _parse_image_ref,
     run_extended_build,
 )
+from aicage.errors import CliError
+from aicage.registry.extensions import ExtensionMetadata
+from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 
 
 class ExtendedRunnerTests(TestCase):
@@ -34,14 +34,14 @@ class ExtendedRunnerTests(TestCase):
             log_path = Path(tmp_dir) / "build.log"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._extended_runner.find_packaged_path",
+                    "aicage.docker.build.find_packaged_path",
                     return_value=Path("/tmp/Dockerfile"),
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._extended_runner.subprocess.run",
+                    "aicage.docker.build.subprocess.run",
                     return_value=CompletedProcess([], 0),
                 ) as run_mock,
-                mock.patch("aicage.registry.local_build._extended_runner._cleanup_intermediate_images") as cleanup_mock,
+                mock.patch("aicage.docker.build._cleanup_intermediate_images") as cleanup_mock,
             ):
                 run_extended_build(
                     run_config=run_config,
@@ -59,11 +59,11 @@ class ExtendedRunnerTests(TestCase):
             log_path = Path(tmp_dir) / "build.log"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._extended_runner.find_packaged_path",
+                    "aicage.docker.build.find_packaged_path",
                     return_value=Path("/tmp/Dockerfile"),
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._extended_runner.subprocess.run",
+                    "aicage.docker.build.subprocess.run",
                     return_value=CompletedProcess([], 1),
                 ),
             ):
@@ -78,7 +78,7 @@ class ExtendedRunnerTests(TestCase):
     def test_cleanup_intermediate_images_logs_failures(self) -> None:
         logger = mock.Mock()
         with mock.patch(
-            "aicage.registry.local_build._extended_runner.subprocess.run",
+            "aicage.docker.build.subprocess.run",
             return_value=CompletedProcess([], 1),
         ):
             _cleanup_intermediate_images(["aicage:tmp"], logger)

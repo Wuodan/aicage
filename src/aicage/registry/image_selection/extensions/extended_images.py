@@ -4,7 +4,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
 from aicage.registry._extended_images import load_extended_images
-from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.images_metadata.models import AgentMetadata
 from aicage.runtime.prompts import ExtendedImageOption
 

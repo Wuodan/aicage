@@ -5,10 +5,7 @@ import urllib.request
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from aicage.registry._remote_api import (
-    RegistryDiscoveryError,
-    fetch_pull_token_for_repository,
-)
+from ._registry_api import RegistryDiscoveryError, fetch_pull_token_for_repository
 
 if TYPE_CHECKING:
     from aicage.config.global_config import GlobalConfig

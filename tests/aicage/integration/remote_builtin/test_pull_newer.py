@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from aicage.config.config_store import SettingsStore
-from aicage.registry import _local_query
+from aicage.docker.query import get_local_repo_digest_for_repo
 from aicage.registry.images_metadata.loader import load_images_metadata
 
 from .._helpers import build_dummy_image, require_integration, run_cli_pty, setup_workspace
@@ -46,7 +46,7 @@ def test_builtin_agent_pulls_newer_digest(monkeypatch: pytest.MonkeyPatch, tmp_p
         assert local_id_after != local_id_before
 
         repository = f"{global_cfg.image_registry}/{global_cfg.image_repository}"
-        local_digest = _local_query.get_local_repo_digest_for_repo(image_ref, repository)
+        local_digest = get_local_repo_digest_for_repo(image_ref, repository)
         assert local_digest is not None
     finally:
         subprocess.run(["docker", "image", "rm", "-f", image_ref], check=False, capture_output=True)

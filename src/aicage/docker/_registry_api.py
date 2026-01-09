@@ -22,9 +22,7 @@ def fetch_pull_token_for_repository(global_cfg: GlobalConfig, repository: str) -
     data, _ = _fetch_json(url, None)
     token = data.get("token")
     if not token:
-        raise RegistryDiscoveryError(
-            f"Missing token while querying registry for {repository}."
-        )
+        raise RegistryDiscoveryError(f"Missing token while querying registry for {repository}.")
     return token
 
 

@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from aicage.config.runtime_config import RunConfig
-from aicage.registry import _local_query, _remote_query
+from aicage.docker.query import get_local_repo_digest
+from aicage.docker.remote_query import get_remote_repo_digest_for_repo
 
 
 @dataclass(frozen=True)
@@ -12,11 +13,11 @@ class _PullDecision:
 
 
 def decide_pull(run_config: RunConfig) -> _PullDecision:
-    local_digest = _local_query.get_local_repo_digest(run_config)
+    local_digest = get_local_repo_digest(run_config)
     if local_digest is None:
         return _PullDecision(should_pull=True)
 
-    remote_digest = _remote_query.get_remote_repo_digest_for_repo(
+    remote_digest = get_remote_repo_digest_for_repo(
         run_config.image_ref,
         run_config.global_cfg.image_repository,
         run_config.global_cfg,

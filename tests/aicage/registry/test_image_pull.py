@@ -106,17 +106,17 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
                 ) as remote_mock,
                 mock.patch(
-                    "aicage.registry._pull_runner.subprocess.Popen",
+                    "aicage.docker.pull.subprocess.Popen",
                     return_value=pull_ok,
                 ) as popen_mock,
-                mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
+                mock.patch("aicage.docker.pull.subprocess.run") as run_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
@@ -140,17 +140,17 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
                 ) as remote_mock,
                 mock.patch(
-                    "aicage.registry._pull_runner.subprocess.Popen",
+                    "aicage.docker.pull.subprocess.Popen",
                     return_value=pull_download,
                 ) as popen_mock,
-                mock.patch("aicage.registry._pull_runner.subprocess.run") as run_mock,
+                mock.patch("aicage.docker.pull.subprocess.run") as run_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
@@ -169,14 +169,14 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
                 ) as remote_mock,
-                mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
-                mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_ok),
+                mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
+                mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_ok),
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
                 mock.patch("sys.stdout", new_callable=io.StringIO),
@@ -193,14 +193,14 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
                 ) as remote_mock,
-                mock.patch("aicage.registry._pull_runner.subprocess.Popen", return_value=pull_fail),
-                mock.patch("aicage.registry._pull_runner.subprocess.run", return_value=inspect_fail),
+                mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
+                mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_fail),
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
@@ -214,14 +214,14 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value="same",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo",
                     return_value="same",
                 ),
-                mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
@@ -235,14 +235,14 @@ class DockerInvocationTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry._pull_decision._local_query.get_local_repo_digest",
+                    "aicage.registry._pull_decision.get_local_repo_digest",
                     return_value="local",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision._remote_query.get_remote_repo_digest_for_repo",
+                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo",
                     return_value=None,
                 ),
-                mock.patch("aicage.registry._pull_runner.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):

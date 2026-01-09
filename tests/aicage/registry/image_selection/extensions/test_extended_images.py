@@ -6,7 +6,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.errors import CliError
 from aicage.registry._extended_images import ExtendedImageConfig
-from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.image_selection.extensions.extended_images import (
     apply_extended_selection,
     load_extended_image_options,

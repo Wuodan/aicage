@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
+from aicage.docker.pull import run_pull
 from aicage.registry._logs import pull_log_path
 from aicage.registry._pull_decision import decide_pull
-from aicage.registry._pull_runner import run_pull
 
 
 def pull_image(run_config: RunConfig) -> None:

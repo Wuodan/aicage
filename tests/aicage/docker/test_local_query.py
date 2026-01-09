@@ -5,7 +5,7 @@ from docker.errors import ImageNotFound
 
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.registry import _local_query
+from aicage.docker.query import get_local_repo_digest
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -102,27 +102,27 @@ class LocalQueryTests(TestCase):
     def test_get_local_repo_digest(self) -> None:
         run_config = self._build_run_config("repo:tag")
         with mock.patch(
-            "aicage.registry._local_query.get_docker_client",
+            "aicage.docker.query.get_docker_client",
             return_value=FakeClient(None),
         ):
-            self.assertIsNone(_local_query.get_local_repo_digest(run_config))
+            self.assertIsNone(get_local_repo_digest(run_config))
 
         with mock.patch(
-            "aicage.registry._local_query.get_docker_client",
+            "aicage.docker.query.get_docker_client",
             return_value=FakeClient(FakeImage(repo_digests={"bad": "data"})),
         ):
-            self.assertIsNone(_local_query.get_local_repo_digest(run_config))
+            self.assertIsNone(get_local_repo_digest(run_config))
 
         with mock.patch(
-            "aicage.registry._local_query.get_docker_client",
+            "aicage.docker.query.get_docker_client",
             return_value=FakeClient(FakeImage(repo_digests=["bad"])),
         ):
-            self.assertIsNone(_local_query.get_local_repo_digest(run_config))
+            self.assertIsNone(get_local_repo_digest(run_config))
 
         payload = ["ghcr.io/aicage/aicage@sha256:deadbeef", "other@sha256:skip"]
         with mock.patch(
-            "aicage.registry._local_query.get_docker_client",
+            "aicage.docker.query.get_docker_client",
             return_value=FakeClient(FakeImage(repo_digests=payload)),
         ):
-            digest = _local_query.get_local_repo_digest(run_config)
+            digest = get_local_repo_digest(run_config)
         self.assertEqual("sha256:deadbeef", digest)

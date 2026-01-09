@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
-from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.registry.local_build._extended_store import ExtendedBuildRecord
 from aicage.registry.local_build.ensure_extended_image import ensure_extended_image

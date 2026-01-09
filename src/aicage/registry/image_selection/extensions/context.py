@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from aicage.config.context import ConfigContext
 from aicage.config.project_config import AgentConfig
-from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.images_metadata.models import AgentMetadata
 
 

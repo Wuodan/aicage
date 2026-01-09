@@ -5,7 +5,7 @@ from pathlib import Path
 from aicage.config.context import ConfigContext
 from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
 from aicage.errors import CliError
-from aicage.registry._extensions import ExtensionMetadata, load_extensions
+from aicage.registry.extensions import ExtensionMetadata, load_extensions
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.runtime.prompts import (
     BaseSelectionRequest,

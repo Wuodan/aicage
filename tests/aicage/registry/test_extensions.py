@@ -3,7 +3,8 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.errors import CliError
-from aicage.registry import _extended_images, _extensions
+from aicage.registry import _extended_images
+from aicage.registry import extensions as extensions_module
 from aicage.registry._extended_images import ExtendedImageConfig
 
 
@@ -14,10 +15,10 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             self._write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                extensions = _extensions.load_extensions()
+                extensions = extensions_module.load_extensions()
 
         self.assertIn("sample", extensions)
         metadata = extensions["sample"]
@@ -30,15 +31,15 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             self._write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                extensions = _extensions.load_extensions()
+                extensions = extensions_module.load_extensions()
                 metadata = extensions["sample"]
-                first_hash = _extensions.extension_hash(metadata)
+                first_hash = extensions_module.extension_hash(metadata)
                 script_path = metadata.scripts_dir / "01-install.sh"
                 script_path.write_text("#!/usr/bin/env bash\necho changed\n", encoding="utf-8")
-                second_hash = _extensions.extension_hash(metadata)
+                second_hash = extensions_module.extension_hash(metadata)
 
         self.assertNotEqual(first_hash, second_hash)
 
@@ -49,14 +50,14 @@ class ExtensionDiscoveryTests(TestCase):
             self._write_extension(extension_dir, name="Sample", description="Desc")
             (extension_dir / "Dockerfile").write_text("FROM ubuntu:latest\n", encoding="utf-8")
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                extensions = _extensions.load_extensions()
+                extensions = extensions_module.load_extensions()
                 metadata = extensions["sample"]
-                first_hash = _extensions.extension_hash(metadata)
+                first_hash = extensions_module.extension_hash(metadata)
                 (extension_dir / "Dockerfile").write_text("FROM ubuntu:22.04\n", encoding="utf-8")
-                second_hash = _extensions.extension_hash(metadata)
+                second_hash = extensions_module.extension_hash(metadata)
 
         self.assertNotEqual(first_hash, second_hash)
 
@@ -66,10 +67,10 @@ class ExtensionDiscoveryTests(TestCase):
             extension_root.mkdir(parents=True)
             (extension_root / "README.md").write_text("ignore", encoding="utf-8")
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                extensions = _extensions.load_extensions()
+                extensions = extensions_module.load_extensions()
 
         self.assertEqual({}, extensions)
 
@@ -83,11 +84,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extensions_requires_definition(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -96,11 +97,11 @@ class ExtensionDiscoveryTests(TestCase):
             scripts_dir = extension_dir / "scripts"
             scripts_dir.mkdir(parents=True, exist_ok=True)
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extensions_rejects_invalid_yaml(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -113,17 +114,17 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extensions_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
             with self.assertRaises(CliError):
-                _extensions._load_yaml(missing_path)
+                extensions_module._load_yaml(missing_path)
 
     def test_load_extensions_rejects_unknown_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -142,11 +143,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extensions_rejects_blank_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -159,11 +160,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extensions_requires_required_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -176,11 +177,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
-                    _extensions.load_extensions()
+                    extensions_module.load_extensions()
 
     def test_load_extended_images_skips_missing_extensions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -2,8 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.docker import build
 from aicage.errors import CliError
-from aicage.registry.local_build import _runner
 
 from ._fixtures import build_run_config
 
@@ -19,15 +19,15 @@ class LocalBuildRunnerTests(TestCase):
             log_path = Path(tmp_dir) / "logs" / "build.log"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._runner.find_packaged_path",
+                    "aicage.docker.build.find_packaged_path",
                     return_value=Path("/tmp/build/Dockerfile"),
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._runner.subprocess.run",
+                    "aicage.docker.build.subprocess.run",
                     return_value=mock.Mock(returncode=0),
                 ) as run_mock,
             ):
-                _runner.run_build(
+                build.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     log_path=log_path,
@@ -63,16 +63,16 @@ class LocalBuildRunnerTests(TestCase):
             log_path = Path(tmp_dir) / "logs" / "build.log"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._runner.find_packaged_path",
+                    "aicage.docker.build.find_packaged_path",
                     return_value=Path("/tmp/build/Dockerfile"),
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._runner.subprocess.run",
+                    "aicage.docker.build.subprocess.run",
                     return_value=mock.Mock(returncode=1),
                 ),
                 self.assertRaises(CliError),
             ):
-                _runner.run_build(
+                build.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                     log_path=log_path,
@@ -80,16 +80,16 @@ class LocalBuildRunnerTests(TestCase):
 
     def test_local_image_exists_true_on_success(self) -> None:
         with mock.patch(
-            "aicage.registry.local_build._runner.subprocess.run",
+            "aicage.docker.build.subprocess.run",
             return_value=mock.Mock(returncode=0),
         ):
-            exists = _runner.local_image_exists("aicage:claude-ubuntu")
+            exists = build.local_image_exists("aicage:claude-ubuntu")
         self.assertTrue(exists)
 
     def test_local_image_exists_false_on_failure(self) -> None:
         with mock.patch(
-            "aicage.registry.local_build._runner.subprocess.run",
+            "aicage.docker.build.subprocess.run",
             return_value=mock.Mock(returncode=1),
         ):
-            exists = _runner.local_image_exists("aicage:claude-ubuntu")
+            exists = build.local_image_exists("aicage:claude-ubuntu")
         self.assertFalse(exists)

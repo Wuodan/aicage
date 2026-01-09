@@ -7,6 +7,7 @@ from pathlib import Path
 
 from aicage._logging import get_logger
 from aicage.config.global_config import GlobalConfig
+from aicage.docker.run import run_builder_version_check
 from aicage.errors import CliError
 from aicage.registry.images_metadata.models import AgentMetadata
 
@@ -70,19 +71,8 @@ class _CommandResult:
 
 
 def _run_builder(image_ref: str, definition_dir: Path) -> _CommandResult:
-    command = [
-        "docker",
-        "run",
-        "--rm",
-        "-v",
-        f"{definition_dir.resolve()}:/agent:ro",
-        "-w",
-        "/agent",
-        image_ref,
-        "/bin/bash",
-        "/agent/version.sh",
-    ]
-    return _run_command(command, "builder image")
+    process = run_builder_version_check(image_ref, definition_dir)
+    return _from_process(process, "builder image")
 
 
 def _run_host(script_path: Path) -> _CommandResult:
@@ -96,6 +86,10 @@ def _run_host(script_path: Path) -> _CommandResult:
 
 def _run_command(command: list[str], context: str) -> _CommandResult:
     process = subprocess.run(command, check=False, capture_output=True, text=True)
+    return _from_process(process, context)
+
+
+def _from_process(process: subprocess.CompletedProcess[str], context: str) -> _CommandResult:
     output = process.stdout.strip() if process.stdout else ""
     if process.returncode == 0 and output:
         return _CommandResult(success=True, output=output, error="")

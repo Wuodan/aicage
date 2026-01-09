@@ -1,5 +1,3 @@
-import shlex
-import subprocess
 import sys
 from collections.abc import Sequence
 
@@ -9,11 +7,12 @@ from aicage.cli._print_config import print_project_config
 from aicage.cli_types import ParsedArgs
 from aicage.config import ConfigError
 from aicage.config.runtime_config import RunConfig, load_run_config
+from aicage.docker.run import print_run_command, run_container
 from aicage.errors import CliError
 from aicage.registry.image_pull import pull_image
 from aicage.registry.local_build.ensure_extended_image import ensure_extended_image
 from aicage.registry.local_build.ensure_local_image import ensure_local_image
-from aicage.runtime.run_args import DockerRunArgs, assemble_docker_run
+from aicage.runtime.run_args import DockerRunArgs
 from aicage.runtime.run_plan import build_run_args
 
 
@@ -36,14 +35,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             ensure_local_image(run_config)
         run_args: DockerRunArgs = build_run_args(config=run_config, parsed=parsed)
 
-        run_cmd: list[str] = assemble_docker_run(run_args)
-
         if parsed.dry_run:
-            print(shlex.join(run_cmd))
+            print_run_command(run_args)
             logger.info("Dry-run docker command printed.")
             return 0
 
-        subprocess.run(run_cmd, check=True)
+        run_container(run_args)
         return 0
     except KeyboardInterrupt:
         print()

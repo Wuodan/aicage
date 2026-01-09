@@ -1,2 +1,1 @@
-# Runtime helpers for building docker run commands.
-
+# Runtime helpers for building container run arguments.

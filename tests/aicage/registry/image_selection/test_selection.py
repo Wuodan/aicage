@@ -31,6 +31,15 @@ from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
 
 
 class ImageSelectionTests(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        patcher = mock.patch(
+            "aicage.registry.image_selection.selection.load_extensions",
+            return_value={},
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_resolve_uses_existing_base(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"

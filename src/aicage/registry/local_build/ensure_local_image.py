@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from aicage.config.runtime_config import RunConfig
+from aicage.docker.build import run_build
 from aicage.errors import CliError
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
 from ._plan import base_image_ref, base_repository, now_iso, should_build
-from ._runner import run_build
 from ._store import BuildRecord, BuildStore
 
 

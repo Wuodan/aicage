@@ -25,13 +25,10 @@ class AgentVersionCheckTests(TestCase):
                 store=VersionCheckStore(store_dir),
             )
 
-            def _run_side_effect(args: list[str], **kwargs: object) -> CompletedProcess[str]:
-                return CompletedProcess(args, 0, stdout="1.2.3\n", stderr="")
-
             with (
                 mock.patch(
                     "aicage.registry.agent_version.checker.subprocess.run",
-                    side_effect=_run_side_effect,
+                    return_value=CompletedProcess([], 0, stdout="1.2.3\n", stderr=""),
                 ),
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
@@ -58,15 +55,14 @@ class AgentVersionCheckTests(TestCase):
                 store=VersionCheckStore(store_dir),
             )
 
-            def _run_side_effect(args: list[str], **kwargs: object) -> CompletedProcess[str]:
-                if args[0] == "/bin/bash":
-                    return CompletedProcess(args, 1, stdout="", stderr="host failed")
-                return CompletedProcess(args, 0, stdout="1.2.3\n", stderr="")
-
             with (
                 mock.patch(
                     "aicage.registry.agent_version.checker.subprocess.run",
-                    side_effect=_run_side_effect,
+                    return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
+                ),
+                mock.patch(
+                    "aicage.registry.agent_version.checker.run_builder_version_check",
+                    return_value=CompletedProcess([], 0, stdout="1.2.3\n", stderr=""),
                 ),
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
@@ -93,15 +89,14 @@ class AgentVersionCheckTests(TestCase):
                 store=VersionCheckStore(store_dir),
             )
 
-            def _run_side_effect(args: list[str], **kwargs: object) -> CompletedProcess[str]:
-                if args[0] == "/bin/bash":
-                    return CompletedProcess(args, 1, stdout="", stderr="host failed")
-                return CompletedProcess(args, 1, stdout="", stderr="builder failed")
-
             with (
                 mock.patch(
                     "aicage.registry.agent_version.checker.subprocess.run",
-                    side_effect=_run_side_effect,
+                    return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
+                ),
+                mock.patch(
+                    "aicage.registry.agent_version.checker.run_builder_version_check",
+                    return_value=CompletedProcess([], 1, stdout="", stderr="builder failed"),
                 ),
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):

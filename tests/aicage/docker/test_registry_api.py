@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from aicage.registry import _remote_api
+from aicage.docker import _registry_api
 
 
 class RemoteApiTests(TestCase):
@@ -8,8 +8,8 @@ class RemoteApiTests(TestCase):
         def fake_fetch_json(url: str, headers: dict[str, str] | None):
             return {"token": "abc"}, {}
 
-        with mock.patch("aicage.registry._remote_api._fetch_json", fake_fetch_json):
-            token = _remote_api.fetch_pull_token_for_repository(
+        with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
+            token = _registry_api.fetch_pull_token_for_repository(
                 mock.Mock(image_registry_api_token_url="https://example.test/token"),
                 "repo",
             )
@@ -19,9 +19,9 @@ class RemoteApiTests(TestCase):
         def fake_fetch_json(url: str, headers: dict[str, str] | None):
             return {}, {}
 
-        with mock.patch("aicage.registry._remote_api._fetch_json", fake_fetch_json):
-            with self.assertRaises(_remote_api.RegistryDiscoveryError):
-                _remote_api._fetch_pull_token(
+        with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
+            with self.assertRaises(_registry_api.RegistryDiscoveryError):
+                _registry_api._fetch_pull_token(
                     mock.Mock(
                         image_registry_api_token_url="https://example.test/token",
                         image_repository="repo",
@@ -30,11 +30,11 @@ class RemoteApiTests(TestCase):
 
     def test_fetch_json_raises_on_request_failure(self) -> None:
         with mock.patch(
-            "aicage.registry._remote_api.urllib.request.urlopen",
+            "aicage.docker._registry_api.urllib.request.urlopen",
             side_effect=Exception("boom"),
         ):
-            with self.assertRaises(_remote_api.RegistryDiscoveryError):
-                _remote_api._fetch_json("https://example.test/api", None)
+            with self.assertRaises(_registry_api.RegistryDiscoveryError):
+                _registry_api._fetch_json("https://example.test/api", None)
 
     def test_fetch_json_raises_on_invalid_json(self) -> None:
         response = mock.Mock()
@@ -43,11 +43,11 @@ class RemoteApiTests(TestCase):
         response.__enter__ = mock.Mock(return_value=response)
         response.__exit__ = mock.Mock(return_value=None)
         with mock.patch(
-            "aicage.registry._remote_api.urllib.request.urlopen",
+            "aicage.docker._registry_api.urllib.request.urlopen",
             return_value=response,
         ):
-            with self.assertRaises(_remote_api.RegistryDiscoveryError):
-                _remote_api._fetch_json("https://example.test/api", None)
+            with self.assertRaises(_registry_api.RegistryDiscoveryError):
+                _registry_api._fetch_json("https://example.test/api", None)
 
     def test_fetch_json_returns_payload_and_headers(self) -> None:
         response = mock.Mock()
@@ -56,9 +56,9 @@ class RemoteApiTests(TestCase):
         response.__enter__ = mock.Mock(return_value=response)
         response.__exit__ = mock.Mock(return_value=None)
         with mock.patch(
-            "aicage.registry._remote_api.urllib.request.urlopen",
+            "aicage.docker._registry_api.urllib.request.urlopen",
             return_value=response,
         ):
-            data, headers = _remote_api._fetch_json("https://example.test/api", None)
+            data, headers = _registry_api._fetch_json("https://example.test/api", None)
         self.assertEqual({"token": "abc"}, data)
         self.assertEqual({"x-test": "1"}, headers)

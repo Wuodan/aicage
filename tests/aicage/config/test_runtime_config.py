@@ -59,6 +59,15 @@ class RuntimeConfigTests(TestCase):
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
                 ),
+                mock.patch(
+                    "aicage.config.runtime_config.select_agent_image",
+                    return_value=ImageSelection(
+                        image_ref="ref",
+                        base="ubuntu",
+                        extensions=[],
+                        base_image_ref="ref",
+                    ),
+                ),
             ):
                 run_config = load_run_config("codex")
 

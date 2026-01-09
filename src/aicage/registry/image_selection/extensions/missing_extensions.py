@@ -5,7 +5,7 @@ import yaml
 from aicage.config.context import ConfigContext
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
-from aicage.registry._extensions import ExtensionMetadata
+from aicage.registry.extensions import ExtensionMetadata
 from aicage.runtime.prompts import prompt_for_missing_extensions
 
 

@@ -11,8 +11,8 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
+from aicage.docker.query import get_local_rootfs_layers
 from aicage.paths import DEFAULT_CUSTOM_AGENTS_DIR, DEFAULT_CUSTOM_EXTENSIONS_DIR
-from aicage.registry.local_build._layers import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
 

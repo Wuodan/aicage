@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
+from aicage.docker.build import local_image_exists
+from aicage.docker.query import get_local_rootfs_layers
 
 from ._extended_store import ExtendedBuildRecord
-from ._layers import get_local_rootfs_layers
-from ._runner import local_image_exists
 
 
 def should_build_extended(

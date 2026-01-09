@@ -13,11 +13,11 @@ class LocalBuildDigestTests(TestCase):
         global_cfg = build_run_config().global_cfg
         with (
             mock.patch(
-                "aicage.registry.local_build._digest._local_query.get_local_repo_digest_for_repo",
+                "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
                 return_value="sha256:local",
             ),
             mock.patch(
-                "aicage.registry.local_build._digest._remote_query.get_remote_repo_digest_for_repo",
+                "aicage.registry.local_build._digest.get_remote_repo_digest_for_repo",
                 return_value=None,
             ),
             mock.patch("aicage.registry.local_build._digest.run_pull") as run_mock,
@@ -35,11 +35,11 @@ class LocalBuildDigestTests(TestCase):
             global_cfg = build_run_config().global_cfg
             with (
                 mock.patch(
-                    "aicage.registry.local_build._digest._local_query.get_local_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
                     return_value="sha256:local",
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._digest._remote_query.get_remote_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_remote_repo_digest_for_repo",
                     return_value="sha256:remote",
                 ),
                 mock.patch(
@@ -60,11 +60,11 @@ class LocalBuildDigestTests(TestCase):
             global_cfg = build_run_config().global_cfg
             with (
                 mock.patch(
-                    "aicage.registry.local_build._digest._local_query.get_local_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._digest._remote_query.get_remote_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_remote_repo_digest_for_repo",
                     return_value="sha256:remote",
                 ),
                 mock.patch(
@@ -86,11 +86,11 @@ class LocalBuildDigestTests(TestCase):
             global_cfg = build_run_config().global_cfg
             with (
                 mock.patch(
-                    "aicage.registry.local_build._digest._local_query.get_local_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
                     side_effect=["sha256:old", "sha256:new"],
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._digest._remote_query.get_remote_repo_digest_for_repo",
+                    "aicage.registry.local_build._digest.get_remote_repo_digest_for_repo",
                     return_value="sha256:remote",
                 ),
                 mock.patch(
