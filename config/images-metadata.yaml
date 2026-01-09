@@ -3,9 +3,9 @@
 # https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
 
 aicage-image:
-  version: 0.6.0
+  version: 0.7.0
 aicage-image-base:
-  version: 0.5.13
+  version: 0.7.0
 bases:
   act:
     root_image: ghcr.io/catthehacker/ubuntu:act-latest
