@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-01-09
+
+### Internal
+
+- Centralized Docker interactions under `aicage.docker` and moved run/build/pull/query helpers into it.
+- Split extension metadata helpers into `aicage.registry.extensions` and promoted runtime env vars module.
+- Added task 16 Docker SDK migration subtasks in `doc/ai/task/16/`.
+
 ## [0.7.1] - 2026-01-09
 
 ### Changed
