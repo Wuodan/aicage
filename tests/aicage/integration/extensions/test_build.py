@@ -25,7 +25,7 @@ def test_extension_builds_and_runs(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
         monkeypatch,
         tmp_path,
         "codex",
-        docker_args="--entrypoint=/bin/sh",
+        docker_args="--entrypoint=/bin/bash",
     )
 
     extension_dir = custom_extensions_dir() / "marker"
@@ -36,7 +36,7 @@ def test_extension_builds_and_runs(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     project_cfg = store.load_project(workspace)
     project_cfg.agents["codex"] = AgentConfig(
         base="ubuntu",
-        docker_args="--entrypoint=/bin/sh",
+        docker_args="--entrypoint=/bin/bash",
         image_ref="aicage-extended:codex-ubuntu-marker",
         extensions=["marker"],
     )
@@ -58,7 +58,7 @@ def test_extension_rebuilds_on_base_image_change(
         monkeypatch,
         tmp_path,
         "claude",
-        docker_args="--entrypoint=/bin/sh",
+        docker_args="--entrypoint=/bin/bash",
     )
 
     extension_dir = custom_extensions_dir() / "marker"
@@ -69,7 +69,7 @@ def test_extension_rebuilds_on_base_image_change(
     project_cfg = store.load_project(workspace)
     project_cfg.agents["claude"] = AgentConfig(
         base="ubuntu",
-        docker_args="--entrypoint=/bin/sh",
+        docker_args="--entrypoint=/bin/bash",
         image_ref="aicage-extended:claude-ubuntu-marker",
         extensions=["marker"],
     )

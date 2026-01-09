@@ -25,7 +25,7 @@ def _image_id(image_ref: str) -> str:
 
 def test_builtin_agent_pulls_newer_digest(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     require_integration()
-    docker_args = "--entrypoint=/bin/sh"
+    docker_args = "--entrypoint=/bin/bash"
     workspace, env = setup_workspace(monkeypatch, tmp_path, "copilot", docker_args=docker_args)
     store = SettingsStore()
     global_cfg = store.load_global()

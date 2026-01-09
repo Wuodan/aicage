@@ -135,7 +135,7 @@ def build_dummy_image(image_ref: str, tmp_path: Path) -> str:
             [
                 "FROM alpine:latest",
                 "RUN echo dummy > /dummy",
-                "CMD [\"/bin/sh\", \"-c\", \"echo dummy\"]",
+                "CMD [\"/bin/bash\", \"-c\", \"echo dummy\"]",
             ]
         ),
         encoding="utf-8",

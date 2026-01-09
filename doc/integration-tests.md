@@ -39,7 +39,7 @@ Files: `tests/aicage/integration/remote_builtin/test_run.py`,
 - `test_builtin_agent_pulls_newer_digest`
   - Uses the built-in `copilot` agent.
   - Tags a locally built dummy image with the same name:tag as the remote image.
-  - Runs `aicage copilot -c "echo ok"` with docker args preseeded to `--entrypoint=/bin/sh`, then verifies the local
+  - Runs `aicage copilot -c "echo ok"` with docker args preseeded to `--entrypoint=/bin/bash`, then verifies the local
     image ID changes and a repo digest is present.
 
 ### Local built-in agents
