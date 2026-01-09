@@ -2,6 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from docker.errors import ImageNotFound
+
 from aicage.docker import build
 from aicage.errors import CliError
 
@@ -79,17 +81,17 @@ class LocalBuildRunnerTests(TestCase):
                 )
 
     def test_local_image_exists_true_on_success(self) -> None:
-        with mock.patch(
-            "aicage.docker.build.subprocess.run",
-            return_value=mock.Mock(returncode=0),
-        ):
+        client = mock.Mock()
+        client.images.get.return_value = mock.Mock()
+        with mock.patch("aicage.docker.build.get_docker_client", return_value=client):
             exists = build.local_image_exists("aicage:claude-ubuntu")
         self.assertTrue(exists)
+        client.images.get.assert_called_once_with("aicage:claude-ubuntu")
 
     def test_local_image_exists_false_on_failure(self) -> None:
-        with mock.patch(
-            "aicage.docker.build.subprocess.run",
-            return_value=mock.Mock(returncode=1),
-        ):
+        client = mock.Mock()
+        client.images.get.side_effect = ImageNotFound("missing")
+        with mock.patch("aicage.docker.build.get_docker_client", return_value=client):
             exists = build.local_image_exists("aicage:claude-ubuntu")
         self.assertFalse(exists)
+        client.images.get.assert_called_once_with("aicage:claude-ubuntu")

@@ -4,9 +4,12 @@ import subprocess
 from logging import Logger
 from pathlib import Path
 
+from docker.errors import ImageNotFound
+
 from aicage._logging import get_logger
 from aicage.config.resources import find_packaged_path
 from aicage.config.runtime_config import RunConfig
+from aicage.docker._client import get_docker_client
 from aicage.errors import CliError
 from aicage.registry.extensions import ExtensionMetadata
 
@@ -49,13 +52,12 @@ def run_build(
 
 
 def local_image_exists(image_ref: str) -> bool:
-    result = subprocess.run(
-        ["docker", "image", "inspect", image_ref],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    return result.returncode == 0
+    client = get_docker_client()
+    try:
+        client.images.get(image_ref)
+    except ImageNotFound:
+        return False
+    return True
 
 
 def run_extended_build(
