@@ -5,6 +5,9 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from docker.errors import ContainerError, DockerException, ImageNotFound
+
+from aicage.docker._client import get_docker_client
 from aicage.runtime.env_vars import (
     AICAGE_AGENT_CONFIG_PATH,
     AICAGE_GID,
@@ -26,19 +29,36 @@ def print_run_command(args: DockerRunArgs) -> None:
 
 
 def run_builder_version_check(image_ref: str, definition_dir: Path) -> subprocess.CompletedProcess[str]:
-    command = [
-        "docker",
-        "run",
-        "--rm",
-        "-v",
-        f"{definition_dir.resolve()}:/agent:ro",
-        "-w",
-        "/agent",
-        image_ref,
-        "/bin/bash",
-        "/agent/version.sh",
-    ]
-    return subprocess.run(command, check=False, capture_output=True, text=True)
+    command = ["/bin/bash", "/agent/version.sh"]
+    volume_src = str(definition_dir.resolve())
+    client = get_docker_client()
+    try:
+        output = client.containers.run(
+            image=image_ref,
+            command=command,
+            volumes={volume_src: {"bind": "/agent", "mode": "ro"}},
+            working_dir="/agent",
+            remove=True,
+            stdout=True,
+            stderr=True,
+        )
+        if isinstance(output, bytes):
+            output = output.decode("utf-8", errors="replace")
+        return subprocess.CompletedProcess(command, 0, stdout=output, stderr="")
+    except ContainerError as exc:
+        stdout = _decode_container_output(getattr(exc, "stdout", ""))
+        stderr = _decode_container_output(getattr(exc, "stderr", ""))
+        return subprocess.CompletedProcess(command, exc.exit_status, stdout=stdout, stderr=stderr)
+    except (ImageNotFound, DockerException) as exc:
+        return subprocess.CompletedProcess(command, 1, stdout="", stderr=str(exc))
+
+
+def _decode_container_output(output: object) -> str:
+    if isinstance(output, bytes):
+        return output.decode("utf-8", errors="replace")
+    if isinstance(output, str):
+        return output
+    return ""
 
 
 def _resolve_user_ids() -> list[str]:

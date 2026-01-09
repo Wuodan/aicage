@@ -5,6 +5,8 @@ from subprocess import CompletedProcess
 from unittest import TestCase, mock
 
 import yaml
+from docker.errors import ContainerError
+from docker.models.containers import Container
 
 from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
@@ -60,12 +62,11 @@ class AgentVersionCheckTests(TestCase):
                     "aicage.registry.agent_version.checker.subprocess.run",
                     return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
                 ),
-                mock.patch(
-                    "aicage.registry.agent_version.checker.run_builder_version_check",
-                    return_value=CompletedProcess([], 0, stdout="1.2.3\n", stderr=""),
-                ),
+                mock.patch("aicage.docker.run.get_docker_client") as client_mock,
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
+                client = client_mock.return_value
+                client.containers.run.return_value = "1.2.3\n"
                 result = checker.get_version(
                     "custom",
                     self._agent_metadata(),
@@ -94,12 +95,17 @@ class AgentVersionCheckTests(TestCase):
                     "aicage.registry.agent_version.checker.subprocess.run",
                     return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
                 ),
-                mock.patch(
-                    "aicage.registry.agent_version.checker.run_builder_version_check",
-                    return_value=CompletedProcess([], 1, stdout="", stderr="builder failed"),
-                ),
+                mock.patch("aicage.docker.run.get_docker_client") as client_mock,
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
+                client = client_mock.return_value
+                client.containers.run.side_effect = ContainerError(
+                    container=mock.Mock(spec=Container),
+                    exit_status=1,
+                    command=["/bin/bash", "/agent/version.sh"],
+                    image="ghcr.io/aicage/aicage-image-util:agent-version",
+                    stderr="builder failed",
+                )
                 with self.assertRaises(CliError) as raised:
                     checker.get_version(
                         "custom",
