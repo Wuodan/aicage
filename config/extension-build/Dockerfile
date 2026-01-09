@@ -1,10 +1,5 @@
-# syntax=docker/dockerfile:1.7-labs
 ARG BASE_IMAGE=base
-ARG EXTENSION=extension
-
 FROM ${BASE_IMAGE} AS runtime
-
-ARG EXTENSION
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

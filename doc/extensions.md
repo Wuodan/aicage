@@ -51,13 +51,8 @@ The built-in Dockerfile is at `config/extension-build/Dockerfile`.
 Example:
 
 ```Dockerfile
-# syntax=docker/dockerfile:1.7-labs
 ARG BASE_IMAGE=base
-ARG EXTENSION=extension
-
 FROM ${BASE_IMAGE} AS runtime
-
-ARG EXTENSION
 
 RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly \
     /tmp/aicage/scripts/01-install.sh

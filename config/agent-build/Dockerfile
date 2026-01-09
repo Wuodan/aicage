@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7-labs
 ARG BASE_IMAGE=base
 ARG AGENT=codex
 
