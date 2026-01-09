@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-01-08
+
+### Added
+
+- Local extensions under `~/.aicage/custom/extension/` with extension metadata, scripts, and optional Dockerfile.
+- Extended final images with local config under `~/.aicage/custom/image-extended/`.
+- Image selection flow to pick base images or extended images and apply extensions.
+- Local build/update pipeline for extended images with build logs and stored metadata.
+- End-user documentation for extension authoring and usage.
+
+### Changed
+
+- Project config now stores extended image refs and extension selections per agent.
+- Extension build Dockerfiles no longer include `# syntax` directives or unused build args.
+
+### Internal
+
+- Added test coverage for extension discovery, selection, prompts, and extended image build flows.
+
 ## [0.6.4] - 2026-01-08
 
 ### Changed
@@ -128,10 +147,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release series: `aicage` CLI + image build/publish tooling via submodules.
 
 ## [Planned]
-
-### [0.7.x]
-
-- Custom local extensions that build new final images on top of existing final images.
 
 ### [0.8.x]
 
