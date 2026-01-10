@@ -5,8 +5,8 @@ from pathlib import Path
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
-from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker
+from aicage.registry.errors import RegistryError
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
@@ -18,7 +18,7 @@ def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     agent_metadata = run_config.images_metadata.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
     if definition_dir is None:
-        raise CliError(f"Missing local definition for '{run_config.agent}'.")
+        raise RegistryError(f"Missing local definition for '{run_config.agent}'.")
 
     base_image = base_image_ref(run_config)
     base_repo = base_repository(run_config)

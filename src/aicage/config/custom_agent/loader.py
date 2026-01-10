@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from aicage.config._yaml import load_yaml, maybe_str_list
+from aicage.config.errors import ConfigError
 from aicage.config.image_refs import local_image_ref
 from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
@@ -14,7 +15,6 @@ from aicage.config.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
 )
-from aicage.errors import CliError
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
 
 from ._validation import ensure_required_files, expect_string, validate_agent_mapping
@@ -51,7 +51,7 @@ def _find_agent_definition(agent_dir: Path) -> Path:
         if candidate.is_file():
             return candidate
     expected = ", ".join(CUSTOM_AGENT_DEFINITION_FILES)
-    raise CliError(f"Custom agent '{agent_dir.name}' is missing {expected}.")
+    raise ConfigError(f"Custom agent '{agent_dir.name}' is missing {expected}.")
 
 
 def _build_custom_agent(

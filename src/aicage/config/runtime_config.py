@@ -7,11 +7,11 @@ from aicage.cli_types import ParsedArgs
 from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
+from aicage.config.errors import ConfigError
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
-from aicage.errors import CliError
 from aicage.registry.image_selection import select_agent_image
 from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_persist_docker_args
@@ -59,7 +59,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
 
         base = agent_cfg.base or global_cfg.agents.get(agent, {}).get(AGENT_BASE_KEY)
         if base is None:
-            raise CliError(f"Base selection is missing for agent '{agent}'.")
+            raise ConfigError(f"Base selection is missing for agent '{agent}'.")
 
         return RunConfig(
             project_path=project_path,

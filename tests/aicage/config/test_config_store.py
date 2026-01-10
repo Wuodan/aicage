@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.config import ProjectConfig, SettingsStore
+from aicage.config import ConfigError, ProjectConfig, SettingsStore
 from aicage.config._yaml import load_yaml
 from aicage.config.global_config import (
     _DEFAULT_IMAGE_BASE_KEY,
@@ -17,7 +17,6 @@ from aicage.config.global_config import (
     _VERSION_CHECK_IMAGE_KEY,
 )
 from aicage.config.project_config import AgentConfig, _AgentMounts
-from aicage.errors import CliError
 from aicage.paths import CONFIG_FILENAME
 
 
@@ -86,5 +85,5 @@ class ConfigStoreTests(TestCase):
             base_dir = Path(tmp_dir)
             bad_file = base_dir / "bad.yaml"
             bad_file.write_text("key: [unterminated", encoding="utf-8")
-            with self.assertRaises(CliError):
+            with self.assertRaises(ConfigError):
                 load_yaml(bad_file)

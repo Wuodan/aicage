@@ -2,11 +2,11 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config import ConfigError
 from aicage.config import extended_images as extended_images_module
 from aicage.config import extensions as extensions_module
 from aicage.config._yaml import load_yaml
 from aicage.config.extended_images import ExtendedImageConfig
-from aicage.errors import CliError
 
 
 class ExtensionDiscoveryTests(TestCase):
@@ -88,7 +88,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extensions_requires_definition(self) -> None:
@@ -101,7 +101,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extensions_rejects_invalid_yaml(self) -> None:
@@ -118,13 +118,13 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extensions_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
-            with self.assertRaises(CliError):
+            with self.assertRaises(ConfigError):
                 load_yaml(missing_path)
 
     def test_load_extensions_rejects_unknown_keys(self) -> None:
@@ -147,7 +147,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extensions_rejects_blank_values(self) -> None:
@@ -164,7 +164,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extensions_requires_required_keys(self) -> None:
@@ -181,7 +181,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extensions_module.load_extensions()
 
     def test_load_extended_images_skips_missing_extensions(self) -> None:
@@ -259,7 +259,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_invalid_yaml(self) -> None:
@@ -273,13 +273,13 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images({"marker"})
 
     def test_load_extended_images_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
-            with self.assertRaises(CliError):
+            with self.assertRaises(ConfigError):
                 load_yaml(missing_path)
 
     def test_load_extended_images_rejects_unknown_keys(self) -> None:
@@ -304,7 +304,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_blank_values(self) -> None:
@@ -328,7 +328,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_invalid_extensions_list(self) -> None:
@@ -352,7 +352,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_blank_extension_items(self) -> None:
@@ -377,7 +377,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_requires_required_keys(self) -> None:
@@ -400,7 +400,7 @@ class ExtensionDiscoveryTests(TestCase):
                 "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     extended_images_module.load_extended_images(set())
 
     def test_write_extended_image_config_writes_file(self) -> None:

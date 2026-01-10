@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.mounts._entrypoint import (
     _resolve_entrypoint_path,
     _validate_entrypoint_path,
@@ -19,13 +19,13 @@ class EntrypointMountTests(TestCase):
     def test_validate_entrypoint_path_errors(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing.sh"
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 _validate_entrypoint_path(missing)
 
             entrypoint = Path(tmp_dir) / "entrypoint.sh"
             entrypoint.write_text("#!/usr/bin/env bash\necho ok\n", encoding="utf-8")
             with mock.patch("os.access", return_value=False):
-                with self.assertRaises(CliError):
+                with self.assertRaises(RuntimeExecutionError):
                     _validate_entrypoint_path(entrypoint)
 
     def test_resolve_entrypoint_mount_persists_entrypoint(self) -> None:

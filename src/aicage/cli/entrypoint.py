@@ -5,10 +5,9 @@ from aicage._logging import get_logger
 from aicage.cli._parse import parse_cli
 from aicage.cli._print_config import print_project_config
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.docker.run import print_run_command, run_container
-from aicage.errors import CliError
+from aicage.errors import AicageError
 from aicage.registry.ensure_image import ensure_image
 from aicage.runtime.run_args import DockerRunArgs
 from aicage.runtime.run_plan import build_run_args
@@ -38,7 +37,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print()
         logger.warning("Interrupted by user.")
         return 130
-    except (CliError, ConfigError) as exc:
+    except AicageError as exc:
         print(f"[aicage] {exc}", file=sys.stderr)
         logger.error("CLI error: %s", exc)
         return 1

@@ -13,12 +13,12 @@ from aicage.docker.build import (
     _parse_image_ref,
     run_extended_build,
 )
-from aicage.errors import CliError
+from aicage.docker.errors import DockerError
 
 
 class ExtendedRunnerTests(TestCase):
     def test_parse_image_ref_rejects_missing_tag(self) -> None:
-        with self.assertRaises(CliError):
+        with self.assertRaises(DockerError):
             _parse_image_ref("repo")
 
     def test_intermediate_image_ref_includes_extension(self) -> None:
@@ -67,7 +67,7 @@ class ExtendedRunnerTests(TestCase):
                     return_value=CompletedProcess([], 1),
                 ),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(DockerError):
                     run_extended_build(
                         run_config=run_config,
                         base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",

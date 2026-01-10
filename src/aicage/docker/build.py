@@ -8,7 +8,7 @@ from aicage._logging import get_logger
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.resources import find_packaged_path
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
+from aicage.docker.errors import DockerError
 
 
 def run_build(
@@ -44,7 +44,7 @@ def run_build(
         result = subprocess.run(command, check=False, stdout=log_handle, stderr=subprocess.STDOUT)
     if result.returncode != 0:
         logger.error("Local image build failed for %s (logs: %s)", image_ref, log_path)
-        raise CliError(
+        raise DockerError(
             f"Local image build failed for {image_ref}. See log at {log_path}."
         )
 
@@ -98,7 +98,7 @@ def run_extended_build(
                     run_config.image_ref,
                     log_path,
                 )
-                raise CliError(
+                raise DockerError(
                     f"Extended image build failed for {run_config.image_ref}. See log at {log_path}."
                 )
             current_image_ref = target_ref
@@ -126,7 +126,7 @@ def _intermediate_image_ref(run_config: RunConfig, extension: ExtensionMetadata,
 def _parse_image_ref(image_ref: str) -> tuple[str, str]:
     repository, sep, tag = image_ref.rpartition(":")
     if not sep:
-        raise CliError(f"Image ref '{image_ref}' is missing a tag.")
+        raise DockerError(f"Image ref '{image_ref}' is missing a tag.")
     return repository, tag
 
 

@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from aicage.config import ConfigError
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -19,7 +20,6 @@ from aicage.config.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
-from aicage.errors import CliError
 
 
 class ImagesMetadataModelTests(TestCase):
@@ -56,11 +56,11 @@ class ImagesMetadataModelTests(TestCase):
         )
 
     def test_from_yaml_rejects_invalid_payload(self) -> None:
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_yaml(f"{_AICAGE_IMAGE_KEY}: [")
 
     def test_from_yaml_requires_mapping(self) -> None:
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_yaml("- item")
 
     def test_from_mapping_rejects_unknown_top_level_keys(self) -> None:
@@ -71,7 +71,7 @@ class ImagesMetadataModelTests(TestCase):
             _AGENT_KEY: {},
             "extra": {},
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_unknown_agent_keys(self) -> None:
@@ -90,11 +90,11 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_missing_required_keys(self) -> None:
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping({})
 
     def test_from_mapping_rejects_missing_agent_required_keys(self) -> None:
@@ -111,7 +111,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_non_string_base_key(self) -> None:
@@ -129,7 +129,7 @@ class ImagesMetadataModelTests(TestCase):
             },
             _AGENT_KEY: {},
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_non_string_agent_key(self) -> None:
@@ -147,7 +147,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_invalid_valid_bases_keys(self) -> None:
@@ -165,7 +165,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_invalid_valid_bases_values(self) -> None:
@@ -183,7 +183,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_invalid_agent_bool(self) -> None:
@@ -201,7 +201,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_invalid_agent_list(self) -> None:
@@ -220,7 +220,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_invalid_agent_list_type(self) -> None:
@@ -239,7 +239,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_rejects_empty_agent_fields(self) -> None:
@@ -257,7 +257,7 @@ class ImagesMetadataModelTests(TestCase):
                 }
             },
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)
 
     def test_from_mapping_accepts_valid_exclude_list(self) -> None:
@@ -286,5 +286,5 @@ class ImagesMetadataModelTests(TestCase):
             _BASES_KEY: [],
             _AGENT_KEY: {},
         }
-        with self.assertRaises(CliError):
+        with self.assertRaises(ConfigError):
             ImagesMetadata.from_mapping(data)

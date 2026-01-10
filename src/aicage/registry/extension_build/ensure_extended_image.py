@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from aicage.config.extensions import ExtensionMetadata, extension_hash, load_extensions
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_extended_build
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 
 from ._extended_plan import should_build_extended
 from ._extended_store import ExtendedBuildRecord, ExtendedBuildStore
@@ -15,7 +15,7 @@ from ._logs import build_log_path_for_image
 
 def ensure_extended_image(run_config: RunConfig) -> None:
     if not run_config.extensions:
-        raise CliError("No extensions selected for extended image build.")
+        raise RegistryError("No extensions selected for extended image build.")
 
     extensions = load_extensions()
     resolved = _resolve_extensions(run_config.extensions, extensions)
@@ -57,7 +57,7 @@ def _resolve_extensions(
 ) -> list[ExtensionMetadata]:
     missing = [ext for ext in extension_ids if ext not in extensions]
     if missing:
-        raise CliError(f"Missing extensions: {', '.join(sorted(missing))}.")
+        raise RegistryError(f"Missing extensions: {', '.join(sorted(missing))}.")
     return [extensions[ext] for ext in extension_ids]
 
 

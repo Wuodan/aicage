@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 
 
 @dataclass
@@ -27,5 +27,5 @@ def _read_agent_path(agent: str, images_metadata: ImagesMetadata) -> str:
 def _require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:
     agent_metadata = images_metadata.agents.get(agent)
     if not agent_metadata:
-        raise CliError(f"Agent '{agent}' is missing from images metadata.")
+        raise RuntimeExecutionError(f"Agent '{agent}' is missing from images metadata.")
     return agent_metadata

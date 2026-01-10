@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from aicage.errors import CliError
+from aicage.errors import AicageError
 
 
-class CliErrorTests(TestCase):
-    def test_cli_error_message(self) -> None:
-        err = CliError("boom")
+class AicageErrorTests(TestCase):
+    def test_error_message(self) -> None:
+        err = AicageError("boom")
         self.assertEqual("boom", str(err))

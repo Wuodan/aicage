@@ -6,11 +6,8 @@ from collections.abc import Mapping
 from typing import Any
 
 from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
+from .errors import RegistryDiscoveryError
 from .types import RegistryApiConfig
-
-
-class RegistryDiscoveryError(Exception):
-    """Raised when registry discovery fails."""
 
 
 def fetch_pull_token_for_repository(api_config: RegistryApiConfig, repository: str) -> str:

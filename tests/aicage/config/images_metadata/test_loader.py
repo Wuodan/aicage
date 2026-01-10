@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config import ConfigError
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -20,7 +21,6 @@ from aicage.config.images_metadata.models import (
     AGENT_PATH_KEY,
     BUILD_LOCAL_KEY,
 )
-from aicage.errors import CliError
 from aicage.paths import IMAGES_METADATA_FILENAME
 
 
@@ -45,7 +45,7 @@ class ImagesMetadataLoaderTests(TestCase):
                     "aicage.config.images_metadata.loader.find_packaged_path",
                     return_value=missing,
                 ),
-                self.assertRaises(CliError),
+                self.assertRaises(ConfigError),
             ):
                 load_images_metadata("aicage")
 

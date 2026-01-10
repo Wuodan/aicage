@@ -5,7 +5,7 @@ from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
 
@@ -13,7 +13,7 @@ from aicage.registry.extension_build.ensure_extended_image import ensure_extende
 class EnsureExtendedImageTests(TestCase):
     def test_ensure_extended_image_raises_without_extensions(self) -> None:
         run_config = self._run_config(extensions=[])
-        with self.assertRaises(CliError):
+        with self.assertRaises(RegistryError):
             ensure_extended_image(run_config)
 
     def test_ensure_extended_image_raises_on_missing_extension(self) -> None:
@@ -22,7 +22,7 @@ class EnsureExtendedImageTests(TestCase):
             "aicage.registry.extension_build.ensure_extended_image.load_extensions",
             return_value={},
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RegistryError):
                 ensure_extended_image(run_config)
 
     def test_ensure_extended_image_skips_when_not_needed(self) -> None:

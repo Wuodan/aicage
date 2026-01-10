@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.prompts import prompt_persist_entrypoint
 from aicage.runtime.run_args import MountSpec
 
@@ -40,6 +40,6 @@ def _resolve_entrypoint_path(entrypoint: str) -> Path:
 
 def _validate_entrypoint_path(path: Path) -> None:
     if not path.exists() or not path.is_file():
-        raise CliError(f"Entrypoint '{path}' does not exist or is not a file.")
+        raise RuntimeExecutionError(f"Entrypoint '{path}' does not exist or is not a file.")
     if os.name != "nt" and not os.access(path, os.X_OK):
-        raise CliError(f"Entrypoint '{path}' is not executable.")
+        raise RuntimeExecutionError(f"Entrypoint '{path}' is not executable.")

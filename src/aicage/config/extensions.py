@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Protocol
 
 from aicage.config._yaml import expect_keys, expect_string, load_yaml
-from aicage.errors import CliError
+from aicage.config.errors import ConfigError
 from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
 
 
@@ -52,7 +52,7 @@ def load_extensions() -> dict[str, ExtensionMetadata]:
         )
         scripts_dir = entry / _SCRIPTS_DIRNAME
         if not scripts_dir.is_dir():
-            raise CliError(f"Extension '{extension_id}' is missing scripts/ directory.")
+            raise ConfigError(f"Extension '{extension_id}' is missing scripts/ directory.")
         dockerfile_path = entry / _DOCKERFILE_NAME
         extensions[extension_id] = ExtensionMetadata(
             extension_id=extension_id,
@@ -83,7 +83,7 @@ def _find_extension_definition(extension_dir: Path) -> Path:
         if candidate.is_file():
             return candidate
     expected = ", ".join(CUSTOM_EXTENSION_DEFINITION_FILES)
-    raise CliError(f"Extension '{extension_dir.name}' is missing {expected}.")
+    raise ConfigError(f"Extension '{extension_dir.name}' is missing {expected}.")
 
 
 def _update_hash(digest: _HashWriter, path: Path) -> None:

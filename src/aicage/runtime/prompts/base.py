@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from aicage._logging import get_logger
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
 
@@ -42,14 +42,16 @@ def prompt_for_base(request: BaseSelectionRequest) -> str:
     elif response.isdigit() and bases:
         idx = int(response)
         if idx < 1 or idx > len(bases):
-            raise CliError(f"Invalid choice '{response}'. Pick a number between 1 and {len(bases)}.")
+            raise RuntimeExecutionError(
+                f"Invalid choice '{response}'. Pick a number between 1 and {len(bases)}."
+            )
         choice = bases[idx - 1].base
     else:
         choice = response
 
     if bases and choice not in available_bases(bases):
         options = ", ".join(available_bases(bases))
-        raise CliError(f"Invalid base '{choice}'. Valid options: {options}")
+        raise RuntimeExecutionError(f"Invalid base '{choice}'. Valid options: {options}")
     logger.info("Selected base '%s' for agent '%s'", choice, request.agent)
     return choice
 

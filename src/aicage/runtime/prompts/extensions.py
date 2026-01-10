@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
 
@@ -27,7 +27,7 @@ def prompt_for_extensions(options: list[ExtensionOption]) -> list[str]:
     for item in requested:
         extension_id = _resolve_extension_choice(item, options)
         if extension_id in seen:
-            raise CliError(f"Duplicate extension '{extension_id}' selected.")
+            raise RuntimeExecutionError(f"Duplicate extension '{extension_id}' selected.")
         seen.add(extension_id)
         selection.append(extension_id)
     return selection
@@ -37,10 +37,12 @@ def _resolve_extension_choice(response: str, options: list[ExtensionOption]) -> 
     if response.isdigit():
         idx = int(response)
         if idx < 1 or idx > len(options):
-            raise CliError(f"Invalid selection '{response}'. Pick a number between 1 and {len(options)}.")
+            raise RuntimeExecutionError(
+                f"Invalid selection '{response}'. Pick a number between 1 and {len(options)}."
+            )
         return options[idx - 1].name
     for option in options:
         if option.name == response:
             return option.name
     valid = ", ".join(option.name for option in options)
-    raise CliError(f"Invalid extension '{response}'. Valid options: {valid}")
+    raise RuntimeExecutionError(f"Invalid extension '{response}'. Valid options: {valid}")

@@ -5,7 +5,7 @@ import yaml
 from aicage.config.context import ConfigContext
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.runtime.prompts import prompt_for_missing_extensions
 
 
@@ -32,8 +32,8 @@ def ensure_extensions_exist(
         context.store.save_project(Path(context.project_cfg.path), context.project_cfg)
         return True
     if choice == "exit":
-        raise CliError("Invalid extension configuration; run aborted.")
-    raise CliError("Invalid choice; run aborted.")
+        raise RegistryError("Invalid extension configuration; run aborted.")
+    raise RegistryError("Invalid choice; run aborted.")
 
 
 def _find_projects_using_image(

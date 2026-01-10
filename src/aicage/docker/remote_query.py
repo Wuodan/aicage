@@ -4,8 +4,9 @@ import urllib.error
 import urllib.request
 from collections.abc import Mapping
 
-from ._registry_api import RegistryDiscoveryError, fetch_pull_token_for_repository
+from ._registry_api import fetch_pull_token_for_repository
 from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
+from .errors import RegistryDiscoveryError
 from .types import RemoteImageRef
 
 

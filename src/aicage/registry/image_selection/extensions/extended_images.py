@@ -5,7 +5,7 @@ from aicage.config.extended_images import load_extended_images
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.runtime.prompts import ExtendedImageOption
 
 from ..models import ImageSelection
@@ -43,7 +43,7 @@ def resolve_extended_image(
     for option in options:
         if option.name == name:
             return option
-    raise CliError(f"Unknown extended image '{name}'.")
+    raise RegistryError(f"Unknown extended image '{name}'.")
 
 
 def apply_extended_selection(

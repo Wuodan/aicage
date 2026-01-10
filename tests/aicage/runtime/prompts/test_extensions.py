@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.prompts.extensions import ExtensionOption, prompt_for_extensions
 
 
@@ -41,7 +41,7 @@ class PromptExtensionsTests(TestCase):
             mock.patch("aicage.runtime.prompts.extensions.ensure_tty_for_prompt"),
             mock.patch("builtins.input", return_value="1,one"),
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_extensions(options)
 
     def test_prompt_for_extensions_rejects_invalid_choice(self) -> None:
@@ -53,7 +53,7 @@ class PromptExtensionsTests(TestCase):
             mock.patch("aicage.runtime.prompts.extensions.ensure_tty_for_prompt"),
             mock.patch("builtins.input", return_value="3"),
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_extensions(options)
 
     def test_prompt_for_extensions_rejects_invalid_name(self) -> None:
@@ -65,5 +65,5 @@ class PromptExtensionsTests(TestCase):
             mock.patch("aicage.runtime.prompts.extensions.ensure_tty_for_prompt"),
             mock.patch("builtins.input", return_value="unknown"),
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_extensions(options)

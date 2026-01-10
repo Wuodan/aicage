@@ -9,8 +9,8 @@ import yaml
 from aicage.config._yaml import expect_bool, maybe_str_list
 from aicage.config._yaml import expect_keys as _expect_keys
 from aicage.config._yaml import expect_string as _expect_string
+from aicage.config.errors import ConfigError
 from aicage.config.resources import find_packaged_path
-from aicage.errors import CliError
 
 _AICAGE_IMAGE_KEY: str = "aicage-image"
 _AICAGE_IMAGE_BASE_KEY: str = "aicage-image-base"
@@ -71,9 +71,9 @@ class ImagesMetadata:
         try:
             data = yaml.safe_load(payload) or {}
         except yaml.YAMLError as exc:
-            raise CliError(f"Invalid images metadata YAML: {exc}") from exc
+            raise ConfigError(f"Invalid images metadata YAML: {exc}") from exc
         if not isinstance(data, dict):
-            raise CliError("Images metadata YAML must be a mapping at the top level.")
+            raise ConfigError("Images metadata YAML must be a mapping at the top level.")
         return cls.from_mapping(data)
 
     @classmethod
@@ -107,7 +107,7 @@ def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
     bases: dict[str, _BaseMetadata] = {}
     for name, base_value in mapping.items():
         if not isinstance(name, str):
-            raise CliError("Images metadata base keys must be strings.")
+            raise ConfigError("Images metadata base keys must be strings.")
         base_mapping = _expect_mapping(base_value, f"{_BASES_KEY}.{name}")
         _expect_keys(
             base_mapping,
@@ -151,7 +151,7 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
     agents: dict[str, AgentMetadata] = {}
     for name, agent_value in mapping.items():
         if not isinstance(name, str):
-            raise CliError("Images metadata agent keys must be strings.")
+            raise ConfigError("Images metadata agent keys must be strings.")
         agent_mapping = _expect_mapping(agent_value, f"{_AGENT_KEY}.{name}")
         _expect_keys(
             agent_mapping,
@@ -206,7 +206,7 @@ def _local_definition_dir(agent_name: str, build_local: bool) -> Path | None:
 
 def _expect_mapping(value: Any, context: str) -> dict[str, Any]:
     if not isinstance(value, dict):
-        raise CliError(f"{context} must be a mapping.")
+        raise ConfigError(f"{context} must be a mapping.")
     return value
 
 
@@ -215,8 +215,8 @@ def _expect_str_mapping(value: Any, context: str) -> dict[str, str]:
     items: dict[str, str] = {}
     for key, item in mapping.items():
         if not isinstance(key, str) or not key.strip():
-            raise CliError(f"{context} must contain non-empty string keys.")
+            raise ConfigError(f"{context} must contain non-empty string keys.")
         if not isinstance(item, str) or not item.strip():
-            raise CliError(f"{context} must contain non-empty string values.")
+            raise ConfigError(f"{context} must contain non-empty string values.")
         items[key] = item
     return items

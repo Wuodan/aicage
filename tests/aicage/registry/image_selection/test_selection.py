@@ -24,8 +24,8 @@ from aicage.config.images_metadata.models import (
     _ImageReleaseInfo,
 )
 from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
 from aicage.registry import image_selection
+from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
 
@@ -80,7 +80,7 @@ class ImageSelectionTests(TestCase):
             Path("/tmp/project"),
             bases=[],
         )
-        with self.assertRaises(CliError):
+        with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
     def test_resolve_raises_on_invalid_base(self) -> None:
@@ -90,7 +90,7 @@ class ImageSelectionTests(TestCase):
             bases=["ubuntu"],
             agents={"codex": AgentConfig(base="alpine")},
         )
-        with self.assertRaises(CliError):
+        with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
     def test_resolve_build_local_uses_local_tag(self) -> None:
@@ -183,7 +183,7 @@ class ImageSelectionTests(TestCase):
                 agents={},
             ),
         )
-        with self.assertRaises(CliError):
+        with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
     def test_fresh_selection_accepts_extended_choice(self) -> None:
@@ -238,7 +238,7 @@ class ImageSelectionTests(TestCase):
             "aicage.registry.image_selection.selection._available_bases",
             return_value=[],
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RegistryError):
                 image_selection.select_agent_image("codex", context)
 
     @staticmethod

@@ -6,7 +6,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.extensions import ExtensionMetadata, load_extensions
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.runtime.prompts import (
     BaseSelectionRequest,
     ImageChoice,
@@ -73,7 +73,7 @@ def select_agent_image(agent: str, context: ConfigContext) -> ImageSelection:
 def _require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:
     agent_metadata = images_metadata.agents.get(agent)
     if not agent_metadata:
-        raise CliError(f"Agent '{agent}' is missing from images metadata.")
+        raise RegistryError(f"Agent '{agent}' is missing from images metadata.")
     return agent_metadata
 
 
@@ -82,7 +82,7 @@ def _available_bases(
     agent_metadata: AgentMetadata,
 ) -> list[str]:
     if not agent_metadata.valid_bases:
-        raise CliError(f"Agent '{agent}' does not define any valid bases.")
+        raise RegistryError(f"Agent '{agent}' does not define any valid bases.")
     return sorted(agent_metadata.valid_bases)
 
 
@@ -92,7 +92,7 @@ def _validate_base(
     agent_metadata: AgentMetadata,
 ) -> None:
     if base not in agent_metadata.valid_bases:
-        raise CliError(f"Base '{base}' is not valid for agent '{agent}'.")
+        raise RegistryError(f"Base '{base}' is not valid for agent '{agent}'.")
 
 
 def _fresh_selection(
@@ -103,7 +103,7 @@ def _fresh_selection(
 ) -> ImageSelection:
     available_bases = _available_bases(agent, agent_metadata)
     if not available_bases:
-        raise CliError(f"No base images found for agent '{agent}' in metadata.")
+        raise RegistryError(f"No base images found for agent '{agent}' in metadata.")
 
     extended_images = load_extended_image_options(agent, agent_metadata, extensions)
     request = ImageChoiceRequest(

@@ -7,7 +7,7 @@ from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.extensions.missing_extensions import (
     _find_projects_using_image,
     _load_yaml,
@@ -76,7 +76,7 @@ class MissingExtensionsTests(TestCase):
                 "aicage.registry.image_selection.extensions.missing_extensions.prompt_for_missing_extensions",
                 return_value="exit",
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(RegistryError):
                     ensure_extensions_exist(
                         agent="codex",
                         project_config_path=Path(tmp_dir) / "project.yaml",
@@ -94,7 +94,7 @@ class MissingExtensionsTests(TestCase):
                 "aicage.registry.image_selection.extensions.missing_extensions.prompt_for_missing_extensions",
                 return_value="later",
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(RegistryError):
                     ensure_extensions_exist(
                         agent="codex",
                         project_config_path=Path(tmp_dir) / "project.yaml",

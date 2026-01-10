@@ -7,7 +7,7 @@ import yaml
 
 from aicage._logging import get_logger
 from aicage.config._yaml import expect_keys, expect_string, load_yaml, read_str_list
-from aicage.errors import CliError
+from aicage.config.errors import ConfigError
 from aicage.paths import DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
 
 _AGENT_KEY: str = "agent"
@@ -37,7 +37,7 @@ def load_extended_images(available_extensions: set[str]) -> dict[str, ExtendedIm
             continue
         config_path = entry / EXTENDED_IMAGE_DEFINITION_FILENAME
         if not config_path.is_file():
-            raise CliError(
+            raise ConfigError(
                 f"Extended image '{entry.name}' is missing {EXTENDED_IMAGE_DEFINITION_FILENAME}."
             )
         mapping = load_yaml(config_path)

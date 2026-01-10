@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config import ConfigError
 from aicage.config.custom_agent.loader import load_custom_agents
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -23,7 +24,6 @@ from aicage.config.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
-from aicage.errors import CliError
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES
 
 
@@ -91,7 +91,7 @@ class CustomAgentLoaderTests(TestCase):
                 "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(ConfigError):
                     load_custom_agents(metadata, "aicage")
 
     @staticmethod

@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.docker import build
-from aicage.errors import CliError
+from aicage.docker.errors import DockerError
 
 from ._fixtures import build_run_config
 
@@ -71,7 +71,7 @@ class LocalBuildRunnerTests(TestCase):
                     "aicage.docker.build.subprocess.run",
                     return_value=mock.Mock(returncode=1),
                 ),
-                self.assertRaises(CliError),
+                self.assertRaises(DockerError),
             ):
                 build.run_build(
                     run_config=run_config,

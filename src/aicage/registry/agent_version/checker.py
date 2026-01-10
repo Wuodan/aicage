@@ -14,8 +14,8 @@ from aicage.docker.query import get_local_repo_digest
 from aicage.docker.remote_query import get_remote_repo_digest
 from aicage.docker.run import run_builder_version_check
 from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
-from aicage.errors import CliError
 from aicage.registry._logs import pull_log_path
+from aicage.registry.errors import RegistryError
 
 from .store import VersionCheckStore
 
@@ -34,7 +34,7 @@ class AgentVersionChecker:
         logger = get_logger()
         script_path = definition_dir / "version.sh"
         if not script_path.is_file():
-            raise CliError(f"Agent '{agent_name}' is missing version.sh at {script_path}.")
+            raise RegistryError(f"Agent '{agent_name}' is missing version.sh at {script_path}.")
 
         errors: list[str] = []
         host_result = _run_host(script_path)
@@ -67,7 +67,7 @@ class AgentVersionChecker:
         )
         errors.append(builder_result.error)
         logger.error("Version check failed for %s: %s", agent_name, "; ".join(errors))
-        raise CliError("; ".join(errors))
+        raise RegistryError("; ".join(errors))
 
 
 @dataclass(frozen=True)
@@ -125,7 +125,7 @@ def _pull_version_check_image(image_ref: str, logger: Logger) -> None:
     log_path = pull_log_path(image_ref)
     try:
         run_pull(image_ref, log_path)
-    except CliError:
+    except RegistryError:
         logger.warning("Version check image pull failed; using local image (logs: %s).", log_path)
 
 

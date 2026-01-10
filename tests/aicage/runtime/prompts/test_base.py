@@ -22,7 +22,7 @@ from aicage.config.images_metadata.models import (
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.prompts import (
     BaseSelectionRequest,
     prompt_for_base,
@@ -33,14 +33,14 @@ from aicage.runtime.prompts import (
 class PromptTests(TestCase):
     def test_prompt_requires_tty(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=False):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_yes_no("Continue?", default=False)
 
     def test_prompt_validates_choice(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch(
             "builtins.input", return_value="fedora"
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_base(
                     BaseSelectionRequest(
                         agent="codex",
@@ -68,7 +68,7 @@ class PromptTests(TestCase):
             )
             self.assertEqual("ubuntu", default_choice)
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value="3"):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_base(
                     BaseSelectionRequest(
                         agent="codex",

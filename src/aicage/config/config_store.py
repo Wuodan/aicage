@@ -7,11 +7,9 @@ from typing import Any
 
 import yaml
 
-from aicage.errors import CliError
 from aicage.paths import CONFIG_FILENAME
 
 from ._yaml import load_yaml
-from .errors import ConfigError
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path
@@ -42,10 +40,7 @@ class SettingsStore:
         if not path.exists():
             data = {}
         else:
-            try:
-                data = load_yaml(path)
-            except CliError as exc:
-                raise ConfigError(str(exc)) from exc
+            data = load_yaml(path)
         return GlobalConfig.from_mapping(data)
 
     def _project_path(self, project_realpath: Path) -> Path:
@@ -57,10 +52,7 @@ class SettingsStore:
         if not path.exists():
             data = {}
         else:
-            try:
-                data = load_yaml(path)
-            except CliError as exc:
-                raise ConfigError(str(exc)) from exc
+            data = load_yaml(path)
         return ProjectConfig.from_mapping(project_realpath, data)
 
     def save_project(self, project_realpath: Path, config: ProjectConfig) -> None:

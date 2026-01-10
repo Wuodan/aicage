@@ -1,8 +1,8 @@
 import sys
 
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 
 
 def ensure_tty_for_prompt() -> None:
     if not sys.stdin.isatty():
-        raise CliError("Interactive input required but stdin is not a TTY.")
+        raise RuntimeExecutionError("Interactive input required but stdin is not a TTY.")

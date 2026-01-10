@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.registry.local_build import _digest
 
 from ._fixtures import build_run_config
@@ -44,7 +44,7 @@ class LocalBuildDigestTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.local_build._digest.run_pull",
-                    side_effect=CliError("docker pull failed"),
+                    side_effect=RegistryError("docker pull failed"),
                 ),
                 mock.patch("aicage.registry.local_build._digest.pull_log_path", return_value=Path(tmp_dir)),
             ):
@@ -69,11 +69,11 @@ class LocalBuildDigestTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.local_build._digest.run_pull",
-                    side_effect=CliError("docker pull failed"),
+                    side_effect=RegistryError("docker pull failed"),
                 ),
                 mock.patch("aicage.registry.local_build._digest.pull_log_path", return_value=Path(tmp_dir)),
             ):
-                with self.assertRaises(CliError) as exc:
+                with self.assertRaises(RegistryError) as exc:
                     _digest.refresh_base_digest(
                         base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
                         base_repository="ghcr.io/aicage/aicage-image-base",

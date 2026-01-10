@@ -12,7 +12,7 @@ from aicage.config.images_metadata.models import (
     _ImageReleaseInfo,
 )
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
 from aicage.registry.local_build._store import (
     _AGENT_KEY,
@@ -32,7 +32,7 @@ class EnsureLocalImageTests(TestCase):
         with mock.patch(
             "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
         ) as refresh_mock:
-            with self.assertRaises(CliError):
+            with self.assertRaises(RegistryError):
                 ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
         refresh_mock.assert_not_called()
 
@@ -72,8 +72,8 @@ class EnsureLocalImageTests(TestCase):
                 "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
             ) as checker_cls,
         ):
-            checker_cls.return_value.get_version.side_effect = CliError("version failed")
-            with self.assertRaises(CliError):
+            checker_cls.return_value.get_version.side_effect = RegistryError("version failed")
+            with self.assertRaises(RegistryError):
                 ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
 
     def test_ensure_local_image_builds_when_missing_image(self) -> None:

@@ -5,7 +5,7 @@ from typing import Any
 
 import yaml
 
-from aicage.errors import CliError
+from aicage.config.errors import ConfigError
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -13,31 +13,31 @@ def load_yaml(path: Path) -> dict[str, Any]:
         payload = path.read_text(encoding="utf-8")
         data = yaml.safe_load(payload) or {}
     except (OSError, yaml.YAMLError) as exc:
-        raise CliError(f"Failed to read YAML from {path}: {exc}") from exc
+        raise ConfigError(f"Failed to read YAML from {path}: {exc}") from exc
     if not isinstance(data, dict):
-        raise CliError(f"YAML at {path} must be a mapping.")
+        raise ConfigError(f"YAML at {path} must be a mapping.")
     return data
 
 
 def expect_string(value: Any, context: str) -> str:
     if not isinstance(value, str) or not value.strip():
-        raise CliError(f"{context} must be a non-empty string.")
+        raise ConfigError(f"{context} must be a non-empty string.")
     return value
 
 
 def expect_bool(value: Any, context: str) -> bool:
     if not isinstance(value, bool):
-        raise CliError(f"{context} must be a boolean.")
+        raise ConfigError(f"{context} must be a boolean.")
     return value
 
 
 def read_str_list(value: Any, context: str) -> list[str]:
     if not isinstance(value, list):
-        raise CliError(f"{context} must be a list.")
+        raise ConfigError(f"{context} must be a list.")
     items: list[str] = []
     for item in value:
         if not isinstance(item, str) or not item.strip():
-            raise CliError(f"{context} must contain non-empty strings.")
+            raise ConfigError(f"{context} must contain non-empty strings.")
         items.append(item)
     return items
 
@@ -56,7 +56,7 @@ def expect_keys(
 ) -> None:
     missing = sorted(required - set(mapping))
     if missing:
-        raise CliError(f"{context} missing required keys: {', '.join(missing)}.")
+        raise ConfigError(f"{context} missing required keys: {', '.join(missing)}.")
     unknown = sorted(set(mapping) - required - optional)
     if unknown:
-        raise CliError(f"{context} contains unsupported keys: {', '.join(unknown)}.")
+        raise ConfigError(f"{context} contains unsupported keys: {', '.join(unknown)}.")

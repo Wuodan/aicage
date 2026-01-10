@@ -10,10 +10,10 @@ from docker.models.containers import Container
 
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata
-from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
 from aicage.registry.agent_version import checker as version_checker
 from aicage.registry.agent_version.store import _VERSION_KEY
+from aicage.registry.errors import RegistryError
 
 
 class AgentVersionCheckTests(TestCase):
@@ -109,7 +109,7 @@ class AgentVersionCheckTests(TestCase):
                     image="ghcr.io/aicage/aicage-image-util:agent-version",
                     stderr="builder failed",
                 )
-                with self.assertRaises(CliError) as raised:
+                with self.assertRaises(RegistryError) as raised:
                     checker.get_version(
                         "custom",
                         self._agent_metadata(),
@@ -126,7 +126,7 @@ class AgentVersionCheckTests(TestCase):
                 global_cfg=self._global_config(),
                 store=VersionCheckStore(store_dir),
             )
-            with self.assertRaises(CliError):
+            with self.assertRaises(RegistryError):
                 checker.get_version(
                     "custom",
                     self._agent_metadata(),

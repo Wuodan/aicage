@@ -1,4 +1,4 @@
 
 
-class CliError(Exception):
-    """Raised for user-facing CLI errors."""
+class AicageError(Exception):
+    """Base error for aicage."""

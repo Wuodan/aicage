@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Any
 
 from aicage.config._yaml import expect_bool, expect_string
+from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import BUILD_LOCAL_KEY
 from aicage.config.resources import find_packaged_path
-from aicage.errors import CliError
 
 _AGENT_SCHEMA_PATH = "validation/agent.schema.json"
 _CUSTOM_AGENT_CONTEXT = "custom agent metadata"
@@ -17,7 +17,7 @@ _CUSTOM_AGENT_CONTEXT = "custom agent metadata"
 def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
     context = _CUSTOM_AGENT_CONTEXT
     if not isinstance(mapping, dict):
-        raise CliError(f"{context} must be a mapping.")
+        raise ConfigError(f"{context} must be a mapping.")
 
     schema = _load_schema()
     properties = schema.get("properties", {})
@@ -26,12 +26,12 @@ def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
 
     missing = sorted(required - set(mapping))
     if missing:
-        raise CliError(f"{context} missing required keys: {', '.join(missing)}.")
+        raise ConfigError(f"{context} missing required keys: {', '.join(missing)}.")
 
     if additional is False:
         unknown = sorted(set(mapping) - set(properties))
         if unknown:
-            raise CliError(f"{context} contains unsupported keys: {', '.join(unknown)}.")
+            raise ConfigError(f"{context} contains unsupported keys: {', '.join(unknown)}.")
 
     normalized = dict(mapping)
     normalized.setdefault(BUILD_LOCAL_KEY, True)
@@ -48,7 +48,7 @@ def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
 def ensure_required_files(agent_name: str, agent_dir: Path) -> None:
     missing = [name for name in ("install.sh", "version.sh") if not (agent_dir / name).is_file()]
     if missing:
-        raise CliError(f"Custom agent '{agent_name}' is missing {', '.join(missing)}.")
+        raise ConfigError(f"Custom agent '{agent_name}' is missing {', '.join(missing)}.")
 
 
 @lru_cache(maxsize=1)
@@ -69,16 +69,15 @@ def _validate_value(value: Any, schema_entry: dict[str, Any], context: str) -> N
     if schema_type == "array":
         _expect_str_list(value, context, schema_entry)
         return
-    raise CliError(f"{context} has unsupported schema type '{schema_type}'.")
+    raise ConfigError(f"{context} has unsupported schema type '{schema_type}'.")
 
 
 def _expect_str_list(value: Any, context: str, schema_entry: dict[str, Any]) -> None:
     if not isinstance(value, list):
-        raise CliError(f"{context} must be a list.")
+        raise ConfigError(f"{context} must be a list.")
     item_schema = schema_entry.get("items", {})
     item_type = item_schema.get("type")
     if item_type != "string":
-        raise CliError(f"{context} items must be strings.")
+        raise ConfigError(f"{context} items must be strings.")
     for item in value:
         expect_string(item, context)
-

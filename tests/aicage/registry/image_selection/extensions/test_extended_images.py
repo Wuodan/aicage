@@ -7,7 +7,7 @@ from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.errors import CliError
+from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.extensions.extended_images import (
     apply_extended_selection,
     load_extended_image_options,
@@ -62,7 +62,7 @@ class ExtendedImageSelectionTests(TestCase):
             image_ref="aicage-extended:custom",
         )
         self.assertEqual(option, resolve_extended_image("custom", [option]))
-        with self.assertRaises(CliError):
+        with self.assertRaises(RegistryError):
             resolve_extended_image("missing", [option])
 
     def test_apply_extended_selection_updates_config(self) -> None:

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from aicage._logging import get_logger
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
 from .base import BaseOption, available_bases, base_options
@@ -90,7 +90,9 @@ def _parse_image_choice_response(
     if response.isdigit() and options:
         idx = int(response)
         if idx < 1 or idx > len(options):
-            raise CliError(f"Invalid choice '{response}'. Pick a number between 1 and {len(options)}.")
+            raise RuntimeExecutionError(
+                f"Invalid choice '{response}'. Pick a number between 1 and {len(options)}."
+            )
         return options[idx - 1][1]
     base_match = _match_base_choice(response, bases)
     if base_match is not None:
@@ -98,7 +100,7 @@ def _parse_image_choice_response(
     extended_match = _match_extended_choice(response, extended)
     if extended_match is None:
         valid = ", ".join(available_bases(bases) + [option.name for option in extended])
-        raise CliError(f"Invalid choice '{response}'. Valid options: {valid}")
+        raise RuntimeExecutionError(f"Invalid choice '{response}'. Valid options: {valid}")
     return ImageChoice(kind="extended", value=extended_match)
 
 

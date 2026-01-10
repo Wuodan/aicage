@@ -7,8 +7,8 @@ from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest_for_repo
 from aicage.docker.remote_query import get_remote_repo_digest
 from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
-from aicage.errors import CliError
 from aicage.registry._logs import pull_log_path
+from aicage.registry.errors import RegistryError
 
 if TYPE_CHECKING:
     from aicage.config.global_config import GlobalConfig
@@ -39,7 +39,7 @@ def refresh_base_digest(
     log_path = pull_log_path(base_image_ref)
     try:
         run_pull(base_image_ref, log_path)
-    except CliError:
+    except RegistryError:
         if local_digest:
             logger.warning(
                 "Base image pull failed; using local base image (logs: %s).", log_path

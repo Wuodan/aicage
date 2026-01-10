@@ -5,7 +5,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
-from aicage.errors import CliError
+from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.prompts.base import base_options
 from aicage.runtime.prompts.image_choice import (
     ExtendedImageOption,
@@ -71,7 +71,7 @@ class PromptImageChoiceTests(TestCase):
             mock.patch("aicage.runtime.prompts.image_choice.ensure_tty_for_prompt"),
             mock.patch("builtins.input", return_value="fedora"),
         ):
-            with self.assertRaises(CliError):
+            with self.assertRaises(RuntimeExecutionError):
                 prompt_for_image_choice(request)
 
     def test_render_image_prompt_uses_default_when_no_options(self) -> None:
@@ -131,7 +131,7 @@ class PromptImageChoiceTests(TestCase):
         )
         bases = base_options(context, request.agent_metadata)
         options = _build_image_options(bases, [])
-        with self.assertRaises(CliError):
+        with self.assertRaises(RuntimeExecutionError):
             _parse_image_choice_response("99", request, bases, [], options)
 
     @staticmethod

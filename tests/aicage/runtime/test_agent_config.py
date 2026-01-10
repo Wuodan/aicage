@@ -20,8 +20,8 @@ from aicage.config.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
-from aicage.errors import CliError
 from aicage.runtime.agent_config import resolve_agent_config
+from aicage.runtime.errors import RuntimeExecutionError
 
 
 class AgentConfigTests(TestCase):
@@ -65,5 +65,5 @@ class AgentConfigTests(TestCase):
                 _AGENT_KEY: {},
             }
         )
-        with self.assertRaises(CliError):
+        with self.assertRaises(RuntimeExecutionError):
             resolve_agent_config("codex", metadata)
