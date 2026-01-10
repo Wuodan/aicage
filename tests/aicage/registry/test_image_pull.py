@@ -1,11 +1,13 @@
 import io
+import json
 import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from docker.errors import DockerException
+
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
 from aicage.registry import image_pull
 from aicage.registry.images_metadata.models import (
     _AGENT_KEY,
@@ -27,20 +29,22 @@ from aicage.registry.images_metadata.models import (
 )
 
 
-class FakeCompleted:
-    def __init__(self, stdout: str = "", stderr: str = "", returncode: int = 0):
-        self.stdout = stdout
-        self.stderr = stderr
-        self.returncode = returncode
+class FakeDockerApi:
+    def __init__(self, events: list[object], exc: Exception | None = None) -> None:
+        self._events = events
+        self._exc = exc
+        self.calls: list[tuple[str, bool, bool]] = []
+
+    def pull(self, image_ref: str, stream: bool, decode: bool) -> list[object]:
+        self.calls.append((image_ref, stream, decode))
+        if self._exc is not None:
+            raise self._exc
+        return list(self._events)
 
 
-class FakeProcess:
-    def __init__(self, output: str = "", returncode: int = 0) -> None:
-        self.stdout = io.StringIO(output)
-        self.returncode = returncode
-
-    def wait(self) -> int:
-        return self.returncode
+class FakeDockerClient:
+    def __init__(self, api: FakeDockerApi) -> None:
+        self.api = api
 
 
 class DockerInvocationTests(TestCase):
@@ -96,12 +100,15 @@ class DockerInvocationTests(TestCase):
             }
         )
 
-    def test_pull_image_success_and_warning(self) -> None:
+    def test_pull_image_success_writes_log(self) -> None:
         run_config = self._build_run_config("repo:tag")
-        pull_ok = FakeProcess(
-            output="repo:tag\n",
-            returncode=0,
+        api = FakeDockerApi(
+            events=[
+                {"status": "Pulling from org/repo", "id": "repo:tag"},
+                {"status": "Downloading", "id": "abc123"},
+            ]
         )
+        client = FakeDockerClient(api)
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "pull.log"
             with (
@@ -113,82 +120,31 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
                 mock.patch(
-                    "aicage.docker.pull.subprocess.Popen",
-                    return_value=pull_ok,
-                ) as popen_mock,
-                mock.patch("aicage.docker.pull.subprocess.run") as run_mock,
+                    "aicage.docker.pull.get_docker_client",
+                    return_value=client,
+                ),
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(run_config)
             remote_mock.assert_not_called()
-            popen_mock.assert_called_once()
-            run_mock.assert_not_called()
             self.assertIn("Pulling image repo:tag", stdout.getvalue())
-            self.assertIn("repo:tag", log_path.read_text(encoding="utf-8"))
+            log_lines = log_path.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(2, len(log_lines))
+            self.assertEqual(
+                {"status": "Pulling from org/repo", "id": "repo:tag"},
+                json.loads(log_lines[0]),
+            )
+            self.assertEqual(
+                {"status": "Downloading", "id": "abc123"},
+                json.loads(log_lines[1]),
+            )
+            self.assertEqual([("repo:tag", True, True)], api.calls)
 
-        pull_download = FakeProcess(
-            output=(
-                "repo:tag: Pulling from org/repo\n"
-                "abc123: Pulling fs layer\n"
-                "abc123: Downloading\n"
-                "Status: Downloaded newer image for repo:tag\n"
-            ),
-            returncode=0,
-        )
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            log_path = Path(tmp_dir) / "pull.log"
-            with (
-                mock.patch(
-                    "aicage.registry._pull_decision.get_local_repo_digest",
-                    return_value=None,
-                ),
-                mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest"
-                ) as remote_mock,
-                mock.patch(
-                    "aicage.docker.pull.subprocess.Popen",
-                    return_value=pull_download,
-                ) as popen_mock,
-                mock.patch("aicage.docker.pull.subprocess.run") as run_mock,
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-            ):
-                image_pull.pull_image(run_config)
-            remote_mock.assert_not_called()
-            popen_mock.assert_called_once()
-            run_mock.assert_not_called()
-            output = stdout.getvalue()
-            self.assertIn("Pulling image repo:tag", output)
-            self.assertNotIn("Pulling fs layer", output)
-            self.assertIn("Pulling fs layer", log_path.read_text(encoding="utf-8"))
-
-        pull_fail = FakeProcess(output="timeout\n", returncode=1)
-        inspect_ok = FakeCompleted(returncode=0)
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            log_path = Path(tmp_dir) / "pull.log"
-            with (
-                mock.patch(
-                    "aicage.registry._pull_decision.get_local_repo_digest",
-                    return_value=None,
-                ),
-                mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest"
-                ) as remote_mock,
-                mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
-                mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_ok),
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
-                mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
-                mock.patch("sys.stdout", new_callable=io.StringIO),
-            ):
-                image_pull.pull_image(run_config)
-            remote_mock.assert_not_called()
-            self.assertIn("Warning", stderr.getvalue())
-
-    def test_pull_image_raises_on_missing_local(self) -> None:
+    def test_pull_image_raises_on_sdk_error(self) -> None:
         run_config = self._build_run_config("repo:tag")
-        pull_fail = FakeProcess(output="network down\n", returncode=1)
-        inspect_fail = FakeCompleted(returncode=1, stderr="missing", stdout="")
+        api = FakeDockerApi(events=[], exc=DockerException("network down"))
+        client = FakeDockerClient(api)
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "pull.log"
             with (
@@ -199,12 +155,14 @@ class DockerInvocationTests(TestCase):
                 mock.patch(
                     "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
-                mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
-                mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_fail),
+                mock.patch(
+                    "aicage.docker.pull.get_docker_client",
+                    return_value=client,
+                ),
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
-                with self.assertRaises(CliError):
+                with self.assertRaises(DockerException):
                     image_pull.pull_image(run_config)
             remote_mock.assert_not_called()
 
@@ -221,12 +179,12 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_repo_digest",
                     return_value="same",
                 ),
-                mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(run_config)
-            popen_mock.assert_not_called()
+            client_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
 
     def test_pull_image_skips_when_remote_unknown(self) -> None:
@@ -242,10 +200,10 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_repo_digest",
                     return_value=None,
                 ),
-                mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,
+                mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(run_config)
-            popen_mock.assert_not_called()
+            client_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
