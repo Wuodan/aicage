@@ -14,10 +14,13 @@ class _PullDecision:
 
 
 def decide_pull(run_config: RunConfig) -> _PullDecision:
+    # Local digests include registry prefix; registry API uses repository only.
+    local_repository = f"{run_config.global_cfg.image_registry}/{run_config.global_cfg.image_repository}"
+    remote_repository = run_config.global_cfg.image_repository
     local_digest = get_local_repo_digest(
         ImageRefRepository(
             image_ref=run_config.image_ref,
-            repository=f"{run_config.global_cfg.image_registry}/{run_config.global_cfg.image_repository}",
+            repository=local_repository,
         )
     )
     if local_digest is None:
@@ -27,7 +30,7 @@ def decide_pull(run_config: RunConfig) -> _PullDecision:
         RemoteImageRef(
             image=ImageRefRepository(
                 image_ref=run_config.image_ref,
-                repository=run_config.global_cfg.image_repository,
+                repository=remote_repository,
             ),
             registry_api=RegistryApiConfig(
                 registry_api_url=run_config.global_cfg.image_registry_api_url,
