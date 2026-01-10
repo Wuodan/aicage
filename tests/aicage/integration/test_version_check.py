@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 
 from aicage.config.config_store import SettingsStore
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry.agent_version import AgentVersionChecker
-from aicage.registry.images_metadata.models import AgentMetadata
 
 from ._helpers import require_integration
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.registry._extended_images import (
+from aicage.config.extended_images import (
     ExtendedImageConfig,
     extended_image_config_path,
     write_extended_image_config,

@@ -6,6 +6,9 @@ from typing import Any
 
 import yaml
 
+from aicage.config._yaml import expect_bool, maybe_str_list
+from aicage.config._yaml import expect_keys as _expect_keys
+from aicage.config._yaml import expect_string as _expect_string
 from aicage.config.resources import find_packaged_path
 from aicage.errors import CliError
 
@@ -176,17 +179,17 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
             ),
             local_definition_dir=_local_definition_dir(
                 name,
-                _expect_bool(
+                expect_bool(
                     agent_mapping.get(BUILD_LOCAL_KEY), f"{_AGENT_KEY}.{name}.{BUILD_LOCAL_KEY}"
                 ),
             ),
             valid_bases=_expect_str_mapping(
                 agent_mapping.get(_VALID_BASES_KEY), f"{_AGENT_KEY}.{name}.{_VALID_BASES_KEY}"
             ),
-            base_exclude=_maybe_str_list(
+            base_exclude=maybe_str_list(
                 agent_mapping.get(BASE_EXCLUDE_KEY), f"{_AGENT_KEY}.{name}.{BASE_EXCLUDE_KEY}"
             ),
-            base_distro_exclude=_maybe_str_list(
+            base_distro_exclude=maybe_str_list(
                 agent_mapping.get(BASE_DISTRO_EXCLUDE_KEY),
                 f"{_AGENT_KEY}.{name}.{BASE_DISTRO_EXCLUDE_KEY}",
             ),
@@ -207,29 +210,6 @@ def _expect_mapping(value: Any, context: str) -> dict[str, Any]:
     return value
 
 
-def _expect_string(value: Any, context: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise CliError(f"{context} must be a non-empty string.")
-    return value
-
-
-def _expect_bool(value: Any, context: str) -> bool:
-    if not isinstance(value, bool):
-        raise CliError(f"{context} must be a boolean.")
-    return value
-
-
-def _expect_str_list(value: Any, context: str) -> list[str]:
-    if not isinstance(value, list):
-        raise CliError(f"{context} must be a list.")
-    items: list[str] = []
-    for item in value:
-        if not isinstance(item, str) or not item.strip():
-            raise CliError(f"{context} must contain non-empty strings.")
-        items.append(item)
-    return items
-
-
 def _expect_str_mapping(value: Any, context: str) -> dict[str, str]:
     mapping = _expect_mapping(value, context)
     items: dict[str, str] = {}
@@ -240,23 +220,3 @@ def _expect_str_mapping(value: Any, context: str) -> dict[str, str]:
             raise CliError(f"{context} must contain non-empty string values.")
         items[key] = item
     return items
-
-
-def _maybe_str_list(value: Any, context: str) -> list[str] | None:
-    if value is None:
-        return None
-    return _expect_str_list(value, context)
-
-
-def _expect_keys(
-    mapping: dict[str, Any],
-    required: set[str],
-    optional: set[str],
-    context: str,
-) -> None:
-    missing = sorted(required - set(mapping))
-    if missing:
-        raise CliError(f"{context} missing required keys: {', '.join(missing)}.")
-    unknown = sorted(set(mapping) - required - optional)
-    if unknown:
-        raise CliError(f"{context} contains unsupported keys: {', '.join(unknown)}.")

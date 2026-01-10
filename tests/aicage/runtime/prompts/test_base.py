@@ -2,9 +2,7 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import ProjectConfig
-from aicage.errors import CliError
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -23,6 +21,8 @@ from aicage.registry.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
 )
+from aicage.config.project_config import ProjectConfig
+from aicage.errors import CliError
 from aicage.runtime.prompts import (
     BaseSelectionRequest,
     prompt_for_base,

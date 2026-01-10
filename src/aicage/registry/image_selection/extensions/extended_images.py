@@ -1,11 +1,11 @@
 from pathlib import Path
 
 from aicage.config.context import ConfigContext
+from aicage.config.extended_images import load_extended_images
+from aicage.config.extensions import ExtensionMetadata
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.errors import CliError
-from aicage.registry._extended_images import load_extended_images
-from aicage.registry.extensions import ExtensionMetadata
-from aicage.registry.images_metadata.models import AgentMetadata
 from aicage.runtime.prompts import ExtendedImageOption
 
 from ..models import ImageSelection

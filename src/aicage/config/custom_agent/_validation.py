@@ -5,9 +5,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from aicage.config._yaml import expect_bool, expect_string
+from aicage.config.images_metadata.models import BUILD_LOCAL_KEY
 from aicage.config.resources import find_packaged_path
 from aicage.errors import CliError
-from aicage.registry.images_metadata.models import BUILD_LOCAL_KEY
 
 _AGENT_SCHEMA_PATH = "validation/agent.schema.json"
 _CUSTOM_AGENT_CONTEXT = "custom agent metadata"
@@ -63,7 +64,7 @@ def _validate_value(value: Any, schema_entry: dict[str, Any], context: str) -> N
         expect_string(value, context)
         return
     if schema_type == "boolean":
-        _expect_bool(value, context)
+        expect_bool(value, context)
         return
     if schema_type == "array":
         _expect_str_list(value, context, schema_entry)
@@ -81,27 +82,3 @@ def _expect_str_list(value: Any, context: str, schema_entry: dict[str, Any]) -> 
     for item in value:
         expect_string(item, context)
 
-
-def expect_string(value: Any, context: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise CliError(f"{context} must be a non-empty string.")
-    return value
-
-
-def _expect_bool(value: Any, context: str) -> bool:
-    if not isinstance(value, bool):
-        raise CliError(f"{context} must be a boolean.")
-    return value
-
-
-def maybe_str_list(value: Any, context: str) -> list[str] | None:
-    if value is None:
-        return None
-    if not isinstance(value, list):
-        raise CliError(f"{context} must be a list.")
-    items: list[str] = []
-    for item in value:
-        if not isinstance(item, str) or not item.strip():
-            raise CliError(f"{context} must contain non-empty strings.")
-        items.append(item)
-    return items

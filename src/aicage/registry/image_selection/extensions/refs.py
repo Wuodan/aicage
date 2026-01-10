@@ -1,6 +1,6 @@
 from aicage.config.context import ConfigContext
-from aicage.registry._image_refs import local_image_ref
-from aicage.registry.images_metadata.models import AgentMetadata
+from aicage.config.image_refs import local_image_ref
+from aicage.config.images_metadata.models import AgentMetadata
 
 
 def base_image_ref(

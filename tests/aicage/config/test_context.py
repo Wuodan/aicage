@@ -3,8 +3,7 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext, _build_config_context
 from aicage.config.global_config import GlobalConfig
-from aicage.config.project_config import ProjectConfig
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -22,6 +21,7 @@ from aicage.registry.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.config.project_config import ProjectConfig
 
 
 class ContextTests(TestCase):

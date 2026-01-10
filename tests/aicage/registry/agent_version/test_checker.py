@@ -9,11 +9,11 @@ from docker.errors import ContainerError
 from docker.models.containers import Container
 
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
 from aicage.registry.agent_version import checker as version_checker
 from aicage.registry.agent_version.store import _VERSION_KEY
-from aicage.registry.images_metadata.models import AgentMetadata
 
 
 class AgentVersionCheckTests(TestCase):

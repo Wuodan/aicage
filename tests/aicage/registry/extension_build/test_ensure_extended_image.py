@@ -1,13 +1,13 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
-from aicage.registry.extensions import ExtensionMetadata
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 
 
 class EnsureExtendedImageTests(TestCase):

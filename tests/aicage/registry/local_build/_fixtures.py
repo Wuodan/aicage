@@ -1,8 +1,7 @@
 from pathlib import Path
 
 from aicage.config.global_config import GlobalConfig
-from aicage.config.runtime_config import RunConfig
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -20,6 +19,7 @@ from aicage.registry.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.config.runtime_config import RunConfig
 
 
 def build_run_config(

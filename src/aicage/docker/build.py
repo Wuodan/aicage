@@ -5,10 +5,10 @@ from logging import Logger
 from pathlib import Path
 
 from aicage._logging import get_logger
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.resources import find_packaged_path
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
-from aicage.registry.extensions import ExtensionMetadata
 
 
 def run_build(

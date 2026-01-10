@@ -2,10 +2,10 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.extension_build._extended_plan import should_build_extended
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
-from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 
 
 class ExtendedPlanTests(TestCase):

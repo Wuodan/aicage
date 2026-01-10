@@ -2,8 +2,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.errors import CliError
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata
 
 
 @dataclass

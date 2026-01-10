@@ -8,6 +8,7 @@ from pathlib import Path
 
 from aicage._logging import get_logger
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest
 from aicage.docker.remote_query import get_remote_repo_digest
@@ -15,7 +16,6 @@ from aicage.docker.run import run_builder_version_check
 from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
 from aicage.errors import CliError
 from aicage.registry._logs import pull_log_path
-from aicage.registry.images_metadata.models import AgentMetadata
 
 from .store import VersionCheckStore
 

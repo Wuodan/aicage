@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 
 from aicage.config.config_store import SettingsStore
+from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.docker.query import get_local_repo_digest_for_repo
-from aicage.registry.images_metadata.loader import load_images_metadata
 
 from .._helpers import build_dummy_image, require_integration, run_cli_pty, setup_workspace
 

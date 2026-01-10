@@ -1,14 +1,15 @@
 from unittest import TestCase
 
-from aicage.errors import CliError
-from aicage.registry.custom_agent import _validation
-from aicage.registry.images_metadata.models import (
+from aicage.config import _yaml
+from aicage.config.custom_agent import _validation
+from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
     AGENT_PATH_KEY,
     BASE_EXCLUDE_KEY,
     BUILD_LOCAL_KEY,
 )
+from aicage.errors import CliError
 
 
 class CustomAgentValidationTests(TestCase):
@@ -18,11 +19,11 @@ class CustomAgentValidationTests(TestCase):
 
     def test_expect_bool_rejects_non_bool(self) -> None:
         with self.assertRaises(CliError):
-            _validation._expect_bool("true", BUILD_LOCAL_KEY)
+            _yaml.expect_bool("true", BUILD_LOCAL_KEY)
 
     def test_maybe_str_list_rejects_non_string_items(self) -> None:
         with self.assertRaises(CliError):
-            _validation.maybe_str_list(["ok", ""], BASE_EXCLUDE_KEY)
+            _yaml.maybe_str_list(["ok", ""], BASE_EXCLUDE_KEY)
 
     def test_validate_agent_mapping_rejects_missing_required(self) -> None:
         with self.assertRaises(CliError):

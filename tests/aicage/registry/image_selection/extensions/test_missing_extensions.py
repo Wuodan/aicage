@@ -3,16 +3,16 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.errors import CliError
-from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.image_selection.extensions.missing_extensions import (
     _find_projects_using_image,
     _load_yaml,
     ensure_extensions_exist,
 )
-from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 
 
 class MissingExtensionsTests(TestCase):

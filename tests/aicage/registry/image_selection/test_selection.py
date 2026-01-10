@@ -4,11 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
-from aicage.config.project_config import AgentConfig
-from aicage.errors import CliError
-from aicage.registry import image_selection
-from aicage.registry.image_selection.models import ImageSelection
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -27,6 +23,10 @@ from aicage.registry.images_metadata.models import (
     ImagesMetadata,
     _ImageReleaseInfo,
 )
+from aicage.config.project_config import AgentConfig
+from aicage.errors import CliError
+from aicage.registry import image_selection
+from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
 
 

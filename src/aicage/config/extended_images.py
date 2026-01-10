@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 
 from aicage._logging import get_logger
+from aicage.config._yaml import expect_keys, expect_string, read_str_list
 from aicage.errors import CliError
 from aicage.paths import DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
 
@@ -41,13 +42,13 @@ def load_extended_images(available_extensions: set[str]) -> dict[str, ExtendedIm
                 f"Extended image '{entry.name}' is missing {EXTENDED_IMAGE_DEFINITION_FILENAME}."
             )
         mapping = _load_yaml(config_path)
-        _expect_keys(
+        expect_keys(
             mapping,
             required={_AGENT_KEY, _BASE_KEY, _EXTENSIONS_KEY, _IMAGE_REF_KEY},
             optional=set(),
             context=f"extended image config at {config_path}",
         )
-        extensions = _read_str_list(mapping.get(_EXTENSIONS_KEY), _EXTENSIONS_KEY)
+        extensions = read_str_list(mapping.get(_EXTENSIONS_KEY), _EXTENSIONS_KEY)
         missing = [ext for ext in extensions if ext not in available_extensions]
         if missing:
             logger.warning(
@@ -58,10 +59,10 @@ def load_extended_images(available_extensions: set[str]) -> dict[str, ExtendedIm
             continue
         configs[entry.name] = ExtendedImageConfig(
             name=entry.name,
-            agent=_expect_string(mapping.get(_AGENT_KEY), _AGENT_KEY),
-            base=_expect_string(mapping.get(_BASE_KEY), _BASE_KEY),
+            agent=expect_string(mapping.get(_AGENT_KEY), _AGENT_KEY),
+            base=expect_string(mapping.get(_BASE_KEY), _BASE_KEY),
             extensions=extensions,
-            image_ref=_expect_string(mapping.get(_IMAGE_REF_KEY), _IMAGE_REF_KEY),
+            image_ref=expect_string(mapping.get(_IMAGE_REF_KEY), _IMAGE_REF_KEY),
             path=config_path,
         )
     return configs
@@ -96,33 +97,3 @@ def _load_yaml(path: Path) -> dict[str, Any]:
         raise CliError(f"Extended image config at {path} must be a mapping.")
     return data
 
-
-def _expect_string(value: Any, context: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise CliError(f"{context} must be a non-empty string.")
-    return value
-
-
-def _read_str_list(value: Any, context: str) -> list[str]:
-    if not isinstance(value, list):
-        raise CliError(f"{context} must be a list.")
-    items: list[str] = []
-    for item in value:
-        if not isinstance(item, str) or not item.strip():
-            raise CliError(f"{context} must contain non-empty strings.")
-        items.append(item)
-    return items
-
-
-def _expect_keys(
-    mapping: dict[str, Any],
-    required: set[str],
-    optional: set[str],
-    context: str,
-) -> None:
-    missing = sorted(required - set(mapping))
-    if missing:
-        raise CliError(f"{context} missing required keys: {', '.join(missing)}.")
-    unknown = sorted(set(mapping) - required - optional)
-    if unknown:
-        raise CliError(f"{context} contains unsupported keys: {', '.join(unknown)}.")

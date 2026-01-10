@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 from datetime import datetime, timezone
 
+from aicage.config.extensions import ExtensionMetadata, extension_hash, load_extensions
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_extended_build
 from aicage.errors import CliError
-from aicage.registry._hashing import new_hasher
-from aicage.registry.extensions import ExtensionMetadata, extension_hash, load_extensions
 
 from ._extended_plan import should_build_extended
 from ._extended_store import ExtendedBuildRecord, ExtendedBuildStore
@@ -62,7 +62,7 @@ def _resolve_extensions(
 
 
 def _combined_extension_hash(extensions: list[ExtensionMetadata]) -> str:
-    digest = new_hasher()
+    digest = hashlib.sha256()
     for extension in extensions:
         digest.update(extension.extension_id.encode("utf-8"))
         digest.update(extension_hash(extension).encode("utf-8"))

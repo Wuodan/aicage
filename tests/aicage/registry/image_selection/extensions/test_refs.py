@@ -3,9 +3,9 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
 from aicage.registry.image_selection.extensions.refs import base_image_ref
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 
 
 class ExtensionRefsTests(TestCase):

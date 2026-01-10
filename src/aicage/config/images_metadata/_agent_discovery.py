@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from aicage.registry.custom_agent import load_custom_agents
-from aicage.registry.images_metadata.models import ImagesMetadata
+from aicage.config.custom_agent import load_custom_agents
+
+from .models import ImagesMetadata
 
 
 def discover_agents(

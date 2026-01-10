@@ -2,10 +2,10 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config import extended_images as extended_images_module
+from aicage.config import extensions as extensions_module
+from aicage.config.extended_images import ExtendedImageConfig
 from aicage.errors import CliError
-from aicage.registry import _extended_images
-from aicage.registry import extensions as extensions_module
-from aicage.registry._extended_images import ExtendedImageConfig
 
 
 class ExtensionDiscoveryTests(TestCase):
@@ -15,7 +15,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             self._write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -31,7 +31,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             self._write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -50,7 +50,7 @@ class ExtensionDiscoveryTests(TestCase):
             self._write_extension(extension_dir, name="Sample", description="Desc")
             (extension_dir / "Dockerfile").write_text("FROM ubuntu:latest\n", encoding="utf-8")
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -67,7 +67,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_root.mkdir(parents=True)
             (extension_root / "README.md").write_text("ignore", encoding="utf-8")
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -84,7 +84,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -97,7 +97,7 @@ class ExtensionDiscoveryTests(TestCase):
             scripts_dir = extension_dir / "scripts"
             scripts_dir.mkdir(parents=True, exist_ok=True)
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -114,7 +114,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -143,7 +143,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -160,7 +160,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -177,7 +177,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.DEFAULT_CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(CliError):
@@ -202,10 +202,10 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                configs = _extended_images.load_extended_images(set())
+                configs = extended_images_module.load_extended_images(set())
 
         self.assertEqual({}, configs)
 
@@ -215,10 +215,10 @@ class ExtensionDiscoveryTests(TestCase):
             images_dir.mkdir(parents=True)
             (images_dir / "README.md").write_text("ignore", encoding="utf-8")
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                configs = _extended_images.load_extended_images(set())
+                configs = extended_images_module.load_extended_images(set())
 
         self.assertEqual({}, configs)
 
@@ -241,10 +241,10 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
-                configs = _extended_images.load_extended_images({"marker"})
+                configs = extended_images_module.load_extended_images({"marker"})
 
         self.assertIn("custom", configs)
         self.assertEqual("codex", configs["custom"].agent)
@@ -255,11 +255,11 @@ class ExtensionDiscoveryTests(TestCase):
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_invalid_yaml(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -269,17 +269,17 @@ class ExtensionDiscoveryTests(TestCase):
             config_path = config_dir / "image-extended.yaml"
             config_path.write_text("- not-a-mapping\n", encoding="utf-8")
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images({"marker"})
+                    extended_images_module.load_extended_images({"marker"})
 
     def test_load_extended_images_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
             with self.assertRaises(CliError):
-                _extended_images._load_yaml(missing_path)
+                extended_images_module._load_yaml(missing_path)
 
     def test_load_extended_images_rejects_unknown_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -300,11 +300,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_blank_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -324,11 +324,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_invalid_extensions_list(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -348,11 +348,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_rejects_blank_extension_items(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -373,11 +373,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_load_extended_images_requires_required_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -396,11 +396,11 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.registry._extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(CliError):
-                    _extended_images.load_extended_images(set())
+                    extended_images_module.load_extended_images(set())
 
     def test_write_extended_image_config_writes_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -413,9 +413,9 @@ class ExtensionDiscoveryTests(TestCase):
                 image_ref="aicage-extended:codex-ubuntu-extra",
                 path=config_path,
             )
-            _extended_images.write_extended_image_config(config)
+            extended_images_module.write_extended_image_config(config)
 
-            payload = _extended_images._load_yaml(config_path)
+            payload = extended_images_module._load_yaml(config_path)
             self.assertEqual("codex", payload.get("agent"))
             self.assertEqual(["extra"], payload.get("extensions"))
 

@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from aicage.errors import CliError
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -20,6 +19,7 @@ from aicage.registry.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.errors import CliError
 
 
 class ImagesMetadataModelTests(TestCase):

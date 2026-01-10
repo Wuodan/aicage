@@ -2,17 +2,17 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
+from aicage.config.extended_images import ExtendedImageConfig
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.errors import CliError
-from aicage.registry._extended_images import ExtendedImageConfig
-from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.image_selection.extensions.extended_images import (
     apply_extended_selection,
     load_extended_image_options,
     resolve_extended_image,
 )
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.runtime.prompts import ExtendedImageOption
 
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 from aicage.config.resources import find_packaged_path
 from aicage.errors import CliError
 from aicage.paths import IMAGES_METADATA_FILENAME
-from aicage.registry._agent_discovery import discover_agents
 
+from ._agent_discovery import discover_agents
 from .models import ImagesMetadata
 
 

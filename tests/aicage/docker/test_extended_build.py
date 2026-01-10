@@ -3,7 +3,9 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from unittest import TestCase, mock
 
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import (
     _cleanup_intermediate_images,
@@ -12,8 +14,6 @@ from aicage.docker.build import (
     run_extended_build,
 )
 from aicage.errors import CliError
-from aicage.registry.extensions import ExtensionMetadata
-from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 
 
 class ExtendedRunnerTests(TestCase):

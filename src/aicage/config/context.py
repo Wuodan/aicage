@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from aicage.registry.images_metadata.loader import load_images_metadata
-from aicage.registry.images_metadata.models import ImagesMetadata
+from aicage.config.images_metadata.loader import load_images_metadata
+from aicage.config.images_metadata.models import ImagesMetadata
 
 from .config_store import SettingsStore
 from .global_config import GlobalConfig

@@ -5,10 +5,9 @@ from typing import Any
 
 import yaml
 
-from aicage.errors import CliError
-from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
-from aicage.registry._image_refs import local_image_ref
-from aicage.registry.images_metadata.models import (
+from aicage.config._yaml import maybe_str_list
+from aicage.config.image_refs import local_image_ref
+from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
     AGENT_PATH_KEY,
@@ -17,8 +16,10 @@ from aicage.registry.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
 )
+from aicage.errors import CliError
+from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
 
-from ._validation import ensure_required_files, expect_string, maybe_str_list, validate_agent_mapping
+from ._validation import ensure_required_files, expect_string, validate_agent_mapping
 
 
 def load_custom_agents(

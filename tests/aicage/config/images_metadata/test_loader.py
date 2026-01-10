@@ -2,10 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.errors import CliError
-from aicage.paths import IMAGES_METADATA_FILENAME
-from aicage.registry.images_metadata.loader import load_images_metadata
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.loader import load_images_metadata
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -22,6 +20,8 @@ from aicage.registry.images_metadata.models import (
     AGENT_PATH_KEY,
     BUILD_LOCAL_KEY,
 )
+from aicage.errors import CliError
+from aicage.paths import IMAGES_METADATA_FILENAME
 
 
 class ImagesMetadataLoaderTests(TestCase):
@@ -31,7 +31,7 @@ class ImagesMetadataLoaderTests(TestCase):
             path = Path(tmp_dir) / IMAGES_METADATA_FILENAME
             path.write_text(payload, encoding="utf-8")
             with mock.patch(
-                "aicage.registry.images_metadata.loader.find_packaged_path",
+                "aicage.config.images_metadata.loader.find_packaged_path",
                 return_value=path,
             ):
                 metadata = load_images_metadata("aicage")
@@ -42,7 +42,7 @@ class ImagesMetadataLoaderTests(TestCase):
             missing = Path(tmp_dir) / IMAGES_METADATA_FILENAME
             with (
                 mock.patch(
-                    "aicage.registry.images_metadata.loader.find_packaged_path",
+                    "aicage.config.images_metadata.loader.find_packaged_path",
                     return_value=missing,
                 ),
                 self.assertRaises(CliError),

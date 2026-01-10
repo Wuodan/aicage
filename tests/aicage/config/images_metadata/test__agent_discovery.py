@@ -2,10 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.errors import CliError
-from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES
-from aicage.registry.custom_agent.loader import load_custom_agents
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata._agent_discovery import discover_agents
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -25,21 +23,50 @@ from aicage.registry.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES
 
 
-class CustomAgentLoaderTests(TestCase):
-    def test_load_custom_agents_returns_empty_when_missing_dir(self) -> None:
+class AgentDiscoveryTests(TestCase):
+    def test_discover_agents_returns_release_metadata_when_missing_custom_dir(self) -> None:
         metadata = self._metadata_with_bases(["ubuntu"])
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
-                "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 missing,
             ):
-                custom_agents = load_custom_agents(metadata, "aicage")
-        self.assertEqual({}, custom_agents)
+                discovered = discover_agents(metadata, "aicage")
+        self.assertIs(discovered, metadata)
 
-    def test_load_custom_agents_builds_bases(self) -> None:
+    def test_discover_agents_overrides_release_agent(self) -> None:
+        metadata = self._metadata_with_bases(["ubuntu"])
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            custom_dir = Path(tmp_dir)
+            agent_dir = custom_dir / "codex"
+            agent_dir.mkdir()
+            (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
+                "\n".join(
+                    [
+                        f"{AGENT_PATH_KEY}: ~/.custom-codex",
+                        f"{AGENT_FULL_NAME_KEY}: Custom Codex",
+                        f"{AGENT_HOMEPAGE_KEY}: https://example.com",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
+            with mock.patch(
+                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                custom_dir,
+            ):
+                discovered = discover_agents(metadata, "aicage")
+
+        agent = discovered.agents["codex"]
+        self.assertEqual(custom_dir / "codex", agent.local_definition_dir)
+        self.assertEqual({"ubuntu": "aicage:codex-ubuntu"}, agent.valid_bases)
+
+    def test_discover_agents_filters_bases(self) -> None:
         metadata = self._metadata_with_bases(["ubuntu", "fedora", "alpine"])
         with tempfile.TemporaryDirectory() as tmp_dir:
             custom_dir = Path(tmp_dir)
@@ -62,37 +89,14 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
-                "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
-                custom_agents = load_custom_agents(metadata, "aicage")
+                discovered = discover_agents(metadata, "aicage")
 
-        agent = custom_agents["custom"]
+        agent = discovered.agents["custom"]
         self.assertEqual(custom_dir / "custom", agent.local_definition_dir)
         self.assertEqual({"ubuntu": "aicage:custom-ubuntu"}, agent.valid_bases)
-
-    def test_load_custom_agents_requires_install_and_version(self) -> None:
-        metadata = self._metadata_with_bases(["ubuntu"])
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            custom_dir = Path(tmp_dir)
-            agent_dir = custom_dir / "custom"
-            agent_dir.mkdir()
-            (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
-                "\n".join(
-                    [
-                        f"{AGENT_PATH_KEY}: ~/.custom",
-                        f"{AGENT_FULL_NAME_KEY}: Custom",
-                        f"{AGENT_HOMEPAGE_KEY}: https://example.com",
-                    ]
-                ),
-                encoding="utf-8",
-            )
-            with mock.patch(
-                "aicage.registry.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
-                custom_dir,
-            ):
-                with self.assertRaises(CliError):
-                    load_custom_agents(metadata, "aicage")
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:

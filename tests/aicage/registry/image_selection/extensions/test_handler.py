@@ -3,12 +3,12 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.image_selection.extensions.context import ExtensionSelectionContext
 from aicage.registry.image_selection.extensions.handler import handle_extension_selection
-from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
 
 
 class ExtensionHandlerTests(TestCase):

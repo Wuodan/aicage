@@ -8,11 +8,11 @@ from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata.loader import load_images_metadata
+from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
 from aicage.errors import CliError
 from aicage.registry.image_selection import select_agent_image
-from aicage.registry.images_metadata.loader import load_images_metadata
-from aicage.registry.images_metadata.models import ImagesMetadata
 from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_persist_docker_args
 from aicage.runtime.run_args import MountSpec
@@ -84,4 +84,3 @@ def _persist_docker_args(agent_cfg: AgentConfig, parsed: ParsedArgs | None) -> N
 
     if prompt_persist_docker_args(parsed.docker_args, existing):
         agent_cfg.docker_args = parsed.docker_args
-

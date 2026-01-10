@@ -5,14 +5,14 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config.global_config import GlobalConfig
-from aicage.config.runtime_config import RunConfig
-from aicage.errors import CliError
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
     _BaseMetadata,
     _ImageReleaseInfo,
 )
+from aicage.config.runtime_config import RunConfig
+from aicage.errors import CliError
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
 from aicage.registry.local_build._store import (
     _AGENT_KEY,

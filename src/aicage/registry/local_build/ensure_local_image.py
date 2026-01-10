@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
 from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker
-from aicage.registry.images_metadata.models import AgentMetadata
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path

@@ -11,7 +11,7 @@ from ._fixtures import build_run_config
 class LocalBuildRunnerTests(TestCase):
     def test_run_build_invokes_docker(self) -> None:
         with mock.patch(
-            "aicage.registry.images_metadata.models.find_packaged_path",
+            "aicage.config.images_metadata.models.find_packaged_path",
             return_value=Path("/tmp/build/Dockerfile"),
         ):
             run_config = build_run_config()
@@ -56,7 +56,7 @@ class LocalBuildRunnerTests(TestCase):
 
     def test_run_build_raises_on_failure(self) -> None:
         with mock.patch(
-            "aicage.registry.images_metadata.models.find_packaged_path",
+            "aicage.config.images_metadata.models.find_packaged_path",
             return_value=Path("/tmp/build/Dockerfile"),
         ):
             run_config = build_run_config()

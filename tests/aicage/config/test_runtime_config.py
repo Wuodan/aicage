@@ -4,11 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
 from aicage.config import SettingsStore
-from aicage.config.project_config import AgentConfig, _AgentMounts
-from aicage.config.runtime_config import RunConfig, load_run_config
-from aicage.errors import CliError
-from aicage.registry.image_selection import ImageSelection
-from aicage.registry.images_metadata.models import (
+from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
     _AICAGE_IMAGE_KEY,
@@ -26,6 +22,10 @@ from aicage.registry.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.config.runtime_config import RunConfig, load_run_config
+from aicage.errors import CliError
+from aicage.registry.image_selection import ImageSelection
 from aicage.runtime.run_args import MountSpec
 
 
