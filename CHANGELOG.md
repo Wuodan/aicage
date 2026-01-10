@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.5] - 2026-01-10
+
+### Changed
+
+- Extension builds now run as a strict post-step on a guaranteed-local base+agent image.
+- Image pull and local build paths now pass explicit image refs instead of copying run configs.
+
+### Internal
+
+- Centralized base-layer checks for local and extended image decisions.
+- Simplified pull decisions to return booleans.
+- Added a registry-level ensure entrypoint for local image setup.
+
 ## [0.7.4] - 2026-01-10
 
 ### Changed
