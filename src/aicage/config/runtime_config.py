@@ -10,7 +10,6 @@ from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
 from aicage.errors import CliError
-from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.image_selection import select_agent_image
 from aicage.registry.images_metadata.loader import load_images_metadata
 from aicage.registry.images_metadata.models import ImagesMetadata
@@ -27,7 +26,6 @@ class RunConfig:
     image_ref: str
     base_image_ref: str
     extensions: list[str]
-    agent_version: str | None
     global_cfg: GlobalConfig
     images_metadata: ImagesMetadata
     project_docker_args: str
@@ -50,7 +48,6 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
             images_metadata=images_metadata,
         )
         selection = select_agent_image(agent, context)
-        agent_version = _check_agent_version(agent, global_cfg, images_metadata)
         agent_cfg = project_cfg.agents.setdefault(agent, AgentConfig())
 
         existing_project_docker_args: str = agent_cfg.docker_args
@@ -71,7 +68,6 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
             image_ref=selection.image_ref,
             base_image_ref=selection.base_image_ref,
             extensions=list(selection.extensions),
-            agent_version=agent_version,
             global_cfg=global_cfg,
             images_metadata=images_metadata,
             project_docker_args=existing_project_docker_args,
@@ -89,15 +85,3 @@ def _persist_docker_args(agent_cfg: AgentConfig, parsed: ParsedArgs | None) -> N
     if prompt_persist_docker_args(parsed.docker_args, existing):
         agent_cfg.docker_args = parsed.docker_args
 
-
-def _check_agent_version(
-    agent: str,
-    global_cfg: GlobalConfig,
-    images_metadata: ImagesMetadata,
-) -> str | None:
-    agent_metadata = images_metadata.agents[agent]
-    definition_dir = agent_metadata.local_definition_dir
-    if definition_dir is None:
-        return None
-    checker = AgentVersionChecker(global_cfg)
-    return checker.get_version(agent, agent_metadata, definition_dir)

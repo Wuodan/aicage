@@ -53,14 +53,28 @@ class EnsureLocalImageTests(TestCase):
                     "aicage.registry.local_build.ensure_local_image.should_build",
                     return_value=False,
                 ),
+                mock.patch(
+                    "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
+                ) as checker_cls,
             ):
+                checker_cls.return_value.get_version.return_value = "1.2.3"
                 ensure_local_image_module.ensure_local_image(run_config)
             refresh_mock.assert_called_once()
 
-    def test_ensure_local_image_raises_without_version(self) -> None:
-        run_config = build_run_config(agent_version=None)
-        with self.assertRaises(CliError):
-            ensure_local_image_module.ensure_local_image(run_config)
+    def test_ensure_local_image_raises_on_version_failure(self) -> None:
+        run_config = build_run_config()
+        with (
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
+                return_value="sha256:base",
+            ),
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
+            ) as checker_cls,
+        ):
+            checker_cls.return_value.get_version.side_effect = CliError("version failed")
+            with self.assertRaises(CliError):
+                ensure_local_image_module.ensure_local_image(run_config)
 
     def test_ensure_local_image_builds_when_missing_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -88,7 +102,11 @@ class EnsureLocalImageTests(TestCase):
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.run_build"
                 ) as build_mock,
+                mock.patch(
+                    "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
+                ) as checker_cls,
             ):
+                checker_cls.return_value.get_version.return_value = "1.2.3"
                 ensure_local_image_module.ensure_local_image(run_config)
 
             build_mock.assert_called_once()
@@ -138,7 +156,11 @@ class EnsureLocalImageTests(TestCase):
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.run_build"
                 ) as build_mock,
+                mock.patch(
+                    "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
+                ) as checker_cls,
             ):
+                checker_cls.return_value.get_version.return_value = "1.2.3"
                 ensure_local_image_module.ensure_local_image(run_config)
 
             build_mock.assert_not_called()
@@ -185,7 +207,6 @@ class EnsureLocalImageTests(TestCase):
             image_ref="aicage:claude-ubuntu",
             base_image_ref="aicage:claude-ubuntu",
             extensions=[],
-            agent_version="1.2.3",
             global_cfg=global_cfg,
             images_metadata=images_metadata,
             project_docker_args="",

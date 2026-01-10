@@ -86,7 +86,6 @@ def _base_run_config(run_config: RunConfig) -> RunConfig:
         image_ref=run_config.base_image_ref,
         base_image_ref=run_config.base_image_ref,
         extensions=[],
-        agent_version=run_config.agent_version,
         global_cfg=run_config.global_cfg,
         images_metadata=run_config.images_metadata,
         project_docker_args=run_config.project_docker_args,

@@ -23,7 +23,6 @@ from aicage.registry.images_metadata.models import (
 
 
 def build_run_config(
-    agent_version: str | None = "1.2.3",
     build_local: bool = True,
 ) -> RunConfig:
     return RunConfig(
@@ -33,7 +32,6 @@ def build_run_config(
         image_ref="aicage:claude-ubuntu",
         base_image_ref="aicage:claude-ubuntu",
         extensions=[],
-        agent_version=agent_version,
         global_cfg=GlobalConfig(
             image_registry="ghcr.io",
             image_registry_api_url="https://ghcr.io/v2",

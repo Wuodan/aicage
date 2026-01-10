@@ -4,9 +4,8 @@ from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
 from aicage.config import SettingsStore
-from aicage.config.global_config import GlobalConfig
 from aicage.config.project_config import AgentConfig, _AgentMounts
-from aicage.config.runtime_config import RunConfig, _check_agent_version, load_run_config
+from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.errors import CliError
 from aicage.registry.image_selection import ImageSelection
 from aicage.registry.images_metadata.models import (
@@ -158,55 +157,6 @@ class RuntimeConfigTests(TestCase):
             ):
                 with self.assertRaises(CliError):
                     load_run_config("codex")
-
-    def test_check_agent_version_uses_definition_dir_for_build_local(self) -> None:
-        global_cfg = GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
-        images_metadata = ImagesMetadata.from_mapping(
-            {
-                _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                _BASES_KEY: {
-                    "ubuntu": {
-                        _ROOT_IMAGE_KEY: "ubuntu:latest",
-                        _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                        _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                        _OS_INSTALLER_KEY: "distro/debian/install.sh",
-                        _TEST_SUITE_KEY: "default",
-                    }
-                },
-                _AGENT_KEY: {
-                    "codex": {
-                        AGENT_PATH_KEY: "~/.codex",
-                        AGENT_FULL_NAME_KEY: "Codex CLI",
-                        AGENT_HOMEPAGE_KEY: "https://example.com",
-                        BUILD_LOCAL_KEY: True,
-                        _VALID_BASES_KEY: {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-                    }
-                },
-            }
-        )
-        with mock.patch("aicage.config.runtime_config.AgentVersionChecker") as checker_cls:
-            checker = checker_cls.return_value
-            checker.get_version.return_value = "1.2.3"
-            version = _check_agent_version("codex", global_cfg, images_metadata)
-
-        self.assertEqual("1.2.3", version)
-        checker_cls.assert_called_once_with(global_cfg)
-        checker.get_version.assert_called_once_with(
-            "codex",
-            images_metadata.agents["codex"],
-            images_metadata.agents["codex"].local_definition_dir,
-        )
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:

@@ -13,12 +13,13 @@ def should_build(
     run_config: RunConfig,
     record: BuildRecord | None,
     base_image_ref: str,
+    agent_version: str,
 ) -> bool:
     if not local_image_exists(run_config.image_ref):
         return True
     if record is None:
         return True
-    if record.agent_version != run_config.agent_version:
+    if record.agent_version != agent_version:
         return True
     base_layer_missing = _base_layer_missing(base_image_ref, run_config.image_ref)
     if base_layer_missing is None:

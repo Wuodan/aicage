@@ -17,6 +17,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 None,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertTrue(should_build)
 
@@ -30,6 +31,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 None,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertTrue(should_build)
 
@@ -57,6 +59,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertTrue(should_build)
 
@@ -84,6 +87,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertTrue(should_build)
 
@@ -111,6 +115,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertFalse(should_build)
 
@@ -138,5 +143,6 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
+                "1.2.3",
             )
         self.assertFalse(should_build)

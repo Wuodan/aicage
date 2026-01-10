@@ -143,7 +143,6 @@ class EnsureExtendedImageTests(TestCase):
             image_ref="aicage-extended:codex-ubuntu-ext",
             base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             extensions=extensions,
-            agent_version=None,
             global_cfg=global_cfg,
             images_metadata=images_metadata,
             project_docker_args="",

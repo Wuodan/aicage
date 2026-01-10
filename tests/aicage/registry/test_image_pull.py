@@ -56,7 +56,6 @@ class DockerInvocationTests(TestCase):
             image_ref=image_ref,
             base_image_ref=image_ref,
             extensions=[],
-            agent_version=None,
             global_cfg=GlobalConfig(
                 image_registry="ghcr.io",
                 image_registry_api_url="https://ghcr.io/v2",
