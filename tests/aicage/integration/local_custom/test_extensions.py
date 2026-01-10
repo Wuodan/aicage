@@ -4,7 +4,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig
-from aicage.registry.local_build._extended_store import ExtendedBuildStore
+from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 from aicage.registry.local_build._store import BuildStore
 
 from .._helpers import (

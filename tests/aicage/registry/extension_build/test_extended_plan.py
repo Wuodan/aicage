@@ -3,9 +3,9 @@ from unittest import TestCase, mock
 
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.registry.extension_build._extended_plan import should_build_extended
+from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
-from aicage.registry.local_build._extended_plan import should_build_extended
-from aicage.registry.local_build._extended_store import ExtendedBuildRecord
 
 
 class ExtendedPlanTests(TestCase):
@@ -13,7 +13,7 @@ class ExtendedPlanTests(TestCase):
         run_config = self._run_config()
         record = self._record(run_config)
         with mock.patch(
-            "aicage.registry.local_build._extended_plan.local_image_exists",
+            "aicage.registry.extension_build._extended_plan.local_image_exists",
             return_value=False,
         ):
             self.assertTrue(
@@ -30,11 +30,11 @@ class ExtendedPlanTests(TestCase):
         record = self._record(run_config)
         with (
             mock.patch(
-                "aicage.registry.local_build._extended_plan.local_image_exists",
+                "aicage.registry.extension_build._extended_plan.local_image_exists",
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._layers.get_local_rootfs_layers",
+                "aicage.registry.layers.get_local_rootfs_layers",
                 return_value=None,
             ),
         ):
@@ -52,11 +52,11 @@ class ExtendedPlanTests(TestCase):
         record = self._record(run_config)
         with (
             mock.patch(
-                "aicage.registry.local_build._extended_plan.local_image_exists",
+                "aicage.registry.extension_build._extended_plan.local_image_exists",
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._layers.get_local_rootfs_layers",
+                "aicage.registry.layers.get_local_rootfs_layers",
                 side_effect=[["layer-a"], ["layer-b"]],
             ),
         ):
@@ -74,11 +74,11 @@ class ExtendedPlanTests(TestCase):
         record = self._record(run_config)
         with (
             mock.patch(
-                "aicage.registry.local_build._extended_plan.local_image_exists",
+                "aicage.registry.extension_build._extended_plan.local_image_exists",
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._layers.get_local_rootfs_layers",
+                "aicage.registry.layers.get_local_rootfs_layers",
                 side_effect=[["layer-a"], None],
             ),
         ):

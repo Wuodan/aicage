@@ -4,10 +4,10 @@ from unittest import TestCase, mock
 from aicage.config.global_config import GlobalConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.errors import CliError
+from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
+from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
 from aicage.registry.extensions import ExtensionMetadata
 from aicage.registry.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
-from aicage.registry.local_build._extended_store import ExtendedBuildRecord
-from aicage.registry.local_build.ensure_extended_image import ensure_extended_image
 
 
 class EnsureExtendedImageTests(TestCase):
@@ -18,7 +18,10 @@ class EnsureExtendedImageTests(TestCase):
 
     def test_ensure_extended_image_raises_on_missing_extension(self) -> None:
         run_config = self._run_config(extensions=["missing"])
-        with mock.patch("aicage.registry.local_build.ensure_extended_image.load_extensions", return_value={}):
+        with mock.patch(
+            "aicage.registry.extension_build.ensure_extended_image.load_extensions",
+            return_value={},
+        ):
             with self.assertRaises(CliError):
                 ensure_extended_image(run_config)
 
@@ -29,23 +32,23 @@ class EnsureExtendedImageTests(TestCase):
         store.load.return_value = None
         with (
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.load_extensions",
+                "aicage.registry.extension_build.ensure_extended_image.load_extensions",
                 return_value={"ext": extension},
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.ExtendedBuildStore",
+                "aicage.registry.extension_build.ensure_extended_image.ExtendedBuildStore",
                 return_value=store,
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.extension_hash",
+                "aicage.registry.extension_build.ensure_extended_image.extension_hash",
                 return_value="hash",
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.should_build_extended",
+                "aicage.registry.extension_build.ensure_extended_image.should_build_extended",
                 return_value=False,
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.run_extended_build"
+                "aicage.registry.extension_build.ensure_extended_image.run_extended_build"
             ) as run_mock,
         ):
             ensure_extended_image(run_config)
@@ -59,30 +62,30 @@ class EnsureExtendedImageTests(TestCase):
         store.load.return_value = None
         with (
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.load_extensions",
+                "aicage.registry.extension_build.ensure_extended_image.load_extensions",
                 return_value={"ext": extension},
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.ExtendedBuildStore",
+                "aicage.registry.extension_build.ensure_extended_image.ExtendedBuildStore",
                 return_value=store,
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.extension_hash",
+                "aicage.registry.extension_build.ensure_extended_image.extension_hash",
                 return_value="hash",
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.should_build_extended",
+                "aicage.registry.extension_build.ensure_extended_image.should_build_extended",
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.run_extended_build"
+                "aicage.registry.extension_build.ensure_extended_image.run_extended_build"
             ) as run_mock,
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.build_log_path_for_image",
+                "aicage.registry.extension_build.ensure_extended_image.build_log_path_for_image",
                 return_value=Path("/tmp/logs/build.log"),
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.now_iso",
+                "aicage.registry.extension_build.ensure_extended_image._now_iso",
                 return_value="2024-01-01T00:00:00+00:00",
             ),
         ):

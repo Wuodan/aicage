@@ -3,9 +3,9 @@ from __future__ import annotations
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
+from aicage.registry.layers import base_layer_missing
 
 from ._extended_store import ExtendedBuildRecord
-from ._layers import base_layer_missing
 
 
 def should_build_extended(

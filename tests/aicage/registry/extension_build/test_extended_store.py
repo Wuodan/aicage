@@ -4,7 +4,10 @@ from unittest import TestCase
 
 import yaml
 
-from aicage.registry.local_build._extended_store import ExtendedBuildRecord, ExtendedBuildStore
+from aicage.registry.extension_build._extended_store import (
+    ExtendedBuildRecord,
+    ExtendedBuildStore,
+)
 
 
 class ExtendedStoreTests(TestCase):

@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
+from aicage.registry.layers import base_layer_missing
 
-from ._layers import base_layer_missing
 from ._store import BuildRecord
 
 
