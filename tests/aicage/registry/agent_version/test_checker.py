@@ -11,6 +11,7 @@ from docker.models.containers import Container
 from aicage.config.global_config import GlobalConfig
 from aicage.errors import CliError
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
+from aicage.registry.agent_version import checker as version_checker
 from aicage.registry.agent_version.store import _VERSION_KEY
 from aicage.registry.images_metadata.models import AgentMetadata
 
@@ -62,6 +63,7 @@ class AgentVersionCheckTests(TestCase):
                     "aicage.registry.agent_version.checker.subprocess.run",
                     return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
                 ),
+                mock.patch("aicage.registry.agent_version.checker._ensure_version_check_image"),
                 mock.patch("aicage.docker.run.get_docker_client") as client_mock,
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
@@ -95,6 +97,7 @@ class AgentVersionCheckTests(TestCase):
                     "aicage.registry.agent_version.checker.subprocess.run",
                     return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
                 ),
+                mock.patch("aicage.registry.agent_version.checker._ensure_version_check_image"),
                 mock.patch("aicage.docker.run.get_docker_client") as client_mock,
                 mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
@@ -130,6 +133,60 @@ class AgentVersionCheckTests(TestCase):
                     definition_dir=agent_dir,
                 )
             self.assertFalse((store_dir / "custom.yaml").exists())
+
+    def test_version_check_pulls_when_local_missing(self) -> None:
+        global_cfg = self._global_config()
+        image_ref = global_cfg.version_check_image
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry.agent_version.checker.get_local_repo_digest",
+                    return_value=None,
+                ) as local_mock,
+                mock.patch("aicage.registry.agent_version.checker.get_remote_repo_digest") as remote_mock,
+                mock.patch("aicage.registry.agent_version.checker.run_pull") as pull_mock,
+                mock.patch(
+                    "aicage.registry.agent_version.checker.pull_log_path",
+                    return_value=log_path,
+                ),
+            ):
+                version_checker._ensure_version_check_image(
+                    image_ref=image_ref,
+                    global_cfg=global_cfg,
+                    logger=mock.Mock(),
+                )
+        local_mock.assert_called_once()
+        remote_mock.assert_not_called()
+        pull_mock.assert_called_once_with(image_ref, log_path)
+
+    def test_version_check_skips_pull_when_remote_unknown(self) -> None:
+        global_cfg = self._global_config()
+        image_ref = global_cfg.version_check_image
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "pull.log"
+            with (
+                mock.patch(
+                    "aicage.registry.agent_version.checker.get_local_repo_digest",
+                    return_value="sha256:local",
+                ),
+                mock.patch(
+                    "aicage.registry.agent_version.checker.get_remote_repo_digest",
+                    return_value=None,
+                ) as remote_mock,
+                mock.patch("aicage.registry.agent_version.checker.run_pull") as pull_mock,
+                mock.patch(
+                    "aicage.registry.agent_version.checker.pull_log_path",
+                    return_value=log_path,
+                ),
+            ):
+                version_checker._ensure_version_check_image(
+                    image_ref=image_ref,
+                    global_cfg=global_cfg,
+                    logger=mock.Mock(),
+                )
+        remote_mock.assert_called_once()
+        pull_mock.assert_not_called()
 
     @staticmethod
     def _global_config() -> GlobalConfig:
