@@ -5,7 +5,6 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config import ConfigError, ProjectConfig, SettingsStore
-from aicage.config._yaml import load_yaml
 from aicage.config.global_config import (
     _DEFAULT_IMAGE_BASE_KEY,
     _IMAGE_BASE_REPOSITORY_KEY,
@@ -17,6 +16,7 @@ from aicage.config.global_config import (
     _VERSION_CHECK_IMAGE_KEY,
 )
 from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CONFIG_FILENAME
 
 

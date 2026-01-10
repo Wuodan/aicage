@@ -1,10 +1,10 @@
 from pathlib import Path
 
-import yaml
-
 from aicage.config.context import ConfigContext
+from aicage.config.errors import ConfigError
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.project_config import AgentConfig
+from aicage.config.yaml_loader import load_yaml
 from aicage.registry.errors import RegistryError
 from aicage.runtime.prompts import prompt_for_missing_extensions
 
@@ -61,10 +61,6 @@ def _find_projects_using_image(
 
 def _load_yaml(path: Path) -> dict[str, object]:
     try:
-        payload = path.read_text(encoding="utf-8")
-        data = yaml.safe_load(payload) or {}
-    except (OSError, yaml.YAMLError):
+        return load_yaml(path)
+    except ConfigError:
         return {}
-    if not isinstance(data, dict):
-        return {}
-    return data

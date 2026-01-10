@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from aicage.config._yaml import expect_keys, expect_string, load_yaml
+from aicage.config._yaml import expect_keys, expect_string
 from aicage.config.errors import ConfigError
+from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
 
 

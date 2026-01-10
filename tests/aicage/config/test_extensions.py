@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 from aicage.config import ConfigError
 from aicage.config import extended_images as extended_images_module
 from aicage.config import extensions as extensions_module
-from aicage.config._yaml import load_yaml
 from aicage.config.extended_images import ExtendedImageConfig
+from aicage.config.yaml_loader import load_yaml
 
 
 class ExtensionDiscoveryTests(TestCase):

@@ -6,8 +6,9 @@ from pathlib import Path
 import yaml
 
 from aicage._logging import get_logger
-from aicage.config._yaml import expect_keys, expect_string, load_yaml, read_str_list
+from aicage.config._yaml import expect_keys, expect_string, read_str_list
 from aicage.config.errors import ConfigError
+from aicage.config.yaml_loader import load_yaml
 from aicage.paths import DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
 
 _AGENT_KEY: str = "agent"

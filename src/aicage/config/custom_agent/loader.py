@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from aicage.config._yaml import load_yaml, maybe_str_list
+from aicage.config._yaml import maybe_str_list
 from aicage.config.errors import ConfigError
 from aicage.config.image_refs import local_image_ref
 from aicage.config.images_metadata.models import (
@@ -15,6 +15,7 @@ from aicage.config.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
 )
+from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
 
 from ._validation import ensure_required_files, expect_string, validate_agent_mapping

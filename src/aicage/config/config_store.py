@@ -9,10 +9,10 @@ import yaml
 
 from aicage.paths import CONFIG_FILENAME
 
-from ._yaml import load_yaml
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path
+from .yaml_loader import load_yaml
 
 _DEFAULT_BASE_DIR = "~/.aicage"
 _PROJECTS_SUBDIR = "projects"
