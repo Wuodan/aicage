@@ -23,6 +23,8 @@ def run_build(
 
     dockerfile_path = find_packaged_path("agent-build/Dockerfile")
     build_root = _build_context_dir(run_config, dockerfile_path)
+    # Docker SDK does not support BuildKit; keep CLI build for compatibility.
+    # See: https://github.com/docker/docker-py/issues/2230
     command = [
         "docker",
         "build",
@@ -72,6 +74,8 @@ def run_extended_build(
             if target_ref != run_config.image_ref:
                 intermediate_refs.append(target_ref)
             dockerfile_path = extension.dockerfile_path or dockerfile_builtin
+            # Docker SDK does not support BuildKit; keep CLI build for compatibility.
+            # See: https://github.com/docker/docker-py/issues/2230
             command = [
                 "docker",
                 "build",
