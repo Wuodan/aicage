@@ -5,6 +5,7 @@ import urllib.request
 from collections.abc import Mapping
 from typing import Any
 
+from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
 from .types import RegistryApiConfig
 
 
@@ -24,7 +25,7 @@ def fetch_pull_token_for_repository(api_config: RegistryApiConfig, repository: s
 def _fetch_json(url: str, headers: dict[str, str] | None) -> tuple[dict[str, Any], Mapping[str, str]]:
     request = urllib.request.Request(url, headers=headers or {})
     try:
-        with urllib.request.urlopen(request) as response:
+        with urllib.request.urlopen(request, timeout=REGISTRY_REQUEST_TIMEOUT_SECONDS) as response:
             payload = response.read().decode("utf-8")
             response_headers = response.headers
     except Exception as exc:  # pylint: disable=broad-except

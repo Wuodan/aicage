@@ -5,6 +5,7 @@ import urllib.request
 from collections.abc import Mapping
 
 from ._registry_api import RegistryDiscoveryError, fetch_pull_token_for_repository
+from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
 from .types import RemoteImageRef
 
 
@@ -54,7 +55,7 @@ def _parse_reference(image_ref: str) -> str | None:
 def _head_request(url: str, headers: Mapping[str, str]) -> dict[str, str] | None:
     request = urllib.request.Request(url, headers=dict(headers), method="HEAD")
     try:
-        with urllib.request.urlopen(request) as response:
+        with urllib.request.urlopen(request, timeout=REGISTRY_REQUEST_TIMEOUT_SECONDS) as response:
             return dict(response.headers)
     except urllib.error.HTTPError as exc:
         if exc.code in {401, 403}:

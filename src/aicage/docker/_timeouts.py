@@ -1,0 +1,4 @@
+from __future__ import annotations
+
+DOCKER_REQUEST_TIMEOUT_SECONDS = 60 * 60 * 6
+REGISTRY_REQUEST_TIMEOUT_SECONDS = 60 * 60 * 6
