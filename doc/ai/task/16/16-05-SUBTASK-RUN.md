@@ -1,5 +1,11 @@
 # Subtask 16-05: Replace container run with Docker SDK
 
+## Status: Skipped
+
+This subtask was skipped to keep the Docker CLI path. The CLI remains more reliable for
+interactive `-it` TTY behavior, and it keeps the existing `--dry-run` output matching real
+`docker run` commands.
+
 ## Goal
 
 Evaluate replacing the CLI-based container run with Docker SDK usage.

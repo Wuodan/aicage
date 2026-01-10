@@ -1,5 +1,10 @@
 # Subtask 16-04: Replace image build with Docker SDK
 
+## Status: Skipped
+
+This subtask was skipped to keep the Docker CLI path because the Docker SDK does not
+support BuildKit yet. See: <https://github.com/docker/docker-py/issues/2230>
+
 ## Goal
 
 Replace the CLI-based local and extended image builds with Docker SDK usage.
