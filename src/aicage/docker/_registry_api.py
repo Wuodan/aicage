@@ -3,22 +3,17 @@ from __future__ import annotations
 import json
 import urllib.request
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-if TYPE_CHECKING:
-    from aicage.config.global_config import GlobalConfig
+from .types import RegistryApiConfig
 
 
 class RegistryDiscoveryError(Exception):
     """Raised when registry discovery fails."""
 
 
-def _fetch_pull_token(global_cfg: GlobalConfig) -> str:
-    return fetch_pull_token_for_repository(global_cfg, global_cfg.image_repository)
-
-
-def fetch_pull_token_for_repository(global_cfg: GlobalConfig, repository: str) -> str:
-    url = f"{global_cfg.image_registry_api_token_url}:{repository}:pull"
+def fetch_pull_token_for_repository(api_config: RegistryApiConfig, repository: str) -> str:
+    url = f"{api_config.registry_api_token_url}:{repository}:pull"
     data, _ = _fetch_json(url, None)
     token = data.get("token")
     if not token:

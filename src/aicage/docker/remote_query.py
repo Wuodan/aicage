@@ -3,27 +3,20 @@ from __future__ import annotations
 import urllib.error
 import urllib.request
 from collections.abc import Mapping
-from typing import TYPE_CHECKING
 
 from ._registry_api import RegistryDiscoveryError, fetch_pull_token_for_repository
-
-if TYPE_CHECKING:
-    from aicage.config.global_config import GlobalConfig
+from .types import RemoteImageRef
 
 
-def get_remote_repo_digest_for_repo(
-    image_ref: str,
-    repository: str,
-    global_cfg: GlobalConfig,
-) -> str | None:
-    reference = _parse_reference(image_ref)
+def get_remote_repo_digest(image: RemoteImageRef) -> str | None:
+    reference = _parse_reference(image.image.image_ref)
     if reference is None:
         return None
     try:
-        token = fetch_pull_token_for_repository(global_cfg, repository)
+        token = fetch_pull_token_for_repository(image.registry_api, image.image.repository)
     except RegistryDiscoveryError:
         return None
-    url = f"{global_cfg.image_registry_api_url}/{repository}/manifests/{reference}"
+    url = f"{image.registry_api.registry_api_url}/{image.image.repository}/manifests/{reference}"
     headers: dict[str, str] = {
         "Accept": ",".join(
             [

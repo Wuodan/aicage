@@ -2,14 +2,21 @@ from __future__ import annotations
 
 from docker.errors import DockerException, ImageNotFound
 
-from aicage.config.runtime_config import RunConfig
-
 from ._client import get_docker_client
+from .types import ImageRefRepository
 
 
-def get_local_repo_digest(run_config: RunConfig) -> str | None:
-    repository = f"{run_config.global_cfg.image_registry}/{run_config.global_cfg.image_repository}"
-    return get_local_repo_digest_for_repo(run_config.image_ref, repository)
+def local_image_exists(image_ref: str) -> bool:
+    client = get_docker_client()
+    try:
+        client.images.get(image_ref)
+    except ImageNotFound:
+        return False
+    return True
+
+
+def get_local_repo_digest(image: ImageRefRepository) -> str | None:
+    return get_local_repo_digest_for_repo(image.image_ref, image.repository)
 
 
 def get_local_repo_digest_for_repo(image_ref: str, repository: str) -> str | None:

@@ -2,9 +2,9 @@ import urllib.error
 from email.message import Message
 from unittest import TestCase, mock
 
-from aicage.config.global_config import GlobalConfig
 from aicage.docker import remote_query
 from aicage.docker._registry_api import RegistryDiscoveryError
+from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
 
 
 class FakeResponse:
@@ -31,11 +31,7 @@ class RemoteQueryTests(TestCase):
             ),
             mock.patch("aicage.docker.remote_query.urllib.request.urlopen") as urlopen_mock,
         ):
-            digest = remote_query.get_remote_repo_digest_for_repo(
-                "ghcr.io/aicage/aicage:tag",
-                "aicage/aicage",
-                self._global_config(),
-            )
+            digest = remote_query.get_remote_repo_digest(self._remote_image())
         self.assertIsNone(digest)
         urlopen_mock.assert_not_called()
 
@@ -50,22 +46,14 @@ class RemoteQueryTests(TestCase):
                 return_value=FakeResponse({"Docker-Content-Digest": "sha256:remote"}),
             ),
         ):
-            digest = remote_query.get_remote_repo_digest_for_repo(
-                "ghcr.io/aicage/aicage:tag",
-                "aicage/aicage",
-                self._global_config(),
-            )
+            digest = remote_query.get_remote_repo_digest(self._remote_image())
         self.assertEqual("sha256:remote", digest)
 
     def test_get_remote_repo_digest_returns_none_on_missing_reference(self) -> None:
         with mock.patch(
             "aicage.docker.remote_query.fetch_pull_token_for_repository",
         ) as token_mock:
-            digest = remote_query.get_remote_repo_digest_for_repo(
-                "ghcr.io/aicage/aicage",
-                "aicage/aicage",
-                self._global_config(),
-            )
+            digest = remote_query.get_remote_repo_digest(self._remote_image(image_ref="ghcr.io/aicage/aicage"))
         self.assertIsNone(digest)
         token_mock.assert_not_called()
 
@@ -80,11 +68,7 @@ class RemoteQueryTests(TestCase):
                 return_value=None,
             ),
         ):
-            digest = remote_query.get_remote_repo_digest_for_repo(
-                "ghcr.io/aicage/aicage:tag",
-                "aicage/aicage",
-                self._global_config(),
-            )
+            digest = remote_query.get_remote_repo_digest(self._remote_image())
         self.assertIsNone(digest)
 
     def test_get_remote_repo_digest_accepts_lowercase_header(self) -> None:
@@ -98,11 +82,7 @@ class RemoteQueryTests(TestCase):
                 return_value={"docker-content-digest": "sha256:lower"},
             ),
         ):
-            digest = remote_query.get_remote_repo_digest_for_repo(
-                "ghcr.io/aicage/aicage:tag",
-                "aicage/aicage",
-                self._global_config(),
-            )
+            digest = remote_query.get_remote_repo_digest(self._remote_image())
         self.assertEqual("sha256:lower", digest)
 
     def test_parse_reference_accepts_digest(self) -> None:
@@ -163,15 +143,14 @@ class RemoteQueryTests(TestCase):
         self.assertIsNone(result)
 
     @staticmethod
-    def _global_config() -> GlobalConfig:
-        return GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
+    def _remote_image(image_ref: str = "ghcr.io/aicage/aicage:tag") -> RemoteImageRef:
+        return RemoteImageRef(
+            image=ImageRefRepository(
+                image_ref=image_ref,
+                repository="aicage/aicage",
+            ),
+            registry_api=RegistryApiConfig(
+                registry_api_url="https://ghcr.io/v2",
+                registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+            ),
         )

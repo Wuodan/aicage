@@ -4,8 +4,7 @@ from datetime import datetime, timezone
 
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
-from aicage.docker.build import local_image_exists
-from aicage.docker.query import get_local_rootfs_layers
+from aicage.docker.query import get_local_rootfs_layers, local_image_exists
 
 from ._store import BuildRecord
 

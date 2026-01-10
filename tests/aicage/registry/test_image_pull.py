@@ -110,7 +110,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
                 mock.patch(
                     "aicage.docker.pull.subprocess.Popen",
@@ -144,7 +144,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
                 mock.patch(
                     "aicage.docker.pull.subprocess.Popen",
@@ -173,7 +173,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
                 mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
                 mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_ok),
@@ -197,7 +197,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo"
+                    "aicage.registry._pull_decision.get_remote_repo_digest"
                 ) as remote_mock,
                 mock.patch("aicage.docker.pull.subprocess.Popen", return_value=pull_fail),
                 mock.patch("aicage.docker.pull.subprocess.run", return_value=inspect_fail),
@@ -218,7 +218,7 @@ class DockerInvocationTests(TestCase):
                     return_value="same",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo",
+                    "aicage.registry._pull_decision.get_remote_repo_digest",
                     return_value="same",
                 ),
                 mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,
@@ -239,7 +239,7 @@ class DockerInvocationTests(TestCase):
                     return_value="local",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest_for_repo",
+                    "aicage.registry._pull_decision.get_remote_repo_digest",
                     return_value=None,
                 ),
                 mock.patch("aicage.docker.pull.subprocess.Popen") as popen_mock,

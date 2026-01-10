@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 
 from aicage.docker import _registry_api
+from aicage.docker.types import RegistryApiConfig
 
 
 class RemoteApiTests(TestCase):
@@ -10,7 +11,10 @@ class RemoteApiTests(TestCase):
 
         with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
             token = _registry_api.fetch_pull_token_for_repository(
-                mock.Mock(image_registry_api_token_url="https://example.test/token"),
+                RegistryApiConfig(
+                    registry_api_url="https://example.test/api",
+                    registry_api_token_url="https://example.test/token",
+                ),
                 "repo",
             )
         self.assertEqual("abc", token)
@@ -21,11 +25,12 @@ class RemoteApiTests(TestCase):
 
         with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
             with self.assertRaises(_registry_api.RegistryDiscoveryError):
-                _registry_api._fetch_pull_token(
-                    mock.Mock(
-                        image_registry_api_token_url="https://example.test/token",
-                        image_repository="repo",
-                    )
+                _registry_api.fetch_pull_token_for_repository(
+                    RegistryApiConfig(
+                        registry_api_url="https://example.test/api",
+                        registry_api_token_url="https://example.test/token",
+                    ),
+                    "repo",
                 )
 
     def test_fetch_json_raises_on_request_failure(self) -> None:
