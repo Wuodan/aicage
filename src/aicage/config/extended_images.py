@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 import yaml
 
 from aicage._logging import get_logger
-from aicage.config._yaml import expect_keys, expect_string, read_str_list
+from aicage.config._yaml import expect_keys, expect_string, load_yaml, read_str_list
 from aicage.errors import CliError
 from aicage.paths import DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
 
@@ -41,7 +40,7 @@ def load_extended_images(available_extensions: set[str]) -> dict[str, ExtendedIm
             raise CliError(
                 f"Extended image '{entry.name}' is missing {EXTENDED_IMAGE_DEFINITION_FILENAME}."
             )
-        mapping = _load_yaml(config_path)
+        mapping = load_yaml(config_path)
         expect_keys(
             mapping,
             required={_AGENT_KEY, _BASE_KEY, _EXTENSIONS_KEY, _IMAGE_REF_KEY},
@@ -85,15 +84,3 @@ def extended_image_config_path(name: str) -> Path:
         / name
         / EXTENDED_IMAGE_DEFINITION_FILENAME
     )
-
-
-def _load_yaml(path: Path) -> dict[str, Any]:
-    try:
-        payload = path.read_text(encoding="utf-8")
-        data = yaml.safe_load(payload) or {}
-    except (OSError, yaml.YAMLError) as exc:
-        raise CliError(f"Failed to read extended image config from {path}: {exc}") from exc
-    if not isinstance(data, dict):
-        raise CliError(f"Extended image config at {path} must be a mapping.")
-    return data
-

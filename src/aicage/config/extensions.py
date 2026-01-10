@@ -3,11 +3,9 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Protocol
 
-import yaml
-
-from aicage.config._yaml import expect_keys, expect_string
+from aicage.config._yaml import expect_keys, expect_string, load_yaml
 from aicage.errors import CliError
 from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
 
@@ -45,7 +43,7 @@ def load_extensions() -> dict[str, ExtensionMetadata]:
             continue
         extension_id = entry.name
         definition_path = _find_extension_definition(entry)
-        mapping = _load_yaml(definition_path)
+        mapping = load_yaml(definition_path)
         expect_keys(
             mapping,
             required={_EXTENSION_NAME_KEY, _EXTENSION_DESCRIPTION_KEY},
@@ -91,14 +89,3 @@ def _find_extension_definition(extension_dir: Path) -> Path:
 def _update_hash(digest: _HashWriter, path: Path) -> None:
     digest.update(path.name.encode("utf-8"))
     digest.update(path.read_bytes())
-
-
-def _load_yaml(path: Path) -> dict[str, Any]:
-    try:
-        payload = path.read_text(encoding="utf-8")
-        data = yaml.safe_load(payload) or {}
-    except (OSError, yaml.YAMLError) as exc:
-        raise CliError(f"Failed to read extension metadata from {path}: {exc}") from exc
-    if not isinstance(data, dict):
-        raise CliError(f"Extension metadata at {path} must be a mapping.")
-    return data

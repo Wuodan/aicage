@@ -7,8 +7,10 @@ from typing import Any
 
 import yaml
 
+from aicage.errors import CliError
 from aicage.paths import CONFIG_FILENAME
 
+from ._yaml import load_yaml
 from .errors import ConfigError
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
@@ -30,24 +32,20 @@ class SettingsStore:
         self.projects_dir.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
-    def _load_yaml(path: Path) -> dict[str, Any]:
-        if not path.exists():
-            return {}
-        try:
-            with path.open("r", encoding="utf-8") as handle:
-                data = yaml.safe_load(handle)
-                return data or {}
-        except yaml.YAMLError as exc:
-            raise ConfigError(f"Failed to parse YAML config at {path}: {exc}") from exc
-
-    @staticmethod
     def _save_yaml(path: Path, data: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as handle:
             yaml.safe_dump(data, handle, sort_keys=True)
 
     def load_global(self) -> GlobalConfig:
-        data = self._load_yaml(self._global_config())
+        path = self._global_config()
+        if not path.exists():
+            data = {}
+        else:
+            try:
+                data = load_yaml(path)
+            except CliError as exc:
+                raise ConfigError(str(exc)) from exc
         return GlobalConfig.from_mapping(data)
 
     def _project_path(self, project_realpath: Path) -> Path:
@@ -55,7 +53,14 @@ class SettingsStore:
         return self.projects_dir / f"{digest}.yaml"
 
     def load_project(self, project_realpath: Path) -> ProjectConfig:
-        data = self._load_yaml(self._project_path(project_realpath))
+        path = self._project_path(project_realpath)
+        if not path.exists():
+            data = {}
+        else:
+            try:
+                data = load_yaml(path)
+            except CliError as exc:
+                raise ConfigError(str(exc)) from exc
         return ProjectConfig.from_mapping(project_realpath, data)
 
     def save_project(self, project_realpath: Path, config: ProjectConfig) -> None:

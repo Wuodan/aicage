@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config import extended_images as extended_images_module
 from aicage.config import extensions as extensions_module
+from aicage.config._yaml import load_yaml
 from aicage.config.extended_images import ExtendedImageConfig
 from aicage.errors import CliError
 
@@ -124,7 +125,7 @@ class ExtensionDiscoveryTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
             with self.assertRaises(CliError):
-                extensions_module._load_yaml(missing_path)
+                load_yaml(missing_path)
 
     def test_load_extensions_rejects_unknown_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -279,7 +280,7 @@ class ExtensionDiscoveryTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing_path = Path(tmp_dir) / "missing.yaml"
             with self.assertRaises(CliError):
-                extended_images_module._load_yaml(missing_path)
+                load_yaml(missing_path)
 
     def test_load_extended_images_rejects_unknown_keys(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -415,7 +416,7 @@ class ExtensionDiscoveryTests(TestCase):
             )
             extended_images_module.write_extended_image_config(config)
 
-            payload = extended_images_module._load_yaml(config_path)
+            payload = load_yaml(config_path)
             self.assertEqual("codex", payload.get("agent"))
             self.assertEqual(["extra"], payload.get("extensions"))
 
