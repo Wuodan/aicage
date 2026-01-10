@@ -33,7 +33,7 @@ class EnsureLocalImageTests(TestCase):
             "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
         ) as refresh_mock:
             with self.assertRaises(CliError):
-                ensure_local_image_module.ensure_local_image(run_config)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
         refresh_mock.assert_not_called()
 
     def test_ensure_local_image_runs_for_custom_agent(self) -> None:
@@ -58,7 +58,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
             refresh_mock.assert_called_once()
 
     def test_ensure_local_image_raises_on_version_failure(self) -> None:
@@ -74,7 +74,7 @@ class EnsureLocalImageTests(TestCase):
         ):
             checker_cls.return_value.get_version.side_effect = CliError("version failed")
             with self.assertRaises(CliError):
-                ensure_local_image_module.ensure_local_image(run_config)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
 
     def test_ensure_local_image_builds_when_missing_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -107,7 +107,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
 
             build_mock.assert_called_once()
             record_path = state_dir / "claude-ubuntu.yaml"
@@ -161,7 +161,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
 
             build_mock.assert_not_called()
 

@@ -30,6 +30,7 @@ class LocalBuildRunnerTests(TestCase):
                 build.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
+                    image_ref="aicage:claude-ubuntu",
                     log_path=log_path,
                 )
 
@@ -75,5 +76,6 @@ class LocalBuildRunnerTests(TestCase):
                 build.run_build(
                     run_config=run_config,
                     base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
+                    image_ref="aicage:claude-ubuntu",
                     log_path=log_path,
                 )

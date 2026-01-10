@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
-from aicage.docker.query import get_local_rootfs_layers, local_image_exists
+from aicage.docker.query import local_image_exists
 
 from ._extended_store import ExtendedBuildRecord
+from ._layers import base_layer_missing
 
 
 def should_build_extended(
@@ -23,22 +24,12 @@ def should_build_extended(
     )
     if needs_rebuild:
         return True
-    base_layer_missing = _base_layer_missing(base_image_ref, run_config.image_ref)
-    if base_layer_missing is None:
+    is_missing = base_layer_missing(base_image_ref, run_config.image_ref)
+    if is_missing is None:
         logger = get_logger()
         logger.warning(
             "Skipping base image layer validation for %s; missing local layer data.",
             run_config.image_ref,
         )
         return False
-    return base_layer_missing
-
-
-def _base_layer_missing(base_image_ref: str, final_image_ref: str) -> bool | None:
-    base_layers = get_local_rootfs_layers(base_image_ref)
-    if base_layers is None:
-        return None
-    final_layers = get_local_rootfs_layers(final_image_ref)
-    if final_layers is None:
-        return None
-    return base_layers[-1] not in final_layers
+    return is_missing

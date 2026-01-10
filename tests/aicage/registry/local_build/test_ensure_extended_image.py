@@ -22,7 +22,7 @@ class EnsureExtendedImageTests(TestCase):
             with self.assertRaises(CliError):
                 ensure_extended_image(run_config)
 
-    def test_ensure_extended_image_pulls_for_builtin_agent(self) -> None:
+    def test_ensure_extended_image_skips_when_not_needed(self) -> None:
         run_config = self._run_config(extensions=["ext"], local_definition_dir=None)
         extension = self._extension("ext")
         store = mock.Mock()
@@ -41,15 +41,16 @@ class EnsureExtendedImageTests(TestCase):
                 return_value="hash",
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.pull_image"
-            ) as pull_mock,
-            mock.patch(
                 "aicage.registry.local_build.ensure_extended_image.should_build_extended",
                 return_value=False,
             ),
+            mock.patch(
+                "aicage.registry.local_build.ensure_extended_image.run_extended_build"
+            ) as run_mock,
         ):
             ensure_extended_image(run_config)
-        pull_mock.assert_called_once()
+        run_mock.assert_not_called()
+        store.save.assert_not_called()
 
     def test_ensure_extended_image_builds_when_needed(self) -> None:
         run_config = self._run_config(extensions=["ext"], local_definition_dir=Path("/tmp/def"))
@@ -70,9 +71,6 @@ class EnsureExtendedImageTests(TestCase):
                 return_value="hash",
             ),
             mock.patch(
-                "aicage.registry.local_build.ensure_extended_image.ensure_local_image"
-            ) as ensure_local_mock,
-            mock.patch(
                 "aicage.registry.local_build.ensure_extended_image.should_build_extended",
                 return_value=True,
             ),
@@ -89,7 +87,6 @@ class EnsureExtendedImageTests(TestCase):
             ),
         ):
             ensure_extended_image(run_config)
-        ensure_local_mock.assert_called_once()
         run_mock.assert_called_once()
         store.save.assert_called_once()
         record = store.save.call_args.args[0]

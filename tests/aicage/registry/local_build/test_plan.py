@@ -18,6 +18,7 @@ class LocalBuildPlanTests(TestCase):
                 None,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -32,6 +33,7 @@ class LocalBuildPlanTests(TestCase):
                 None,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -51,7 +53,7 @@ class LocalBuildPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._plan._base_layer_missing",
+                "aicage.registry.local_build._plan.base_layer_missing",
                 return_value=False,
             ),
         ):
@@ -60,6 +62,7 @@ class LocalBuildPlanTests(TestCase):
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -79,7 +82,7 @@ class LocalBuildPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._plan._base_layer_missing",
+                "aicage.registry.local_build._plan.base_layer_missing",
                 return_value=True,
             ),
         ):
@@ -88,6 +91,7 @@ class LocalBuildPlanTests(TestCase):
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -107,7 +111,7 @@ class LocalBuildPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._plan._base_layer_missing",
+                "aicage.registry.local_build._plan.base_layer_missing",
                 return_value=None,
             ),
         ):
@@ -116,6 +120,7 @@ class LocalBuildPlanTests(TestCase):
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertFalse(should_build)
 
@@ -135,7 +140,7 @@ class LocalBuildPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._plan._base_layer_missing",
+                "aicage.registry.local_build._plan.base_layer_missing",
                 return_value=False,
             ),
         ):
@@ -144,5 +149,6 @@ class LocalBuildPlanTests(TestCase):
                 record,
                 "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
+                run_config.image_ref,
             )
         self.assertFalse(should_build)

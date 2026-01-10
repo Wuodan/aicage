@@ -9,9 +9,7 @@ from aicage.config import ConfigError
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.docker.run import print_run_command, run_container
 from aicage.errors import CliError
-from aicage.registry.image_pull import pull_image
-from aicage.registry.local_build.ensure_extended_image import ensure_extended_image
-from aicage.registry.local_build.ensure_local_image import ensure_local_image
+from aicage.registry.ensure_image import ensure_image
 from aicage.runtime.run_args import DockerRunArgs
 from aicage.runtime.run_plan import build_run_args
 
@@ -26,13 +24,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         run_config: RunConfig = load_run_config(parsed.agent, parsed)
         logger.info("Resolved run config for agent %s", run_config.agent)
-        agent_metadata = run_config.images_metadata.agents[run_config.agent]
-        if run_config.extensions:
-            ensure_extended_image(run_config)
-        elif agent_metadata.local_definition_dir is None:
-            pull_image(run_config)
-        else:
-            ensure_local_image(run_config)
+        ensure_image(run_config)
         run_args: DockerRunArgs = build_run_args(config=run_config, parsed=parsed)
 
         if parsed.dry_run:

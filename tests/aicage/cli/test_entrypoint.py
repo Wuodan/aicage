@@ -146,7 +146,7 @@ class EntrypointTests(TestCase):
                     return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
                 ),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.entrypoint.pull_image"),
+                mock.patch("aicage.cli.entrypoint.ensure_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch("aicage.cli.entrypoint.run_container") as run_mock,
             ):
@@ -174,7 +174,7 @@ class EntrypointTests(TestCase):
                     return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
                 ),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
-                mock.patch("aicage.cli.entrypoint.pull_image"),
+                mock.patch("aicage.cli.entrypoint.ensure_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch("aicage.cli.entrypoint.run_container"),
             ):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aicage.config.runtime_config import RunConfig
+from aicage.config.global_config import GlobalConfig
 from aicage.docker.query import get_local_repo_digest
 from aicage.docker.remote_query import get_remote_repo_digest
 from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
@@ -13,13 +13,13 @@ class _PullDecision:
     should_pull: bool
 
 
-def decide_pull(run_config: RunConfig) -> _PullDecision:
+def decide_pull(image_ref: str, global_cfg: GlobalConfig) -> _PullDecision:
     # Local digests include registry prefix; registry API uses repository only.
-    local_repository = f"{run_config.global_cfg.image_registry}/{run_config.global_cfg.image_repository}"
-    remote_repository = run_config.global_cfg.image_repository
+    local_repository = f"{global_cfg.image_registry}/{global_cfg.image_repository}"
+    remote_repository = global_cfg.image_repository
     local_digest = get_local_repo_digest(
         ImageRefRepository(
-            image_ref=run_config.image_ref,
+            image_ref=image_ref,
             repository=local_repository,
         )
     )
@@ -29,12 +29,12 @@ def decide_pull(run_config: RunConfig) -> _PullDecision:
     remote_digest = get_remote_repo_digest(
         RemoteImageRef(
             image=ImageRefRepository(
-                image_ref=run_config.image_ref,
+                image_ref=image_ref,
                 repository=remote_repository,
             ),
             registry_api=RegistryApiConfig(
-                registry_api_url=run_config.global_cfg.image_registry_api_url,
-                registry_api_token_url=run_config.global_cfg.image_registry_api_token_url,
+                registry_api_url=global_cfg.image_registry_api_url,
+                registry_api_token_url=global_cfg.image_registry_api_token_url,
             ),
         )
     )

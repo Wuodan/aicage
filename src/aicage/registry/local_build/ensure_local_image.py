@@ -14,7 +14,7 @@ from ._plan import base_image_ref, base_repository, now_iso, should_build
 from ._store import BuildRecord, BuildStore
 
 
-def ensure_local_image(run_config: RunConfig) -> None:
+def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     agent_metadata = run_config.images_metadata.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
     if definition_dir is None:
@@ -37,6 +37,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
         record=record,
         base_image_ref=base_image,
         agent_version=agent_version,
+        image_ref=image_ref,
     )
     if not needs_build:
         return
@@ -45,6 +46,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
     run_build(
         run_config=run_config,
         base_image_ref=base_image,
+        image_ref=image_ref,
         log_path=log_path,
     )
 
@@ -54,7 +56,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
             base=run_config.base,
             agent_version=agent_version,
             base_image=base_image,
-            image_ref=run_config.image_ref,
+            image_ref=image_ref,
             built_at=now_iso(),
         )
     )

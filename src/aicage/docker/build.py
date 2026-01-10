@@ -14,12 +14,13 @@ from aicage.registry.extensions import ExtensionMetadata
 def run_build(
     run_config: RunConfig,
     base_image_ref: str,
+    image_ref: str,
     log_path: Path,
 ) -> None:
     logger = get_logger()
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"[aicage] Building local image {run_config.image_ref} (logs: {log_path})...")
-    logger.info("Building local image %s (logs: %s)", run_config.image_ref, log_path)
+    print(f"[aicage] Building local image {image_ref} (logs: {log_path})...")
+    logger.info("Building local image %s (logs: %s)", image_ref, log_path)
 
     dockerfile_path = find_packaged_path("agent-build/Dockerfile")
     build_root = _build_context_dir(run_config, dockerfile_path)
@@ -36,18 +37,18 @@ def run_build(
         "--build-arg",
         f"AGENT={run_config.agent}",
         "--tag",
-        run_config.image_ref,
+        image_ref,
         str(build_root),
     ]
     with log_path.open("w", encoding="utf-8") as log_handle:
         result = subprocess.run(command, check=False, stdout=log_handle, stderr=subprocess.STDOUT)
     if result.returncode != 0:
-        logger.error("Local image build failed for %s (logs: %s)", run_config.image_ref, log_path)
+        logger.error("Local image build failed for %s (logs: %s)", image_ref, log_path)
         raise CliError(
-            f"Local image build failed for {run_config.image_ref}. See log at {log_path}."
+            f"Local image build failed for {image_ref}. See log at {log_path}."
         )
 
-    logger.info("Local image build succeeded for %s", run_config.image_ref)
+    logger.info("Local image build succeeded for %s", image_ref)
 
 
 def run_extended_build(

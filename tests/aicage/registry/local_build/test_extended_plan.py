@@ -34,7 +34,7 @@ class ExtendedPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._extended_plan.get_local_rootfs_layers",
+                "aicage.registry.local_build._layers.get_local_rootfs_layers",
                 return_value=None,
             ),
         ):
@@ -56,7 +56,7 @@ class ExtendedPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._extended_plan.get_local_rootfs_layers",
+                "aicage.registry.local_build._layers.get_local_rootfs_layers",
                 side_effect=[["layer-a"], ["layer-b"]],
             ),
         ):
@@ -78,7 +78,7 @@ class ExtendedPlanTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.local_build._extended_plan.get_local_rootfs_layers",
+                "aicage.registry.local_build._layers.get_local_rootfs_layers",
                 side_effect=[["layer-a"], None],
             ),
         ):
