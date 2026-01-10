@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-01-10
+
+### Changed
+
+- Image pulls now use the Docker SDK with streaming logs.
+
+### Internal
+
+- Increased Docker SDK and registry HTTP timeouts for slow connections.
+
 ## [0.7.3] - 2026-01-10
 
 ### Changed
