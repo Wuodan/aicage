@@ -3,48 +3,48 @@
 # https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
 
 aicage-image:
-  version: 0.7.0
+  version: 0.8.0
 aicage-image-base:
-  version: 0.7.0
+  version: 0.8.0
 bases:
   act:
-    root_image: ghcr.io/catthehacker/ubuntu:act-latest
+    from_image: ghcr.io/catthehacker/ubuntu:act-latest
     base_image_distro: Ubuntu
     base_image_description: (Ubuntu) Runner image from act (act runs GitHub Actions locally)
     os_installer: distro/debian/install.sh
     test_suite: default
   alpine:
-    root_image: alpine:latest
+    from_image: alpine:latest
     base_image_distro: Alpine
     base_image_description: Minimal footprint; experimental
     os_installer: distro/alpine/install.sh
     test_suite: default
   debian:
-    root_image: debian:latest
+    from_image: debian:latest
     base_image_distro: Debian
     base_image_description: For Debian users
     os_installer: distro/debian/install.sh
     test_suite: default
   fedora:
-    root_image: fedora:latest
+    from_image: fedora:latest
     base_image_distro: Fedora
     base_image_description: For RedHat/Fedora users
     os_installer: distro/redhat/install.sh
     test_suite: default
   minimal:
-    root_image: node:alpine
+    from_image: node:alpine
     base_image_distro: Alpine
     base_image_description: (Alpine) For quick CI/CD tests; reduced packages
     os_installer: distro/alpine-minimal/install.sh
     test_suite: minimal
   node:
-    root_image: node:lts-slim
+    from_image: node:lts-slim
     base_image_distro: Ubuntu
     base_image_description: (Ubuntu) Official Node image (all base images have Node)
     os_installer: distro/debian/install.sh
     test_suite: default
   ubuntu:
-    root_image: ubuntu:latest
+    from_image: ubuntu:latest
     base_image_distro: Ubuntu
     base_image_description: Good default for most users
     os_installer: distro/debian/install.sh
