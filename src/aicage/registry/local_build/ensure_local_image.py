@@ -11,7 +11,8 @@ from aicage.registry.errors import RegistryError
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
-from ._plan import base_repository, get_base_image_ref, should_build
+from ._plan import should_build
+from ._refs import base_repository, get_base_image_ref
 from ._store import BuildRecord, BuildStore
 
 

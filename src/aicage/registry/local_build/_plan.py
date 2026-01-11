@@ -5,6 +5,7 @@ from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
 from aicage.registry.layers import base_layer_missing
 
+from ._refs import get_base_image_ref
 from ._store import BuildRecord
 
 
@@ -33,14 +34,3 @@ def should_build(
         return True
     return False
 
-
-def base_repository(run_config: RunConfig) -> str:
-    return (
-        f"{run_config.context.global_cfg.image_registry}/"
-        f"{run_config.context.global_cfg.image_base_repository}"
-    )
-
-
-def get_base_image_ref(run_config: RunConfig) -> str:
-    repository = base_repository(run_config)
-    return f"{repository}:{run_config.selection.base}"
