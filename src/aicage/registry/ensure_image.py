@@ -11,6 +11,6 @@ def ensure_image(run_config: RunConfig) -> None:
     if agent_metadata.local_definition_dir is None:
         pull_image(run_config.selection.base_image_ref, run_config.context.global_cfg)
     else:
-        ensure_local_image(run_config, run_config.selection.base_image_ref)
+        ensure_local_image(run_config)
     if run_config.selection.extensions:
         ensure_extended_image(run_config)

@@ -11,10 +11,10 @@ from ._store import BuildRecord
 def should_build(
     run_config: RunConfig,
     record: BuildRecord | None,
-    base_image_ref: str,
     agent_version: str,
-    image_ref: str,
 ) -> bool:
+    base_image_ref = get_base_image_ref(run_config)
+    image_ref = run_config.selection.base_image_ref
     if not local_image_exists(image_ref):
         return True
     if record is None:
@@ -41,3 +41,6 @@ def base_repository(run_config: RunConfig) -> str:
     )
 
 
+def get_base_image_ref(run_config: RunConfig) -> str:
+    repository = base_repository(run_config)
+    return f"{repository}:{run_config.selection.base}"

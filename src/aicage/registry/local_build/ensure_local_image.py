@@ -11,17 +11,18 @@ from aicage.registry.errors import RegistryError
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
-from ._plan import base_repository, should_build
+from ._plan import base_repository, get_base_image_ref, should_build
 from ._store import BuildRecord, BuildStore
 
 
-def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
+def ensure_local_image(run_config: RunConfig) -> None:
     agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
     if definition_dir is None:
         raise RegistryError(f"Missing local definition for '{run_config.agent}'.")
 
-    base_image = _get_base_image_ref(run_config)
+    base_image = get_base_image_ref(run_config)
+    image_ref = run_config.selection.base_image_ref
     base_repo = base_repository(run_config)
     refresh_base_digest(
         base_image_ref=base_image,
@@ -36,9 +37,7 @@ def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     needs_build = should_build(
         run_config=run_config,
         record=record,
-        base_image_ref=base_image,
         agent_version=agent_version,
-        image_ref=image_ref,
     )
     if not needs_build:
         return
@@ -74,8 +73,3 @@ def _get_agent_version(
         agent_metadata,
         definition_dir,
     )
-
-
-def _get_base_image_ref(run_config: RunConfig) -> str:
-    repository = base_repository(run_config)
-    return f"{repository}:{run_config.selection.base}"

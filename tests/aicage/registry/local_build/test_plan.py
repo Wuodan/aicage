@@ -16,9 +16,7 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 None,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -31,9 +29,7 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 None,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -60,9 +56,7 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 record,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -89,9 +83,7 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 record,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertTrue(should_build)
 
@@ -118,9 +110,7 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 record,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertFalse(should_build)
 
@@ -147,8 +137,6 @@ class LocalBuildPlanTests(TestCase):
             should_build = _plan.should_build(
                 run_config,
                 record,
-                "ghcr.io/aicage/aicage-image-base:ubuntu",
                 "1.2.3",
-                run_config.selection.image_ref,
             )
         self.assertFalse(should_build)
