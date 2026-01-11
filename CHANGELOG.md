@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.6] - 2026-01-11
+
+### Added
+
+- Extension config schema validation for local custom extensions.
+- End-user documentation for custom agents in `doc/custom-agents.md`.
+
+### Changed
+
+- Config loading for extensions, custom agents, and images metadata is centralized under `aicage.config`.
+- Run config now carries the config context used during image selection and builds.
+
+### Internal
+
+- Split agent-version checks and image-selection logic into focused modules.
+- Reworked extension and image-selection tests to mirror the new package structure.
+- Added local build ref helpers and registry time/log/sanitize utilities.
+
 ## [0.7.5] - 2026-01-10
 
 ### Changed
