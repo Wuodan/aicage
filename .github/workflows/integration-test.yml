@@ -24,15 +24,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
-      - name: Download latest images metadata
+      - name: Syncing metadata and agents with sub-project 'aicage-image'
         run: |
-          curl -fsSL \
-            --retry 8 \
-            --retry-all-errors \
-            --retry-delay 2 \
-            --max-time 600 \
-            -o config/images-metadata.yaml \
-            https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
+          scripts/sync-with-aicage-image.sh
+
+      - name: Validating config with schemas
+        run: |
+          scripts/validate-config-with-schemas.sh
 
       - id: collect
         name: Collect integration tests
@@ -76,15 +74,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
-      - name: Download latest images metadata
+      - name: Syncing metadata and agents with sub-project 'aicage-image'
         run: |
-          curl -fsSL \
-            --retry 8 \
-            --retry-all-errors \
-            --retry-delay 2 \
-            --max-time 600 \
-            -o config/images-metadata.yaml \
-            https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
+          scripts/sync-with-aicage-image.sh
+
+      - name: Validating config with schemas
+        run: |
+          scripts/validate-config-with-schemas.sh
 
       - name: Run integration test
         env:
