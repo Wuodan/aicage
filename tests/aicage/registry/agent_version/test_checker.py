@@ -1,17 +1,13 @@
-import io
 import tempfile
 from pathlib import Path
-from subprocess import CompletedProcess
 from unittest import TestCase, mock
 
 import yaml
-from docker.errors import ContainerError
-from docker.models.containers import Container
 
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
-from aicage.registry.agent_version import checker as version_checker
+from aicage.registry.agent_version import _command as command
 from aicage.registry.agent_version.store import _VERSION_KEY
 from aicage.registry.errors import RegistryError
 
@@ -30,10 +26,9 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.checker.subprocess.run",
-                    return_value=CompletedProcess([], 0, stdout="1.2.3\n", stderr=""),
+                    "aicage.registry.agent_version.checker.run_host",
+                    return_value=command._CommandResult(success=True, output="1.2.3", error=""),
                 ),
-                mock.patch("sys.stderr", new_callable=io.StringIO),
             ):
                 result = checker.get_version(
                     "custom",
@@ -47,7 +42,7 @@ class AgentVersionCheckTests(TestCase):
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
 
-    def test_check_uses_builder_fallback_and_persists(self) -> None:
+    def test_check_uses_version_check_image_and_persists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
@@ -60,15 +55,15 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.checker.subprocess.run",
-                    return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
+                    "aicage.registry.agent_version.checker.run_host",
+                    return_value=command._CommandResult(success=False, output="", error="host failed"),
                 ),
-                mock.patch("aicage.registry.agent_version.checker._ensure_version_check_image"),
-                mock.patch("aicage.docker.run.get_docker_client") as client_mock,
-                mock.patch("sys.stderr", new_callable=io.StringIO),
+                mock.patch("aicage.registry.agent_version.checker.ensure_version_check_image"),
+                mock.patch(
+                    "aicage.registry.agent_version.checker.run_version_check_image",
+                    return_value=command._CommandResult(success=True, output="1.2.3", error=""),
+                ),
             ):
-                client = client_mock.return_value
-                client.containers.run.return_value = "1.2.3\n"
                 result = checker.get_version(
                     "custom",
                     self._agent_metadata(),
@@ -81,7 +76,7 @@ class AgentVersionCheckTests(TestCase):
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
 
-    def test_check_raises_when_builder_fails(self) -> None:
+    def test_check_raises_when_version_check_image_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
@@ -94,28 +89,26 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.checker.subprocess.run",
-                    return_value=CompletedProcess([], 1, stdout="", stderr="host failed"),
+                    "aicage.registry.agent_version.checker.run_host",
+                    return_value=command._CommandResult(success=False, output="", error="host failed"),
                 ),
-                mock.patch("aicage.registry.agent_version.checker._ensure_version_check_image"),
-                mock.patch("aicage.docker.run.get_docker_client") as client_mock,
-                mock.patch("sys.stderr", new_callable=io.StringIO),
+                mock.patch("aicage.registry.agent_version.checker.ensure_version_check_image"),
+                mock.patch(
+                    "aicage.registry.agent_version.checker.run_version_check_image",
+                    return_value=command._CommandResult(
+                        success=False,
+                        output="",
+                        error="version check failed",
+                    ),
+                ),
             ):
-                client = client_mock.return_value
-                client.containers.run.side_effect = ContainerError(
-                    container=mock.Mock(spec=Container),
-                    exit_status=1,
-                    command=["/bin/bash", "/agent/version.sh"],
-                    image="ghcr.io/aicage/aicage-image-util:agent-version",
-                    stderr="builder failed",
-                )
                 with self.assertRaises(RegistryError) as raised:
                     checker.get_version(
                         "custom",
                         self._agent_metadata(),
                         definition_dir=agent_dir,
                     )
-            self.assertIn("builder failed", str(raised.exception))
+            self.assertIn("version check failed", str(raised.exception))
 
     def test_check_raises_on_missing_version_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -133,60 +126,6 @@ class AgentVersionCheckTests(TestCase):
                     definition_dir=agent_dir,
                 )
             self.assertFalse((store_dir / "custom.yaml").exists())
-
-    def test_version_check_pulls_when_local_missing(self) -> None:
-        global_cfg = self._global_config()
-        image_ref = global_cfg.version_check_image
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            log_path = Path(tmp_dir) / "pull.log"
-            with (
-                mock.patch(
-                    "aicage.registry.agent_version.checker.get_local_repo_digest",
-                    return_value=None,
-                ) as local_mock,
-                mock.patch("aicage.registry.agent_version.checker.get_remote_repo_digest") as remote_mock,
-                mock.patch("aicage.registry.agent_version.checker.run_pull") as pull_mock,
-                mock.patch(
-                    "aicage.registry.agent_version.checker.pull_log_path",
-                    return_value=log_path,
-                ),
-            ):
-                version_checker._ensure_version_check_image(
-                    image_ref=image_ref,
-                    global_cfg=global_cfg,
-                    logger=mock.Mock(),
-                )
-        local_mock.assert_called_once()
-        remote_mock.assert_not_called()
-        pull_mock.assert_called_once_with(image_ref, log_path)
-
-    def test_version_check_skips_pull_when_remote_unknown(self) -> None:
-        global_cfg = self._global_config()
-        image_ref = global_cfg.version_check_image
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            log_path = Path(tmp_dir) / "pull.log"
-            with (
-                mock.patch(
-                    "aicage.registry.agent_version.checker.get_local_repo_digest",
-                    return_value="sha256:local",
-                ),
-                mock.patch(
-                    "aicage.registry.agent_version.checker.get_remote_repo_digest",
-                    return_value=None,
-                ) as remote_mock,
-                mock.patch("aicage.registry.agent_version.checker.run_pull") as pull_mock,
-                mock.patch(
-                    "aicage.registry.agent_version.checker.pull_log_path",
-                    return_value=log_path,
-                ),
-            ):
-                version_checker._ensure_version_check_image(
-                    image_ref=image_ref,
-                    global_cfg=global_cfg,
-                    logger=mock.Mock(),
-                )
-        remote_mock.assert_called_once()
-        pull_mock.assert_not_called()
 
     @staticmethod
     def _global_config() -> GlobalConfig:
