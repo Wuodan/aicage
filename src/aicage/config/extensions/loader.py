@@ -5,11 +5,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from aicage.config._extension_validation import validate_extension_mapping
 from aicage.config._yaml import expect_string
 from aicage.config.errors import ConfigError
+from aicage.config.extensions._validation import validate_extension_mapping
 from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
+
+_EXTENSION_NAME_KEY: str = "name"
+_EXTENSION_DESCRIPTION_KEY: str = "description"
+_SCRIPTS_DIRNAME: str = "scripts"
+_DOCKERFILE_NAME: str = "Dockerfile"
 
 
 class _HashWriter(Protocol):
@@ -18,11 +23,6 @@ class _HashWriter(Protocol):
 
     def hexdigest(self) -> str:
         ...
-
-_EXTENSION_NAME_KEY: str = "name"
-_EXTENSION_DESCRIPTION_KEY: str = "description"
-_SCRIPTS_DIRNAME: str = "scripts"
-_DOCKERFILE_NAME: str = "Dockerfile"
 
 
 @dataclass(frozen=True)
