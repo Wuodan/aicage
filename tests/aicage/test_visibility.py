@@ -51,7 +51,7 @@ class VisibilityRulesTests(TestCase):
                 if private_parent == [] and current_package != []:
                     violations.append(f"{path.relative_to(repo_root)}:{imported}")
                     continue
-                if current_package == []:
+                if not current_package:
                     continue
                 if not _package_starts_with(current_package, private_parent):
                     violations.append(f"{path.relative_to(repo_root)}:{imported}")

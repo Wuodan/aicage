@@ -41,7 +41,3 @@ def base_repository(run_config: RunConfig) -> str:
     )
 
 
-def base_image_ref(run_config: RunConfig) -> str:
-    repository = base_repository(run_config)
-    return f"{repository}:{run_config.selection.base}"
-

@@ -84,7 +84,8 @@ class ImageSelectionTests(TestCase):
             self.assertEqual("aicage:claude-ubuntu", selection.image_ref)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
-    def test_resolve_uses_fresh_selection_when_image_ref_has_no_base(self) -> None:
+    @staticmethod
+    def test_resolve_uses_fresh_selection_when_image_ref_has_no_base() -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(image_ref="aicage:codex-ubuntu")
         context.project_cfg.agents["codex"] = agent_cfg
@@ -100,7 +101,8 @@ class ImageSelectionTests(TestCase):
             image_selection.select_agent_image("codex", context)
         fresh_mock.assert_called_once()
 
-    def test_resolve_resets_on_missing_extensions(self) -> None:
+    @staticmethod
+    def test_resolve_resets_on_missing_extensions() -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=["extra"])
         context.project_cfg.agents["codex"] = agent_cfg

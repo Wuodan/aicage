@@ -78,7 +78,8 @@ class ExtendedRunnerTests(TestCase):
                         log_path=log_path,
                     )
 
-    def test_cleanup_intermediate_images_logs_failures(self) -> None:
+    @staticmethod
+    def test_cleanup_intermediate_images_logs_failures() -> None:
         logger = mock.Mock()
         with mock.patch(
             "aicage.docker.build.subprocess.run",
