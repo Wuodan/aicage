@@ -80,3 +80,8 @@ development. But by now this:
 
 We use `chmod` if the users config has non-executable `*.sh` scripts. But we might avoid changing
 those by `chmod` by running them as arguments to `sh` (or `bash` if available on host).
+
+## Prevent staring in HOME
+
+Prevent staring in HOME (error when creating symlink in entrypoint) or `/` or similar. Or warn user at least.  
+But accidentally calling `aicage` and forgetting to cd to a project folder happens frequently.
