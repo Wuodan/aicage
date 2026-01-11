@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from aicage.config.custom_agent import load_custom_agents
+from aicage.config.custom_agent.loader import load_custom_agents
 
 from .models import ImagesMetadata
 

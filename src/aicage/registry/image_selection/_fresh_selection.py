@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from aicage.config.context import ConfigContext
-from aicage.config.extensions import ExtensionMetadata
+from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry.errors import RegistryError

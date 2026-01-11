@@ -2,7 +2,7 @@ from pathlib import Path
 
 from aicage.config.context import ConfigContext
 from aicage.config.errors import ConfigError
-from aicage.config.extensions import ExtensionMetadata
+from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.config.yaml_loader import load_yaml
 from aicage.registry.errors import RegistryError

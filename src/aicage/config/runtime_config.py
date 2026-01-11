@@ -7,7 +7,7 @@ from aicage.cli_types import ParsedArgs
 from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.extensions import load_extensions
+from aicage.config.extensions.loader import load_extensions
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry.image_selection import ImageSelection, select_agent_image

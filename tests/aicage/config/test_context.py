@@ -2,8 +2,8 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config import config_store as config_store_module
-from aicage.config import extensions as extensions_module
 from aicage.config.context import ConfigContext
+from aicage.config.extensions import loader as extensions_module
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata import loader as images_loader_module
 from aicage.config.images_metadata.models import (
@@ -65,7 +65,7 @@ class ContextTests(TestCase):
             mock.patch("aicage.config.config_store.SettingsStore") as store_cls,
             mock.patch("pathlib.Path.cwd", return_value=Path("/work/project")),
             mock.patch("aicage.config.images_metadata.loader.load_images_metadata") as load_metadata,
-            mock.patch("aicage.config.extensions.load_extensions") as load_extensions,
+            mock.patch("aicage.config.extensions.loader.load_extensions") as load_extensions,
         ):
             store = store_cls.return_value
             store.load_global.return_value = global_cfg

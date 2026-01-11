@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 
-from aicage.config.extensions import ExtensionMetadata, extension_hash
+from aicage.config.extensions.loader import ExtensionMetadata, extension_hash
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_extended_build
 from aicage.registry._time import now_iso

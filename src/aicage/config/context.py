@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from aicage.config.extensions import ExtensionMetadata
+from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import ImagesMetadata
 
 from .config_store import SettingsStore

@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.extensions import ExtensionMetadata
+from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig
 from aicage.registry import image_selection
