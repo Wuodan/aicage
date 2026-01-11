@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from aicage.config._yaml import expect_keys, expect_string
+from aicage.config._extension_validation import validate_extension_mapping
+from aicage.config._yaml import expect_string
 from aicage.config.errors import ConfigError
 from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
@@ -44,13 +45,7 @@ def load_extensions() -> dict[str, ExtensionMetadata]:
             continue
         extension_id = entry.name
         definition_path = _find_extension_definition(entry)
-        mapping = load_yaml(definition_path)
-        expect_keys(
-            mapping,
-            required={_EXTENSION_NAME_KEY, _EXTENSION_DESCRIPTION_KEY},
-            optional=set(),
-            context=f"extension metadata at {definition_path}",
-        )
+        mapping = validate_extension_mapping(load_yaml(definition_path))
         scripts_dir = entry / _SCRIPTS_DIRNAME
         if not scripts_dir.is_dir():
             raise ConfigError(f"Extension '{extension_id}' is missing scripts/ directory.")

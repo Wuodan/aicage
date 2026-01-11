@@ -28,6 +28,7 @@ packages = ["src/aicage"]
 "config/agent-build" = "config/agent-build"
 "config/extension-build" = "config/extension-build"
 "config/validation/agent.schema.json" = "config/validation/agent.schema.json"
+"config/validation/extension.schema.json" = "config/validation/extension.schema.json"
 
 [tool.hatch.build]
 include = [
@@ -36,6 +37,7 @@ include = [
   "config/agent-build/**",
   "config/extension-build/**",
   "config/validation/agent.schema.json",
+  "config/validation/extension.schema.json",
 ]
 
 [tool.hatch.build.targets.sdist]
@@ -46,6 +48,7 @@ include = [
   "config/agent-build/**",
   "config/extension-build/**",
   "config/validation/agent.schema.json",
+  "config/validation/extension.schema.json",
   "LICENSE",
   "README.md",
   "pyproject.toml",
