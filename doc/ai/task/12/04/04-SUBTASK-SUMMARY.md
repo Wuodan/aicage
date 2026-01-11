@@ -20,7 +20,7 @@
   - src/aicage/registry/images_metadata/loader.py
   - src/aicage/registry/images_metadata/models.py
   - config/config.yaml
-  - doc/validation/config.schema.json
+  - config/validation/config.schema.json
   - tests/aicage/registry/test_agent_discovery.py
   - tests/aicage/registry/test_agent_version_check.py
 

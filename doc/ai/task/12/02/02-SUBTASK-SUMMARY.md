@@ -28,7 +28,7 @@
   - aicage-image/.github/workflows/refresh-images.yml
   - aicage-image/.github/workflows/release.yml
   - config/images-metadata.yaml
-  - doc/validation/images-metadata.schema.json
+  - config/validation/images-metadata.schema.json
   - src/aicage/registry/images_metadata/models.py
   - tests/aicage/registry/images_metadata/test_models.py
   - tests/aicage/registry/images_metadata/test_loader.py

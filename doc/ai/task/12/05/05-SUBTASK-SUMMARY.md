@@ -23,7 +23,7 @@
   - src/aicage/registry/_remote_query.py
   - src/aicage/registry/image_pull.py
   - config/config.yaml
-  - doc/validation/config.schema.json
+  - config/validation/config.schema.json
   - CHANGELOG.md
   - doc/update-processes.md
   - config/agent-build/Dockerfile

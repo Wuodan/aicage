@@ -34,7 +34,7 @@ the final-images.
 - Agent configuration:
   - Folder per agent: `agents/<AGENT>/`
   - `agents/<AGENT>/agent.yml` holds the relevant configuration of an agent.
-    - Schema validation with `doc/validation/agent.schema.json`.
+    - Schema validation with `config/validation/agent.schema.json`.
   - `agents/<AGENT>/install.sh` is the installation script for the agent used during image building.
   - `agents/<AGENT>/version.sh` prints the current version of the agent to trigger image building in CI pipelines.
 - Release-artifact:
