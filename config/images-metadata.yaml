@@ -3,7 +3,7 @@
 # https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
 
 aicage-image:
-  version: 0.8.0
+  version: 0.8.1
 aicage-image-base:
   version: 0.8.0
 bases:

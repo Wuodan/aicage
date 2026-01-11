@@ -1,0 +1,4 @@
+agent_path: ~/.codex
+agent_full_name: Codex CLI
+agent_homepage: https://developers.openai.com/codex/cli
+build_local: false

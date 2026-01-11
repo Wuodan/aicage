@@ -1,0 +1,9 @@
+agent_path: ~/.copilot
+agent_full_name: GitHub Copilot CLI
+agent_homepage: https://github.com/features/copilot/cli
+build_local: false
+base_exclude:
+  - alpine
+  - minimal
+base_distro_exclude:
+  - Alpine

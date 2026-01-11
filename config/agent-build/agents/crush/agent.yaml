@@ -1,0 +1,4 @@
+agent_path: ~/.local/share/crush
+agent_full_name: Crush
+agent_homepage: https://github.com/charmbracelet/crush
+build_local: false

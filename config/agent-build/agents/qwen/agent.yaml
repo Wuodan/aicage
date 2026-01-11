@@ -1,0 +1,4 @@
+agent_path: ~/.qwen
+agent_full_name: Qwen Code
+agent_homepage: https://github.com/QwenLM/qwen-code
+build_local: false

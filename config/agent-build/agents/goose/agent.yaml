@@ -1,0 +1,4 @@
+agent_path: ~/.config/goose
+agent_full_name: Goose CLI
+agent_homepage: https://block.github.io/goose
+build_local: false
