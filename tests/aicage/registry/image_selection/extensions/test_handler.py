@@ -110,7 +110,7 @@ class ExtensionHandlerTests(TestCase):
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
                 bases={
                     "ubuntu": _BaseMetadata(
-                        root_image="ubuntu:latest",
+                        from_image="ubuntu:latest",
                         base_image_distro="Ubuntu",
                         base_image_description="Default",
                         os_installer="distro/debian/install.sh",

@@ -38,14 +38,14 @@
       "additionalProperties": {
         "type": "object",
         "required": [
-          "root_image",
+          "from_image",
           "base_image_distro",
           "base_image_description",
           "os_installer",
           "test_suite"
         ],
         "properties": {
-          "root_image": {
+          "from_image": {
             "type": "string"
           },
           "base_image_distro": {

@@ -10,8 +10,8 @@ from aicage.config.images_metadata.models import (
     _BASE_IMAGE_DESCRIPTION_KEY,
     _BASE_IMAGE_DISTRO_KEY,
     _BASES_KEY,
+    _FROM_IMAGE_KEY,
     _OS_INSTALLER_KEY,
-    _ROOT_IMAGE_KEY,
     _TEST_SUITE_KEY,
     _VALID_BASES_KEY,
     _VERSION_KEY,
@@ -67,7 +67,7 @@ def build_images_metadata(build_local: bool = True) -> ImagesMetadata:
             _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
             _BASES_KEY: {
                 "ubuntu": {
-                    _ROOT_IMAGE_KEY: "ubuntu:latest",
+                    _FROM_IMAGE_KEY: "ubuntu:latest",
                     _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
                     _BASE_IMAGE_DESCRIPTION_KEY: "Default",
                     _OS_INSTALLER_KEY: "distro/debian/install.sh",

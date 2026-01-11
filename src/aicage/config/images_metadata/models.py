@@ -19,7 +19,7 @@ _AGENT_KEY: str = "agent"
 
 _VERSION_KEY: str = "version"
 
-_ROOT_IMAGE_KEY: str = "root_image"
+_FROM_IMAGE_KEY: str = "from_image"
 _BASE_IMAGE_DISTRO_KEY: str = "base_image_distro"
 _BASE_IMAGE_DESCRIPTION_KEY: str = "base_image_description"
 _OS_INSTALLER_KEY: str = "os_installer"
@@ -41,7 +41,7 @@ class _ImageReleaseInfo:
 
 @dataclass(frozen=True)
 class _BaseMetadata:
-    root_image: str
+    from_image: str
     base_image_distro: str
     base_image_description: str
     os_installer: str
@@ -112,7 +112,7 @@ def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
         _expect_keys(
             base_mapping,
             required={
-                _ROOT_IMAGE_KEY,
+                _FROM_IMAGE_KEY,
                 _BASE_IMAGE_DISTRO_KEY,
                 _BASE_IMAGE_DESCRIPTION_KEY,
                 _OS_INSTALLER_KEY,
@@ -122,9 +122,9 @@ def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
             context=f"{_BASES_KEY}.{name}",
         )
         bases[name] = _BaseMetadata(
-            root_image=_expect_string(
-                base_mapping.get(_ROOT_IMAGE_KEY),
-                f"{_BASES_KEY}.{name}.{_ROOT_IMAGE_KEY}",
+            from_image=_expect_string(
+                base_mapping.get(_FROM_IMAGE_KEY),
+                f"{_BASES_KEY}.{name}.{_FROM_IMAGE_KEY}",
             ),
             base_image_distro=_expect_string(
                 base_mapping.get(_BASE_IMAGE_DISTRO_KEY),

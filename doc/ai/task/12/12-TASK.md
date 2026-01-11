@@ -244,7 +244,7 @@ But when such a custom base is selected for an agent, then:
 When a custom local base-images is selected for an agent and the image for agent-base combo exists locally, then
 `aicage` must check if the image needs updating before running it. This shall be based on these checks:
 - Agent version: using `version.sh`
-- Check if the `root_image` defined in `base.yml` has a newer version available online.
+- Check if the `from_image` defined in `base.yml` has a newer version available online.
 
 ### `aicage-builder` images
 
