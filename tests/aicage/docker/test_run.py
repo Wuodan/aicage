@@ -2,11 +2,58 @@ import os
 from pathlib import Path
 from unittest import TestCase, mock
 
+from docker.errors import ContainerError, DockerException
+from docker.models.containers import Container
+
 from aicage.docker import run
 from aicage.runtime.run_args import DockerRunArgs, MountSpec
 
 
 class RunCommandTests(TestCase):
+    def test_run_builder_version_check_returns_output(self) -> None:
+        client = mock.Mock()
+        client.containers.run.return_value = b"1.2.3\n"
+        with mock.patch("aicage.docker.run.get_docker_client", return_value=client):
+            result = run.run_builder_version_check(
+                "ghcr.io/aicage/aicage-image-util:agent-version",
+                Path("/tmp/agent"),
+            )
+        self.assertEqual(0, result.returncode)
+        self.assertEqual("1.2.3\n", result.stdout)
+        self.assertEqual("", result.stderr)
+
+    def test_run_builder_version_check_handles_container_error(self) -> None:
+        error = ContainerError(
+            container=mock.Mock(spec=Container),
+            exit_status=2,
+            command=["/bin/bash", "/agent/version.sh"],
+            image="ghcr.io/aicage/aicage-image-util:agent-version",
+            stderr="failed",
+        )
+        error.stdout = b"partial"
+        client = mock.Mock()
+        client.containers.run.side_effect = error
+        with mock.patch("aicage.docker.run.get_docker_client", return_value=client):
+            result = run.run_builder_version_check(
+                "ghcr.io/aicage/aicage-image-util:agent-version",
+                Path("/tmp/agent"),
+            )
+        self.assertEqual(2, result.returncode)
+        self.assertEqual("partial", result.stdout)
+        self.assertEqual("failed", result.stderr)
+
+    def test_run_builder_version_check_handles_docker_error(self) -> None:
+        client = mock.Mock()
+        client.containers.run.side_effect = DockerException("boom")
+        with mock.patch("aicage.docker.run.get_docker_client", return_value=client):
+            result = run.run_builder_version_check(
+                "ghcr.io/aicage/aicage-image-util:agent-version",
+                Path("/tmp/agent"),
+            )
+        self.assertEqual(1, result.returncode)
+        self.assertEqual("", result.stdout)
+        self.assertEqual("boom", result.stderr)
+
     def test_resolve_user_ids_handles_missing(self) -> None:
         with mock.patch("aicage.docker.run.os.getuid", side_effect=AttributeError), mock.patch(
             "aicage.docker.run.os.getgid", side_effect=AttributeError
