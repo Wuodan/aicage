@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-01-11
+
+### Added
+
+- Added synced agent build definitions for remote-built agents from `aicage-image`.
+- Added sync and schema validation helpers.
+
+### Changed
+
+- Moved config schemas into `config/validation/`.
+- CI workflows now sync config and validate schemas via the new scripts.
+
+## [0.8.0] - 2026-01-11
+
+### Changed
+
+- Renamed base image metadata key `root_image` to `from_image` in config and schema data.
+
 ## [0.7.6] - 2026-01-11
 
 ### Added
