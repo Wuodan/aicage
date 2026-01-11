@@ -5,12 +5,13 @@ from pathlib import Path
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
+from aicage.registry._time import now_iso
 from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.errors import RegistryError
 
 from ._digest import refresh_base_digest
 from ._logs import build_log_path
-from ._plan import base_image_ref, base_repository, now_iso, should_build
+from ._plan import base_image_ref, base_repository, should_build
 from ._store import BuildRecord, BuildStore
 
 

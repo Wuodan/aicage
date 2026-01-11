@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from aicage._lists import read_str_list_or_empty
+
 _PROJECT_PATH_KEY: str = "path"
 _PROJECT_AGENTS_KEY: str = "agents"
 _DOCKER_ARGS_KEY: str = "docker_args"
@@ -65,7 +67,7 @@ class AgentConfig:
             entrypoint=data.get(_AGENT_ENTRYPOINT_KEY),
             mounts=mounts,
             image_ref=data.get(_AGENT_IMAGE_REF_KEY),
-            extensions=_read_str_list(data.get(_AGENT_EXTENSIONS_KEY)),
+            extensions=read_str_list_or_empty(data.get(_AGENT_EXTENSIONS_KEY)),
         )
 
     def to_mapping(self) -> dict[str, Any]:
@@ -109,8 +111,3 @@ class ProjectConfig:
         agents_payload = {name: cfg.to_mapping() for name, cfg in self.agents.items()}
         return {_PROJECT_PATH_KEY: self.path, _PROJECT_AGENTS_KEY: agents_payload}
 
-
-def _read_str_list(value: Any) -> list[str]:
-    if not isinstance(value, list):
-        return []
-    return [item for item in value if isinstance(item, str) and item]

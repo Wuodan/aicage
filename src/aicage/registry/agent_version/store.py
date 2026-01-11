@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
 
 from aicage.paths import DEFAULT_VERSION_CHECK_STATE_DIR
+from aicage.registry._time import now_iso
 
 _AGENT_KEY: str = "agent"
 _VERSION_KEY: str = "version"
@@ -23,14 +23,10 @@ class VersionCheckStore:
             payload = {
                 _AGENT_KEY: agent,
                 _VERSION_KEY: version,
-                _CHECKED_AT_KEY: _now_iso(),
+                _CHECKED_AT_KEY: now_iso(),
             }
             yaml.safe_dump(payload, handle, sort_keys=True)
         return path
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
 
 
 def _sanitize_agent_name(agent_name: str) -> str:

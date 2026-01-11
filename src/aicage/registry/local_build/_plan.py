@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
@@ -47,6 +45,3 @@ def base_image_ref(run_config: RunConfig) -> str:
     repository = base_repository(run_config)
     return f"{repository}:{run_config.selection.base}"
 
-
-def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()

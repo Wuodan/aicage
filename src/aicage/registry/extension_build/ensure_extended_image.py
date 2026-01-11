@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime, timezone
 
 from aicage.config.extensions import ExtensionMetadata, extension_hash
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_extended_build
+from aicage.registry._time import now_iso
 from aicage.registry.errors import RegistryError
 
 from ._extended_plan import should_build_extended
@@ -45,7 +45,7 @@ def ensure_extended_image(run_config: RunConfig) -> None:
             extensions=list(run_config.selection.extensions),
             extension_hash=combined_hash,
             base_image=run_config.selection.base_image_ref,
-            built_at=_now_iso(),
+            built_at=now_iso(),
         )
     )
 
@@ -66,7 +66,3 @@ def _combined_extension_hash(extensions: list[ExtensionMetadata]) -> str:
         digest.update(extension.extension_id.encode("utf-8"))
         digest.update(extension_hash(extension).encode("utf-8"))
     return digest.hexdigest()
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()

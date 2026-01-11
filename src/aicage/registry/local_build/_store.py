@@ -6,6 +6,7 @@ from pathlib import Path
 import yaml
 
 from aicage.paths import DEFAULT_LOCAL_BUILD_STATE_DIR
+from aicage.registry._sanitize import sanitize
 
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
@@ -63,6 +64,3 @@ class BuildStore:
         filename = f"{sanitize(agent)}-{base}.yaml"
         return self._base_dir / filename
 
-
-def sanitize(value: str) -> str:
-    return value.replace("/", "_").replace(":", "_")

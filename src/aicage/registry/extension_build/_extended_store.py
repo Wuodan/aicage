@@ -5,9 +5,9 @@ from pathlib import Path
 
 import yaml
 
+from aicage._lists import read_str_list_or_empty
 from aicage.paths import DEFAULT_LOCAL_EXTENDED_STATE_DIR
-
-from ._sanitize import sanitize
+from aicage.registry._sanitize import sanitize
 
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
@@ -44,7 +44,7 @@ class ExtendedBuildStore:
             agent=str(payload.get(_AGENT_KEY, "")),
             base=str(payload.get(_BASE_KEY, "")),
             image_ref=str(payload.get(_IMAGE_REF_KEY, "")),
-            extensions=_read_str_list(payload.get(_EXTENSIONS_KEY)),
+            extensions=read_str_list_or_empty(payload.get(_EXTENSIONS_KEY)),
             extension_hash=str(payload.get(_EXTENSION_HASH_KEY, "")),
             base_image=str(payload.get(_BASE_IMAGE_KEY, "")),
             built_at=str(payload.get(_BUILT_AT_KEY, "")),
@@ -68,9 +68,3 @@ class ExtendedBuildStore:
     def _path(self, image_ref: str) -> Path:
         filename = f"{sanitize(image_ref)}.yaml"
         return self._base_dir / filename
-
-
-def _read_str_list(value: object) -> list[str]:
-    if not isinstance(value, list):
-        return []
-    return [item for item in value if isinstance(item, str) and item]

@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import json
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from aicage.config._schema_validation import load_schema, validate_schema_mapping
 from aicage.config._yaml import expect_bool, expect_string
 from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import BUILD_LOCAL_KEY
-from aicage.config.resources import find_packaged_path
 
 _AGENT_SCHEMA_PATH = "validation/agent.schema.json"
 _CUSTOM_AGENT_CONTEXT = "custom agent metadata"
@@ -16,33 +14,14 @@ _CUSTOM_AGENT_CONTEXT = "custom agent metadata"
 
 def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
     context = _CUSTOM_AGENT_CONTEXT
-    if not isinstance(mapping, dict):
-        raise ConfigError(f"{context} must be a mapping.")
-
-    schema = _load_schema()
-    properties = schema.get("properties", {})
-    required = set(schema.get("required", []))
-    additional = schema.get("additionalProperties", True)
-
-    missing = sorted(required - set(mapping))
-    if missing:
-        raise ConfigError(f"{context} missing required keys: {', '.join(missing)}.")
-
-    if additional is False:
-        unknown = sorted(set(mapping) - set(properties))
-        if unknown:
-            raise ConfigError(f"{context} contains unsupported keys: {', '.join(unknown)}.")
-
-    normalized = dict(mapping)
-    normalized.setdefault(BUILD_LOCAL_KEY, True)
-
-    for key, value in normalized.items():
-        schema_entry = properties.get(key)
-        if schema_entry is None:
-            continue
-        _validate_value(value, schema_entry, f"{context}.{key}")
-
-    return normalized
+    schema = load_schema(_AGENT_SCHEMA_PATH)
+    return validate_schema_mapping(
+        mapping,
+        schema,
+        context,
+        normalizer=_apply_defaults,
+        value_validator=_validate_value,
+    )
 
 
 def ensure_required_files(agent_name: str, agent_dir: Path) -> None:
@@ -51,11 +30,10 @@ def ensure_required_files(agent_name: str, agent_dir: Path) -> None:
         raise ConfigError(f"Custom agent '{agent_name}' is missing {', '.join(missing)}.")
 
 
-@lru_cache(maxsize=1)
-def _load_schema() -> dict[str, Any]:
-    path = find_packaged_path(_AGENT_SCHEMA_PATH)
-    payload = path.read_text(encoding="utf-8")
-    return json.loads(payload)
+def _apply_defaults(mapping: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(mapping)
+    normalized.setdefault(BUILD_LOCAL_KEY, True)
+    return normalized
 
 
 def _validate_value(value: Any, schema_entry: dict[str, Any], context: str) -> None:

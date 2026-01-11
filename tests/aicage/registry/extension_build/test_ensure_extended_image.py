@@ -84,7 +84,7 @@ class EnsureExtendedImageTests(TestCase):
                 return_value=Path("/tmp/logs/build.log"),
             ),
             mock.patch(
-                "aicage.registry.extension_build.ensure_extended_image._now_iso",
+                "aicage.registry.extension_build.ensure_extended_image.now_iso",
                 return_value="2024-01-01T00:00:00+00:00",
             ),
         ):
