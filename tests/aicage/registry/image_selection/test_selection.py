@@ -2,33 +2,17 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config import GlobalConfig, ProjectConfig
+from aicage.config import ProjectConfig
+from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.extensions import ExtensionMetadata
-from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _OS_INSTALLER_KEY,
-    _ROOT_IMAGE_KEY,
-    _TEST_SUITE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
-    ImagesMetadata,
-    _ImageReleaseInfo,
-)
+from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig
 from aicage.registry import image_selection
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
-from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
+
+from ._fixtures import build_context, global_config, metadata_with_bases
 
 
 class ImageSelectionTests(TestCase):
@@ -40,12 +24,8 @@ class ImageSelectionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
-            store = mock.Mock()
-            context = self._build_context(
-                store,
-                project_path,
-                bases=["debian", "ubuntu"],
-            )
+            store = mock.Mock(spec=SettingsStore)
+            context = build_context(store, project_path, bases=["debian", "ubuntu"])
             context.project_cfg.agents["codex"] = AgentConfig(base="debian")
             selection = image_selection.select_agent_image("codex", context)
 
@@ -56,14 +36,11 @@ class ImageSelectionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
-            store = mock.Mock()
-            context = self._build_context(
-                store,
-                project_path,
-                bases=["alpine", "ubuntu"],
-            )
+            store = mock.Mock(spec=SettingsStore)
+            context = build_context(store, project_path, bases=["alpine", "ubuntu"])
             with mock.patch(
-                "aicage.registry.image_selection.selection.prompt_for_base", return_value="alpine"
+                "aicage.registry.image_selection._fresh_selection.prompt_for_base",
+                return_value="alpine",
             ):
                 image_selection.select_agent_image("codex", context)
 
@@ -71,17 +48,13 @@ class ImageSelectionTests(TestCase):
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_raises_without_bases(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=[],
-        )
+        context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=[])
         with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
     def test_resolve_raises_on_invalid_base(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
+        context = build_context(
+            mock.Mock(spec=SettingsStore),
             Path("/tmp/project"),
             bases=["ubuntu"],
             agents={"codex": AgentConfig(base="alpine")},
@@ -93,12 +66,12 @@ class ImageSelectionTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
-            store = mock.Mock()
+            store = mock.Mock(spec=SettingsStore)
             context = ConfigContext(
                 store=store,
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
-                global_cfg=self._global_config(),
-                images_metadata=self._metadata_with_bases(
+                global_cfg=global_config(),
+                images_metadata=metadata_with_bases(
                     ["ubuntu"],
                     agent_name="claude",
                     build_local=True,
@@ -112,15 +85,11 @@ class ImageSelectionTests(TestCase):
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     def test_resolve_uses_fresh_selection_when_image_ref_has_no_base(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=["ubuntu"],
-        )
+        context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(image_ref="aicage:codex-ubuntu")
         context.project_cfg.agents["codex"] = agent_cfg
         with mock.patch(
-            "aicage.registry.image_selection.selection._fresh_selection",
+            "aicage.registry.image_selection.selection.fresh_selection",
             return_value=ImageSelection(
                 image_ref="aicage:codex-ubuntu",
                 base="ubuntu",
@@ -132,11 +101,7 @@ class ImageSelectionTests(TestCase):
         fresh_mock.assert_called_once()
 
     def test_resolve_resets_on_missing_extensions(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=["ubuntu"],
-        )
+        context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=["extra"])
         context.project_cfg.agents["codex"] = agent_cfg
         with (
@@ -145,7 +110,7 @@ class ImageSelectionTests(TestCase):
                 return_value=True,
             ),
             mock.patch(
-                "aicage.registry.image_selection.selection._fresh_selection",
+                "aicage.registry.image_selection.selection.fresh_selection",
                 return_value=ImageSelection(
                     image_ref="aicage:codex-ubuntu",
                     base="ubuntu",
@@ -158,11 +123,7 @@ class ImageSelectionTests(TestCase):
         fresh_mock.assert_called_once()
 
     def test_resolve_uses_stored_image_ref(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=["ubuntu"],
-        )
+        context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=[])
         context.project_cfg.agents["codex"] = agent_cfg
         selection = image_selection.select_agent_image("codex", context)
@@ -170,9 +131,9 @@ class ImageSelectionTests(TestCase):
 
     def test_resolve_raises_when_agent_missing(self) -> None:
         context = ConfigContext(
-            store=mock.Mock(),
+            store=mock.Mock(spec=SettingsStore),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            global_cfg=self._global_config(),
+            global_cfg=global_config(),
             images_metadata=ImagesMetadata(
                 aicage_image=_ImageReleaseInfo(version="0.3.3"),
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
@@ -183,122 +144,3 @@ class ImageSelectionTests(TestCase):
         )
         with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
-
-    def test_fresh_selection_accepts_extended_choice(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=["ubuntu"],
-        )
-        extended = [
-            ExtendedImageOption(
-                name="custom",
-                base="ubuntu",
-                description="Custom",
-                extensions=["extra"],
-                image_ref="aicage-extended:codex-ubuntu-extra",
-            )
-        ]
-        with (
-            mock.patch(
-                "aicage.registry.image_selection.selection.load_extended_image_options",
-                return_value=extended,
-            ),
-            mock.patch(
-                "aicage.registry.image_selection.selection.prompt_for_image_choice",
-                return_value=ImageChoice(kind="extended", value="custom"),
-            ),
-            mock.patch(
-                "aicage.registry.image_selection.selection.resolve_extended_image",
-                return_value=extended[0],
-            ),
-            mock.patch(
-                "aicage.registry.image_selection.selection.apply_extended_selection",
-                return_value=ImageSelection(
-                    image_ref="aicage-extended:codex-ubuntu-extra",
-                    base="ubuntu",
-                    extensions=["extra"],
-                    base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-                ),
-            ) as apply_mock,
-        ):
-            selection = image_selection.select_agent_image("codex", context)
-        self.assertEqual("aicage-extended:codex-ubuntu-extra", selection.image_ref)
-        apply_mock.assert_called_once()
-
-    def test_fresh_selection_raises_on_empty_bases(self) -> None:
-        context = self._build_context(
-            mock.Mock(),
-            Path("/tmp/project"),
-            bases=["ubuntu"],
-        )
-        with mock.patch(
-            "aicage.registry.image_selection.selection._available_bases",
-            return_value=[],
-        ):
-            with self.assertRaises(RegistryError):
-                image_selection.select_agent_image("codex", context)
-
-    @staticmethod
-    def _build_context(
-        store: mock.Mock,
-        project_path: Path,
-        bases: list[str],
-        agents: dict[str, AgentConfig] | None = None,
-    ) -> ConfigContext:
-        return ConfigContext(
-            store=store,
-            project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
-            global_cfg=ImageSelectionTests._global_config(),
-            images_metadata=ImageSelectionTests._metadata_with_bases(bases),
-            extensions={},
-        )
-
-    @staticmethod
-    def _global_config() -> GlobalConfig:
-        return GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
-
-    @staticmethod
-    def _metadata_with_bases(
-        bases: list[str],
-        agent_name: str = "codex",
-        build_local: bool = False,
-    ) -> ImagesMetadata:
-        return ImagesMetadata.from_mapping(
-            {
-                _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                _BASES_KEY: {
-                    name: {
-                        _ROOT_IMAGE_KEY: "ubuntu:latest",
-                        _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                        _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                        _OS_INSTALLER_KEY: "distro/debian/install.sh",
-                        _TEST_SUITE_KEY: "default",
-                    }
-                    for name in bases
-                },
-                _AGENT_KEY: {
-                    agent_name: {
-                        AGENT_PATH_KEY: "~/.codex",
-                        AGENT_FULL_NAME_KEY: "Codex CLI",
-                        AGENT_HOMEPAGE_KEY: "https://example.com",
-                        BUILD_LOCAL_KEY: build_local,
-                        _VALID_BASES_KEY: {
-                            name: f"ghcr.io/aicage/aicage:{agent_name}-{name}"
-                            for name in bases
-                        },
-                    }
-                },
-            }
-        )
