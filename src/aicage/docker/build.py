@@ -59,8 +59,8 @@ def run_extended_build(
 ) -> None:
     logger = get_logger()
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"[aicage] Building extended image {run_config.image_ref} (logs: {log_path})...")
-    logger.info("Building extended image %s (logs: %s)", run_config.image_ref, log_path)
+    print(f"[aicage] Building extended image {run_config.selection.image_ref} (logs: {log_path})...")
+    logger.info("Building extended image %s (logs: %s)", run_config.selection.image_ref, log_path)
 
     dockerfile_builtin = find_packaged_path("extension-build/Dockerfile")
     current_image_ref = base_image_ref
@@ -68,11 +68,11 @@ def run_extended_build(
     with log_path.open("w", encoding="utf-8") as log_handle:
         for idx, extension in enumerate(extensions):
             target_ref = (
-                run_config.image_ref
+                run_config.selection.image_ref
                 if idx == len(extensions) - 1
                 else _intermediate_image_ref(run_config, extension, idx)
             )
-            if target_ref != run_config.image_ref:
+            if target_ref != run_config.selection.image_ref:
                 intermediate_refs.append(target_ref)
             dockerfile_path = extension.dockerfile_path or dockerfile_builtin
             # Docker SDK does not support BuildKit; keep CLI build for compatibility.
@@ -95,19 +95,19 @@ def run_extended_build(
             if result.returncode != 0:
                 logger.error(
                     "Extended image build failed for %s (logs: %s)",
-                    run_config.image_ref,
+                    run_config.selection.image_ref,
                     log_path,
                 )
                 raise DockerError(
-                    f"Extended image build failed for {run_config.image_ref}. See log at {log_path}."
+                    f"Extended image build failed for {run_config.selection.image_ref}. See log at {log_path}."
                 )
             current_image_ref = target_ref
     _cleanup_intermediate_images(intermediate_refs, logger)
-    logger.info("Extended image build succeeded for %s", run_config.image_ref)
+    logger.info("Extended image build succeeded for %s", run_config.selection.image_ref)
 
 
 def _build_context_dir(run_config: RunConfig, dockerfile_path: Path) -> Path:
-    agent_metadata = run_config.images_metadata.agents[run_config.agent]
+    agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     local_definition_dir = agent_metadata.local_definition_dir
     if local_definition_dir is None:
         return dockerfile_path.parent
@@ -117,8 +117,8 @@ def _build_context_dir(run_config: RunConfig, dockerfile_path: Path) -> Path:
 
 
 def _intermediate_image_ref(run_config: RunConfig, extension: ExtensionMetadata, idx: int) -> str:
-    repository, _ = _parse_image_ref(run_config.image_ref)
-    tag = f"tmp-{run_config.agent}-{run_config.base}-{idx + 1}-{extension.extension_id}"
+    repository, _ = _parse_image_ref(run_config.selection.image_ref)
+    tag = f"tmp-{run_config.agent}-{run_config.selection.base}-{idx + 1}-{extension.extension_id}"
     tag = tag.lower().replace("/", "-")
     return f"{repository}:{tag}"
 

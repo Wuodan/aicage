@@ -3,9 +3,11 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from unittest import TestCase, mock
 
+from aicage.config.context import ConfigContext
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
+from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import (
     _cleanup_intermediate_images,
@@ -14,6 +16,7 @@ from aicage.docker.build import (
     run_extended_build,
 )
 from aicage.docker.errors import DockerError
+from aicage.registry.image_selection import ImageSelection
 
 
 class ExtendedRunnerTests(TestCase):
@@ -117,12 +120,19 @@ class ExtendedRunnerTests(TestCase):
         return RunConfig(
             project_path=Path("/tmp/project"),
             agent="codex",
-            base="ubuntu",
-            image_ref="aicage-extended:codex-ubuntu-extra",
-            base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            extensions=["extra"],
-            global_cfg=global_cfg,
-            images_metadata=images_metadata,
+            context=ConfigContext(
+                store=mock.Mock(),
+                project_cfg=ProjectConfig(path="/tmp/project", agents={}),
+                global_cfg=global_cfg,
+                images_metadata=images_metadata,
+                extensions={},
+            ),
+            selection=ImageSelection(
+                image_ref="aicage-extended:codex-ubuntu-extra",
+                base="ubuntu",
+                extensions=["extra"],
+                base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            ),
             project_docker_args="",
             mounts=[],
         )

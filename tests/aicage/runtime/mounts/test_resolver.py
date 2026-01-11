@@ -45,6 +45,7 @@ class ResolverTests(TestCase):
                 agents={},
             ),
             images_metadata=self._get_images_metadata(),
+            extensions={},
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
         git_mount = MountSpec(host_path=Path("/tmp/git"), container_path=Path("/git"))
@@ -90,6 +91,7 @@ class ResolverTests(TestCase):
                 agents={},
             ),
             images_metadata=self._get_images_metadata(),
+            extensions={},
         )
 
         with (

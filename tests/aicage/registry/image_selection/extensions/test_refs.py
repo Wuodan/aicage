@@ -59,4 +59,5 @@ class ExtensionRefsTests(TestCase):
                 bases={},
                 agents={},
             ),
+            extensions={},
         )

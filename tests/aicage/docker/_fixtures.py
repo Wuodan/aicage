@@ -1,5 +1,7 @@
 from pathlib import Path
+from unittest import mock
 
+from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -19,7 +21,9 @@ from aicage.config.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.registry.image_selection import ImageSelection
 
 
 def build_run_config(
@@ -28,22 +32,29 @@ def build_run_config(
     return RunConfig(
         project_path=Path("/tmp/project"),
         agent="claude",
-        base="ubuntu",
-        image_ref="aicage:claude-ubuntu",
-        base_image_ref="aicage:claude-ubuntu",
-        extensions=[],
-        global_cfg=GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
+        context=ConfigContext(
+            store=mock.Mock(),
+            project_cfg=ProjectConfig(path="/tmp/project", agents={}),
+            global_cfg=GlobalConfig(
+                image_registry="ghcr.io",
+                image_registry_api_url="https://ghcr.io/v2",
+                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
+                image_repository="aicage/aicage",
+                image_base_repository="aicage/aicage-image-base",
+                default_image_base="ubuntu",
+                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
+                local_image_repository="aicage",
+                agents={},
+            ),
+            images_metadata=build_images_metadata(build_local=build_local),
+            extensions={},
         ),
-        images_metadata=build_images_metadata(build_local=build_local),
+        selection=ImageSelection(
+            image_ref="aicage:claude-ubuntu",
+            base="ubuntu",
+            extensions=[],
+            base_image_ref="aicage:claude-ubuntu",
+        ),
         project_docker_args="",
         mounts=[],
     )

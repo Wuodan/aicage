@@ -10,7 +10,7 @@ from ._fixtures import build_run_config
 
 class LocalBuildDigestTests(TestCase):
     def test_refresh_base_digest_skips_pull_when_remote_unknown(self) -> None:
-        global_cfg = build_run_config().global_cfg
+        global_cfg = build_run_config().context.global_cfg
         with (
             mock.patch(
                 "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
@@ -32,7 +32,7 @@ class LocalBuildDigestTests(TestCase):
 
     def test_refresh_base_digest_pull_failure_uses_local_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            global_cfg = build_run_config().global_cfg
+            global_cfg = build_run_config().context.global_cfg
             with (
                 mock.patch(
                     "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
@@ -57,7 +57,7 @@ class LocalBuildDigestTests(TestCase):
 
     def test_refresh_base_digest_pull_failure_without_local_raises(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            global_cfg = build_run_config().global_cfg
+            global_cfg = build_run_config().context.global_cfg
             with (
                 mock.patch(
                     "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
@@ -83,7 +83,7 @@ class LocalBuildDigestTests(TestCase):
 
     def test_refresh_base_digest_pull_success_updates_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            global_cfg = build_run_config().global_cfg
+            global_cfg = build_run_config().context.global_cfg
             with (
                 mock.patch(
                     "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",

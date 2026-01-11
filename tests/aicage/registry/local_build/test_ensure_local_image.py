@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 
 import yaml
 
+from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import (
     AgentMetadata,
@@ -11,8 +12,10 @@ from aicage.config.images_metadata.models import (
     _BaseMetadata,
     _ImageReleaseInfo,
 )
+from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.errors import RegistryError
+from aicage.registry.image_selection import ImageSelection
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
 from aicage.registry.local_build._store import (
     _AGENT_KEY,
@@ -33,7 +36,7 @@ class EnsureLocalImageTests(TestCase):
             "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
         ) as refresh_mock:
             with self.assertRaises(RegistryError):
-                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.selection.image_ref)
         refresh_mock.assert_not_called()
 
     def test_ensure_local_image_runs_for_custom_agent(self) -> None:
@@ -58,7 +61,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.selection.image_ref)
             refresh_mock.assert_called_once()
 
     def test_ensure_local_image_raises_on_version_failure(self) -> None:
@@ -74,7 +77,7 @@ class EnsureLocalImageTests(TestCase):
         ):
             checker_cls.return_value.get_version.side_effect = RegistryError("version failed")
             with self.assertRaises(RegistryError):
-                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.selection.image_ref)
 
     def test_ensure_local_image_builds_when_missing_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -107,7 +110,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.selection.image_ref)
 
             build_mock.assert_called_once()
             record_path = state_dir / "claude-ubuntu.yaml"
@@ -161,7 +164,7 @@ class EnsureLocalImageTests(TestCase):
                 ) as checker_cls,
             ):
                 checker_cls.return_value.get_version.return_value = "1.2.3"
-                ensure_local_image_module.ensure_local_image(run_config, run_config.image_ref)
+                ensure_local_image_module.ensure_local_image(run_config, run_config.selection.image_ref)
 
             build_mock.assert_not_called()
 
@@ -203,12 +206,19 @@ class EnsureLocalImageTests(TestCase):
         return RunConfig(
             project_path=Path("/tmp/project"),
             agent="claude",
-            base="ubuntu",
-            image_ref="aicage:claude-ubuntu",
-            base_image_ref="aicage:claude-ubuntu",
-            extensions=[],
-            global_cfg=global_cfg,
-            images_metadata=images_metadata,
+            context=ConfigContext(
+                store=mock.Mock(),
+                project_cfg=ProjectConfig(path="/tmp/project", agents={}),
+                global_cfg=global_cfg,
+                images_metadata=images_metadata,
+                extensions={},
+            ),
+            selection=ImageSelection(
+                image_ref="aicage:claude-ubuntu",
+                base="ubuntu",
+                extensions=[],
+                base_image_ref="aicage:claude-ubuntu",
+            ),
             project_docker_args="",
             mounts=[],
         )

@@ -15,7 +15,7 @@ from ._store import BuildRecord, BuildStore
 
 
 def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
-    agent_metadata = run_config.images_metadata.agents[run_config.agent]
+    agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
     if definition_dir is None:
         raise RegistryError(f"Missing local definition for '{run_config.agent}'.")
@@ -25,11 +25,11 @@ def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     refresh_base_digest(
         base_image_ref=base_image,
         base_repository=base_repo,
-        global_cfg=run_config.global_cfg,
+        global_cfg=run_config.context.global_cfg,
     )
 
     store = BuildStore()
-    record = store.load(run_config.agent, run_config.base)
+    record = store.load(run_config.agent, run_config.selection.base)
 
     agent_version = _get_agent_version(run_config, agent_metadata, definition_dir)
     needs_build = should_build(
@@ -42,7 +42,7 @@ def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     if not needs_build:
         return
 
-    log_path = build_log_path(run_config.agent, run_config.base)
+    log_path = build_log_path(run_config.agent, run_config.selection.base)
     run_build(
         run_config=run_config,
         base_image_ref=base_image,
@@ -53,7 +53,7 @@ def ensure_local_image(run_config: RunConfig, image_ref: str) -> None:
     store.save(
         BuildRecord(
             agent=run_config.agent,
-            base=run_config.base,
+            base=run_config.selection.base,
             agent_version=agent_version,
             base_image=base_image,
             image_ref=image_ref,
@@ -67,7 +67,7 @@ def _get_agent_version(
     agent_metadata: AgentMetadata,
     definition_dir: Path,
 ) -> str:
-    checker = AgentVersionChecker(run_config.global_cfg)
+    checker = AgentVersionChecker(run_config.context.global_cfg)
     return checker.get_version(
         run_config.agent,
         agent_metadata,

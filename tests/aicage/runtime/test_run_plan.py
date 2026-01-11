@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
+from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -21,7 +22,9 @@ from aicage.config.images_metadata.models import (
     BUILD_LOCAL_KEY,
     ImagesMetadata,
 )
+from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.registry.image_selection import ImageSelection
 from aicage.runtime.agent_config import AgentConfig
 from aicage.runtime.run_plan import build_run_args
 
@@ -32,12 +35,19 @@ class RunPlanTests(TestCase):
         config = RunConfig(
             project_path=project_path,
             agent="codex",
-            base="ubuntu",
-            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            extensions=[],
-            global_cfg=self._get_global_config(),
-            images_metadata=self._get_images_metadata(),
+            context=ConfigContext(
+                store=mock.Mock(),
+                project_cfg=ProjectConfig(path=str(project_path), agents={}),
+                global_cfg=self._get_global_config(),
+                images_metadata=self._get_images_metadata(),
+                extensions={},
+            ),
+            selection=ImageSelection(
+                image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+                base="ubuntu",
+                extensions=[],
+                base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            ),
             project_docker_args="--project",
             mounts=[],
         )
@@ -56,12 +66,19 @@ class RunPlanTests(TestCase):
         config = RunConfig(
             project_path=project_path,
             agent="codex",
-            base="ubuntu",
-            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            extensions=[],
-            global_cfg=self._get_global_config(),
-            images_metadata=self._get_images_metadata(),
+            context=ConfigContext(
+                store=mock.Mock(),
+                project_cfg=ProjectConfig(path=str(project_path), agents={}),
+                global_cfg=self._get_global_config(),
+                images_metadata=self._get_images_metadata(),
+                extensions={},
+            ),
+            selection=ImageSelection(
+                image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+                base="ubuntu",
+                extensions=[],
+                base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            ),
             project_docker_args="",
             mounts=[mount],
         )

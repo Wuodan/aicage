@@ -41,6 +41,7 @@ class ContextTests(TestCase):
                 agents={},
             ),
             images_metadata=self._get_images_metadata(),
+            extensions={},
         )
         self.assertEqual("ghcr.io/aicage/aicage", context.image_repository_ref())
 
@@ -61,17 +62,20 @@ class ContextTests(TestCase):
             mock.patch("aicage.config.context.SettingsStore") as store_cls,
             mock.patch("aicage.config.context.Path.cwd", return_value=Path("/work/project")),
             mock.patch("aicage.config.context.load_images_metadata") as load_metadata,
+            mock.patch("aicage.config.context.load_extensions") as load_extensions,
         ):
             store = store_cls.return_value
             store.load_global.return_value = global_cfg
             store.load_project.return_value = project_cfg
             load_metadata.return_value = self._get_images_metadata()
+            load_extensions.return_value = {}
 
             context = _build_config_context()
 
         self.assertEqual(global_cfg, context.global_cfg)
         self.assertEqual(project_cfg, context.project_cfg)
         self.assertEqual(self._get_images_metadata(), context.images_metadata)
+        self.assertEqual({}, context.extensions)
         load_metadata.assert_called_once_with("aicage")
 
     @staticmethod

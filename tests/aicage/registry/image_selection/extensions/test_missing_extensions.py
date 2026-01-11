@@ -204,4 +204,5 @@ class MissingExtensionsTests(TestCase):
                 bases={},
                 agents={},
             ),
+            extensions={},
         )

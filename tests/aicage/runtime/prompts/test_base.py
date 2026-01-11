@@ -117,6 +117,7 @@ class PromptTests(TestCase):
                 agents={},
             ),
             images_metadata=metadata,
+            extensions={},
         )
 
     @staticmethod

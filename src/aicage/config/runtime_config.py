@@ -7,12 +7,10 @@ from aicage.cli_types import ParsedArgs
 from aicage.config._file_locking import lock_project_config
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.errors import ConfigError
-from aicage.config.global_config import GlobalConfig
+from aicage.config.extensions import load_extensions
 from aicage.config.images_metadata.loader import load_images_metadata
-from aicage.config.images_metadata.models import ImagesMetadata
-from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
-from aicage.registry.image_selection import select_agent_image
+from aicage.config.project_config import AgentConfig
+from aicage.registry.image_selection import ImageSelection, select_agent_image
 from aicage.runtime.mounts import resolve_mounts
 from aicage.runtime.prompts import prompt_persist_docker_args
 from aicage.runtime.run_args import MountSpec
@@ -22,12 +20,8 @@ from aicage.runtime.run_args import MountSpec
 class RunConfig:
     project_path: Path
     agent: str
-    base: str
-    image_ref: str
-    base_image_ref: str
-    extensions: list[str]
-    global_cfg: GlobalConfig
-    images_metadata: ImagesMetadata
+    context: ConfigContext
+    selection: ImageSelection
     project_docker_args: str
     mounts: list[MountSpec]
 
@@ -46,30 +40,25 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
             project_cfg=project_cfg,
             global_cfg=global_cfg,
             images_metadata=images_metadata,
+            extensions=load_extensions(),
         )
         selection = select_agent_image(agent, context)
         agent_cfg = project_cfg.agents.setdefault(agent, AgentConfig())
 
         existing_project_docker_args: str = agent_cfg.docker_args
+        if agent_cfg.base is None:
+            agent_cfg.base = selection.base
 
         mounts = resolve_mounts(context, agent, parsed)
 
         _persist_docker_args(agent_cfg, parsed)
         store.save_project(project_path, project_cfg)
 
-        base = agent_cfg.base or global_cfg.agents.get(agent, {}).get(AGENT_BASE_KEY)
-        if base is None:
-            raise ConfigError(f"Base selection is missing for agent '{agent}'.")
-
         return RunConfig(
             project_path=project_path,
             agent=agent,
-            base=base,
-            image_ref=selection.image_ref,
-            base_image_ref=selection.base_image_ref,
-            extensions=list(selection.extensions),
-            global_cfg=global_cfg,
-            images_metadata=images_metadata,
+            context=context,
+            selection=selection,
             project_docker_args=existing_project_docker_args,
             mounts=mounts,
         )

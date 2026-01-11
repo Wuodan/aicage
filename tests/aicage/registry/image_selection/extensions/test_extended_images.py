@@ -134,4 +134,5 @@ class ExtendedImageSelectionTests(TestCase):
                 bases={},
                 agents={},
             ),
+            extensions={},
         )

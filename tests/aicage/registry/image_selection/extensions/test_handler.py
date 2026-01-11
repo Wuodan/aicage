@@ -119,4 +119,5 @@ class ExtensionHandlerTests(TestCase):
                 },
                 agents={},
             ),
+            extensions={},
         )

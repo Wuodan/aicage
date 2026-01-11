@@ -164,6 +164,7 @@ class PromptImageChoiceTests(TestCase):
                 },
                 agents={},
             ),
+            extensions={},
         )
 
     @staticmethod

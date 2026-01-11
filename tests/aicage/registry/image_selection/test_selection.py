@@ -4,6 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config import GlobalConfig, ProjectConfig
 from aicage.config.context import ConfigContext
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -33,12 +34,7 @@ from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
 class ImageSelectionTests(TestCase):
     def setUp(self) -> None:
         super().setUp()
-        patcher = mock.patch(
-            "aicage.registry.image_selection.selection.load_extensions",
-            return_value={},
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        self._extensions: dict[str, ExtensionMetadata] = {}
 
     def test_resolve_uses_existing_base(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -107,6 +103,7 @@ class ImageSelectionTests(TestCase):
                     agent_name="claude",
                     build_local=True,
                 ),
+                extensions=self._extensions,
             )
             context.project_cfg.agents["claude"] = AgentConfig(base="ubuntu")
             selection = image_selection.select_agent_image("claude", context)
@@ -182,6 +179,7 @@ class ImageSelectionTests(TestCase):
                 bases={},
                 agents={},
             ),
+            extensions=self._extensions,
         )
         with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
@@ -253,6 +251,7 @@ class ImageSelectionTests(TestCase):
             project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
             global_cfg=ImageSelectionTests._global_config(),
             images_metadata=ImageSelectionTests._metadata_with_bases(bases),
+            extensions={},
         )
 
     @staticmethod

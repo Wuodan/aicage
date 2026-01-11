@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
-from aicage.config import ConfigError, SettingsStore
+from aicage.config import SettingsStore
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -53,6 +53,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=mounts),
+                mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
@@ -103,6 +104,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
+                mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
@@ -122,7 +124,7 @@ class RuntimeConfigTests(TestCase):
 
         self.assertEqual("--existing", run_config.project_docker_args)
 
-    def test_load_run_config_raises_without_base_selection(self) -> None:
+    def test_load_run_config_defaults_base_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             base_dir = Path(tmp_dir) / "config"
             project_path = Path(tmp_dir) / "project"
@@ -140,6 +142,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
+                mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
@@ -154,8 +157,9 @@ class RuntimeConfigTests(TestCase):
                     ),
                 ),
             ):
-                with self.assertRaises(ConfigError):
-                    load_run_config("codex")
+                run_config = load_run_config("codex")
+
+        self.assertEqual("ubuntu", run_config.selection.base)
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:

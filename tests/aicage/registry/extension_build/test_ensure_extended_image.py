@@ -1,13 +1,16 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.context import ConfigContext
 from aicage.config.extensions import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
+from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.errors import RegistryError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
+from aicage.registry.image_selection import ImageSelection
 
 
 class EnsureExtendedImageTests(TestCase):
@@ -17,24 +20,20 @@ class EnsureExtendedImageTests(TestCase):
             ensure_extended_image(run_config)
 
     def test_ensure_extended_image_raises_on_missing_extension(self) -> None:
-        run_config = self._run_config(extensions=["missing"])
-        with mock.patch(
-            "aicage.registry.extension_build.ensure_extended_image.load_extensions",
-            return_value={},
-        ):
-            with self.assertRaises(RegistryError):
-                ensure_extended_image(run_config)
+        run_config = self._run_config(extensions=["missing"], available_extensions={})
+        with self.assertRaises(RegistryError):
+            ensure_extended_image(run_config)
 
     def test_ensure_extended_image_skips_when_not_needed(self) -> None:
-        run_config = self._run_config(extensions=["ext"], local_definition_dir=None)
         extension = self._extension("ext")
+        run_config = self._run_config(
+            extensions=["ext"],
+            local_definition_dir=None,
+            available_extensions={"ext": extension},
+        )
         store = mock.Mock()
         store.load.return_value = None
         with (
-            mock.patch(
-                "aicage.registry.extension_build.ensure_extended_image.load_extensions",
-                return_value={"ext": extension},
-            ),
             mock.patch(
                 "aicage.registry.extension_build.ensure_extended_image.ExtendedBuildStore",
                 return_value=store,
@@ -56,15 +55,15 @@ class EnsureExtendedImageTests(TestCase):
         store.save.assert_not_called()
 
     def test_ensure_extended_image_builds_when_needed(self) -> None:
-        run_config = self._run_config(extensions=["ext"], local_definition_dir=Path("/tmp/def"))
         extension = self._extension("ext")
+        run_config = self._run_config(
+            extensions=["ext"],
+            local_definition_dir=Path("/tmp/def"),
+            available_extensions={"ext": extension},
+        )
         store = mock.Mock()
         store.load.return_value = None
         with (
-            mock.patch(
-                "aicage.registry.extension_build.ensure_extended_image.load_extensions",
-                return_value={"ext": extension},
-            ),
             mock.patch(
                 "aicage.registry.extension_build.ensure_extended_image.ExtendedBuildStore",
                 return_value=store,
@@ -110,6 +109,7 @@ class EnsureExtendedImageTests(TestCase):
     def _run_config(
         extensions: list[str],
         local_definition_dir: Path | None = None,
+        available_extensions: dict[str, ExtensionMetadata] | None = None,
     ) -> RunConfig:
         global_cfg = GlobalConfig(
             image_registry="ghcr.io",
@@ -139,12 +139,19 @@ class EnsureExtendedImageTests(TestCase):
         return RunConfig(
             project_path=Path("/tmp/project"),
             agent="codex",
-            base="ubuntu",
-            image_ref="aicage-extended:codex-ubuntu-ext",
-            base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-            extensions=extensions,
-            global_cfg=global_cfg,
-            images_metadata=images_metadata,
+            context=ConfigContext(
+                store=mock.Mock(),
+                project_cfg=ProjectConfig(path="/tmp/project", agents={}),
+                global_cfg=global_cfg,
+                images_metadata=images_metadata,
+                extensions=available_extensions or {},
+            ),
+            selection=ImageSelection(
+                image_ref="aicage-extended:codex-ubuntu-ext",
+                base="ubuntu",
+                extensions=extensions,
+                base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            ),
             project_docker_args="",
             mounts=[],
         )

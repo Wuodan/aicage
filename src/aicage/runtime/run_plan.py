@@ -7,7 +7,10 @@ from aicage.runtime.run_args import DockerRunArgs, merge_docker_args
 
 
 def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
-    agent_config: AgentConfig = resolve_agent_config(config.agent, config.images_metadata)
+    agent_config: AgentConfig = resolve_agent_config(
+        config.agent,
+        config.context.images_metadata,
+    )
 
     merged_docker_args: str = merge_docker_args(
         config.project_docker_args,
@@ -15,7 +18,7 @@ def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
     )
 
     return DockerRunArgs(
-        image_ref=config.image_ref,
+        image_ref=config.selection.image_ref,
         project_path=config.project_path,
         agent_config_host=agent_config.agent_config_host,
         agent_config_mount_container=Path("/aicage/agent-config"),
