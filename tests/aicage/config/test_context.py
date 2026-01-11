@@ -1,8 +1,11 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.context import ConfigContext, _build_config_context
+from aicage.config import config_store as config_store_module
+from aicage.config import extensions as extensions_module
+from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
+from aicage.config.images_metadata import loader as images_loader_module
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -59,10 +62,10 @@ class ContextTests(TestCase):
         )
         project_cfg = ProjectConfig(path="/work/project", agents={})
         with (
-            mock.patch("aicage.config.context.SettingsStore") as store_cls,
-            mock.patch("aicage.config.context.Path.cwd", return_value=Path("/work/project")),
-            mock.patch("aicage.config.context.load_images_metadata") as load_metadata,
-            mock.patch("aicage.config.context.load_extensions") as load_extensions,
+            mock.patch("aicage.config.config_store.SettingsStore") as store_cls,
+            mock.patch("pathlib.Path.cwd", return_value=Path("/work/project")),
+            mock.patch("aicage.config.images_metadata.loader.load_images_metadata") as load_metadata,
+            mock.patch("aicage.config.extensions.load_extensions") as load_extensions,
         ):
             store = store_cls.return_value
             store.load_global.return_value = global_cfg
@@ -104,3 +107,19 @@ class ContextTests(TestCase):
                 },
             }
         )
+
+
+def _build_config_context() -> ConfigContext:
+    store = config_store_module.SettingsStore()
+    project_path = Path.cwd().resolve()
+    global_cfg = store.load_global()
+    images_metadata = images_loader_module.load_images_metadata(global_cfg.local_image_repository)
+    project_cfg = store.load_project(project_path)
+    extensions = extensions_module.load_extensions()
+    return ConfigContext(
+        store=store,
+        project_cfg=project_cfg,
+        global_cfg=global_cfg,
+        images_metadata=images_metadata,
+        extensions=extensions,
+    )

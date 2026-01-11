@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from pathlib import Path
 
-from aicage.config.extensions import ExtensionMetadata, load_extensions
-from aicage.config.images_metadata.loader import load_images_metadata
+from aicage.config.extensions import ExtensionMetadata
 from aicage.config.images_metadata.models import ImagesMetadata
 
 from .config_store import SettingsStore
@@ -20,19 +18,3 @@ class ConfigContext:
 
     def image_repository_ref(self) -> str:
         return f"{self.global_cfg.image_registry}/{self.global_cfg.image_repository}"
-
-
-def _build_config_context() -> ConfigContext:
-    store = SettingsStore()
-    project_path = Path.cwd().resolve()
-    global_cfg = store.load_global()
-    images_metadata = load_images_metadata(global_cfg.local_image_repository)
-    project_cfg = store.load_project(project_path)
-    extensions = load_extensions()
-    return ConfigContext(
-        store=store,
-        project_cfg=project_cfg,
-        global_cfg=global_cfg,
-        images_metadata=images_metadata,
-        extensions=extensions,
-    )
