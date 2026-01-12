@@ -2,7 +2,7 @@
 
 ## Goal
 
-Allow users to define custom base images under ~/.aicage/custom/image-base/ and integrate them into
+Allow users to define custom base images under ~/.aicage/custom/base-images/ and integrate them into
 selection and local build/update logic.
 
 ## Rationale
@@ -49,7 +49,7 @@ This section captures the intended flow and constraints for custom local base im
 
 ### 1) Source and location
 
-- Custom base configs live at `~/.aicage/custom/image-base/`, alongside `custom/agents` and
+- Custom base configs live at `~/.aicage/custom/base-images/`, alongside `custom/agents` and
   `custom/extensions`.
 - The config format is analogous to custom agents/extensions and must be schema-validated.
 - Each custom base config includes a `from_image` that is used for update checks.

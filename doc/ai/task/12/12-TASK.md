@@ -226,7 +226,7 @@ extensive documentation for end-users.
 Sooner or later some users will need other base images, for example based upon an exotic linux distro.
 
 So it would be nice to let users define such local custom base-images in
-`~/.aicage/custom/image-base/<CUSTOM_BASE_IMAGE>/` in a format very similar to the `bases/<BASE>/` folders
+`~/.aicage/custom/base-images/<CUSTOM_BASE_IMAGE>/` in a format very similar to the `bases/<BASE>/` folders
 in `aicage-image-base`.
 
 The processes in `aicage` should pretty much remain the same.

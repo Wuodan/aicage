@@ -20,6 +20,12 @@ CUSTOM_EXTENSION_DEFINITION_FILES: tuple[str, str] = (
 DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR: Path = Path("~/.aicage/custom/image-extended")
 EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yaml"
 
+DEFAULT_CUSTOM_BASES_DIR: Path = Path("~/.aicage/custom/base-images")
+CUSTOM_BASE_DEFINITION_FILES: tuple[str, str] = (
+    "base.yaml",
+    "base.yml",
+)
+
 DEFAULT_VERSION_CHECK_STATE_DIR: Path = Path("~/.aicage/state/version-check")
 DEFAULT_LOCAL_BUILD_STATE_DIR: Path = Path("~/.aicage/state/local-build")
 DEFAULT_LOCAL_EXTENDED_STATE_DIR: Path = Path("~/.aicage/state/local-extended")
