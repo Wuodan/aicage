@@ -7,3 +7,6 @@
 [submodule "aicage-image-util"]
 	path = aicage-image-util
 	url = git@github.com:aicage/aicage-image-util.git
+[submodule "aicage-custom-samples"]
+	path = aicage-custom-samples
+	url = git@github.com:aicage/aicage-custom-samples.git
