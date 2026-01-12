@@ -34,6 +34,17 @@ class VisibilityRulesTests(TestCase):
 
         self.assertEqual([], violations, f"Found private imports in __init__.py: {violations}")
 
+    def test_src_init_files_have_no_methods(self) -> None:
+        repo_root = _repo_root()
+        src_dir = repo_root / "src"
+        violations: list[str] = []
+        for path in src_dir.rglob("__init__.py"):
+            tree = _parse_tree(path)
+            for function_def in _iter_function_defs(tree):
+                violations.append(f"{path.relative_to(repo_root)}:{function_def.name}")
+
+        self.assertEqual([], violations, f"Found methods in __init__.py: {violations}")
+
     def test_src_private_modules_not_imported_outside_package(self) -> None:
         repo_root = _repo_root()
         src_dir = repo_root / "src"
@@ -113,6 +124,14 @@ def _current_package(module_name: str, path: Path) -> list[str]:
 
 def _parse_tree(path: Path) -> ast.AST:
     return ast.parse(path.read_text(encoding="utf-8"))
+
+
+def _iter_function_defs(tree: ast.AST) -> list[ast.FunctionDef | ast.AsyncFunctionDef]:
+    return [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
 
 
 def _iter_imported_modules(tree: ast.AST, current_package: list[str]) -> list[str]:
