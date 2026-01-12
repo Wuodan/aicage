@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AICAGE custom base definition",
+  "type": "object",
+  "required": [
+    "from_image",
+    "base_image_distro",
+    "base_image_description"
+  ],
+  "properties": {
+    "from_image": {
+      "type": "string"
+    },
+    "base_image_distro": {
+      "type": "string"
+    },
+    "base_image_description": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

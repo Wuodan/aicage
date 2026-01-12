@@ -48,6 +48,9 @@ class _BaseMetadata:
     test_suite: str
 
 
+BaseMetadata = _BaseMetadata
+
+
 @dataclass(frozen=True)
 class AgentMetadata:
     agent_path: str
@@ -63,7 +66,7 @@ class AgentMetadata:
 class ImagesMetadata:
     aicage_image: _ImageReleaseInfo
     aicage_image_base: _ImageReleaseInfo
-    bases: dict[str, _BaseMetadata]
+    bases: dict[str, BaseMetadata]
     agents: dict[str, AgentMetadata]
 
     @classmethod
@@ -102,9 +105,9 @@ def _parse_release_info(value: Any, context: str) -> _ImageReleaseInfo:
     return _ImageReleaseInfo(version=_expect_string(mapping.get(_VERSION_KEY), f"{context}.{_VERSION_KEY}"))
 
 
-def _parse_bases(value: Any) -> dict[str, _BaseMetadata]:
+def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
     mapping = _expect_mapping(value, _BASES_KEY)
-    bases: dict[str, _BaseMetadata] = {}
+    bases: dict[str, BaseMetadata] = {}
     for name, base_value in mapping.items():
         if not isinstance(name, str):
             raise ConfigError("Images metadata base keys must be strings.")
