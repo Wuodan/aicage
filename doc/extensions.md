@@ -1,7 +1,7 @@
 # Extensions
 
 Extensions allow installing additional tools into an existing final image. Extensions are defined locally under
-`~/.aicage/custom/extensions/` and are applied in the order selected by the user.
+`~/.aicage-custom/extensions/` and are applied in the order selected by the user.
 Extensions are base-image agnostic; scripts should handle distribution differences if needed.
 
 ## Directory layout
@@ -9,7 +9,7 @@ Extensions are base-image agnostic; scripts should handle distribution differenc
 Each extension lives in its own directory:
 
 ```text
-~/.aicage/custom/extensions/<EXTENSION>/
+~/.aicage-custom/extensions/<EXTENSION>/
 ├─ extension.yml (or extension.yaml)
 ├─ Dockerfile        # optional
 └─ scripts/

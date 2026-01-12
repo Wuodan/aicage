@@ -1,16 +1,16 @@
 # Custom agents
 
 Custom agents let you define local agent installs that build into local Docker images. They live under
-`~/.aicage/custom/agents/` and behave like locally built built-in agents.
+`~/.aicage-custom/agents/` and behave like locally built built-in agents.
 
 If a custom agent name matches a packaged agent name, the custom agent overrides it.
 
 ## Directory layout
 
-Each custom agent is a directory under `~/.aicage/custom/agents/`:
+Each custom agent is a directory under `~/.aicage-custom/agents/`:
 
 ```text
-~/.aicage/custom/agents/<AGENT>/
+~/.aicage-custom/agents/<AGENT>/
 ├─ agent.yaml (or agent.yml)
 ├─ install.sh
 └─ version.sh
@@ -76,7 +76,7 @@ doc/sample/custom/agents/forge/
 └─ version.sh
 ```
 
-Copy that directory to `~/.aicage/custom/agents/forge/` and run:
+Copy that directory to `~/.aicage-custom/agents/forge/` and run:
 
 ```bash
 aicage forge

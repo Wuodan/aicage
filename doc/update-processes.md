@@ -22,7 +22,7 @@ includes current and planned behavior.
 | Base image                        | aicage-image-base `bases/BASE`               | Registry (ghcr.io) | Weekly schedule + manual          |
 | Final image (prebuilt)            | base image + `agents/AGENT`                  | Registry (ghcr.io) | Agent version + base updates      |
 | Local final image (build_local)   | `agent-build/AGENT` on base image            | Local Docker       | Agent version + base digest       |
-| Local final image (custom agent)  | base image + `~/.aicage/custom/agents/AGENT` | Local Docker       | Agent version + base digest       |
+| Local final image (custom agent)  | base image + `~/.aicage-custom/agents/AGENT` | Local Docker       | Agent version + base digest       |
 | Local extended image              | final image + extensions                     | Local Docker       | Extension changes + base/final    |
 | Local custom base image (planned) | custom base definition                       | Local Docker       | Definition changes + root updates |
 <!-- pyml enable line-length -->
