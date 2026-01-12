@@ -290,14 +290,17 @@ So this shall be split into several subtasks from early on with these steps and 
 
 ## Task/SubTask Workflow
 
-Don't forget to read AGENTS.md and always use the existing venv.
+Don't forget to always use the existing venv.
+Also read:
+- AGENTS.md
+- doc/python-test-structure-guidelines.md
 
 You shall follow this order:
 1. Read documentation and code to understand the task.
 2. Ask me questions if something is not clear to you
 3. Present me with an implementation solution - this needs my approval
 4. Implement the change autonomously including a loop of running-tests, fixing bugs, running tests
-5. Run linters as in the pipeline `.github/workflows/publish.yml`
+5. Run linters with `source .venv/bin/activate && ./scripts/lint.sh`
 6. Present me the change for review
 7. Interactively react to my review feedback
 8. Do not create the subtask summary unless and until I explicitly tell you to do so.
