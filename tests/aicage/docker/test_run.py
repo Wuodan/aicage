@@ -10,6 +10,42 @@ from aicage.runtime.run_args import DockerRunArgs, MountSpec
 
 
 class RunCommandTests(TestCase):
+    def test_run_container_executes_command(self) -> None:
+        args = DockerRunArgs(
+            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            project_path=Path("/work/project"),
+            agent_config_host=Path("/host/.codex"),
+            agent_config_mount_container=Path("/aicage/agent-config"),
+            merged_docker_args="",
+            agent_args=["--flag"],
+            agent_path=None,
+        )
+        with (
+            mock.patch("aicage.docker.run._assemble_docker_run", return_value=["docker", "run"]),
+            mock.patch("aicage.docker.run.subprocess.run") as run_mock,
+        ):
+            run.run_container(args)
+
+        run_mock.assert_called_once_with(["docker", "run"], check=True)
+
+    def test_print_run_command_outputs_command(self) -> None:
+        args = DockerRunArgs(
+            image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
+            project_path=Path("/work/project"),
+            agent_config_host=Path("/host/.codex"),
+            agent_config_mount_container=Path("/aicage/agent-config"),
+            merged_docker_args="",
+            agent_args=[],
+            agent_path=None,
+        )
+        with (
+            mock.patch("aicage.docker.run._assemble_docker_run", return_value=["docker", "run", "image"]),
+            mock.patch("builtins.print") as print_mock,
+        ):
+            run.print_run_command(args)
+
+        print_mock.assert_called_once_with("docker run image")
+
     def test_run_builder_version_check_returns_output(self) -> None:
         client = mock.Mock()
         client.containers.run.return_value = b"1.2.3\n"

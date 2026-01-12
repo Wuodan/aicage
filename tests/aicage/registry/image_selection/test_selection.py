@@ -20,7 +20,7 @@ class ImageSelectionTests(TestCase):
         super().setUp()
         self._extensions: dict[str, ExtensionMetadata] = {}
 
-    def test_resolve_uses_existing_base(self) -> None:
+    def test_select_agent_image_uses_existing_base(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
@@ -32,7 +32,7 @@ class ImageSelectionTests(TestCase):
             self.assertEqual("ghcr.io/aicage/aicage:codex-debian", selection.image_ref)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
-    def test_resolve_prompts_and_marks_dirty(self) -> None:
+    def test_select_agent_image_prompts_and_marks_dirty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
@@ -47,12 +47,12 @@ class ImageSelectionTests(TestCase):
             self.assertEqual("alpine", context.project_cfg.agents["codex"].base)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
-    def test_resolve_raises_without_bases(self) -> None:
+    def test_select_agent_image_raises_without_bases(self) -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=[])
         with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
-    def test_resolve_raises_on_invalid_base(self) -> None:
+    def test_select_agent_image_raises_on_invalid_base(self) -> None:
         context = build_context(
             mock.Mock(spec=SettingsStore),
             Path("/tmp/project"),
@@ -62,7 +62,7 @@ class ImageSelectionTests(TestCase):
         with self.assertRaises(RegistryError):
             image_selection.select_agent_image("codex", context)
 
-    def test_resolve_build_local_uses_local_tag(self) -> None:
+    def test_select_agent_image_build_local_uses_local_tag(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
@@ -85,7 +85,7 @@ class ImageSelectionTests(TestCase):
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
 
     @staticmethod
-    def test_resolve_uses_fresh_selection_when_image_ref_has_no_base() -> None:
+    def test_select_agent_image_uses_fresh_selection_when_image_ref_has_no_base() -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(image_ref="aicage:codex-ubuntu")
         context.project_cfg.agents["codex"] = agent_cfg
@@ -102,7 +102,7 @@ class ImageSelectionTests(TestCase):
         fresh_mock.assert_called_once()
 
     @staticmethod
-    def test_resolve_resets_on_missing_extensions() -> None:
+    def test_select_agent_image_resets_on_missing_extensions() -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=["extra"])
         context.project_cfg.agents["codex"] = agent_cfg
@@ -124,14 +124,14 @@ class ImageSelectionTests(TestCase):
             image_selection.select_agent_image("codex", context)
         fresh_mock.assert_called_once()
 
-    def test_resolve_uses_stored_image_ref(self) -> None:
+    def test_select_agent_image_uses_stored_image_ref(self) -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=[])
         context.project_cfg.agents["codex"] = agent_cfg
         selection = image_selection.select_agent_image("codex", context)
         self.assertEqual("aicage:codex-ubuntu", selection.image_ref)
 
-    def test_resolve_raises_when_agent_missing(self) -> None:
+    def test_select_agent_image_raises_when_agent_missing(self) -> None:
         context = ConfigContext(
             store=mock.Mock(spec=SettingsStore),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),

@@ -21,7 +21,7 @@ class GlobalConfigTests(TestCase):
         with self.assertRaises(ConfigError):
             GlobalConfig.from_mapping({_IMAGE_REGISTRY_KEY: "ghcr.io"})
 
-    def test_round_trip_mapping(self) -> None:
+    def test_to_mapping_round_trip(self) -> None:
         data = {
             _IMAGE_REGISTRY_KEY: "ghcr.io",
             _IMAGE_REGISTRY_API_URL_KEY: "https://ghcr.io/v2",

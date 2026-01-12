@@ -17,7 +17,7 @@ class ProjectConfigTests(TestCase):
         cfg = ProjectConfig.from_mapping(Path("/repo"), data)
         self.assertEqual("--net=host", cfg.agents["codex"].docker_args)
 
-    def test_round_trip_mapping(self) -> None:
+    def test_to_mapping_round_trip(self) -> None:
         cfg = ProjectConfig(path="/repo", agents={"codex": AgentConfig(base="ubuntu")})
         self.assertEqual(
             {_PROJECT_PATH_KEY: "/repo", _PROJECT_AGENTS_KEY: {"codex": {AGENT_BASE_KEY: "ubuntu"}}},

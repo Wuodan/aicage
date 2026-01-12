@@ -1,10 +1,15 @@
 from unittest import TestCase
 
-from aicage.config._schema_validation import validate_schema_mapping
+from aicage.config._schema_validation import load_schema, validate_schema_mapping
 from aicage.config.errors import ConfigError
 
 
 class SchemaValidationTests(TestCase):
+    def test_load_schema_reads_packaged_schema(self) -> None:
+        payload = load_schema("validation/config.schema.json")
+
+        self.assertIsInstance(payload.get("properties"), dict)
+
     def test_validate_schema_mapping_applies_normalizer_and_validator(self) -> None:
         schema = {
             "properties": {"name": {"type": "string"}, "enabled": {"type": "boolean"}},

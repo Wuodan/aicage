@@ -2,13 +2,20 @@ from unittest import TestCase, mock
 
 from docker.errors import ImageNotFound
 
-from aicage.docker.query import get_local_repo_digest, local_image_exists
+from aicage.docker.query import (
+    get_local_repo_digest,
+    get_local_repo_digest_for_repo,
+    get_local_rootfs_layers,
+    local_image_exists,
+)
 from aicage.docker.types import ImageRefRepository
 
 
 class FakeImage:
-    def __init__(self, repo_digests: object):
+    def __init__(self, repo_digests: object, rootfs: object | None = None):
         self.attrs = {"RepoDigests": repo_digests}
+        if rootfs is not None:
+            self.attrs["RootFS"] = rootfs
 
 
 class FakeImages:
@@ -54,6 +61,35 @@ class LocalQueryTests(TestCase):
         ):
             digest = get_local_repo_digest(image)
         self.assertEqual("sha256:deadbeef", digest)
+
+    def test_get_local_repo_digest_for_repo(self) -> None:
+        with mock.patch(
+            "aicage.docker.query.get_docker_client",
+            return_value=FakeClient(None),
+        ):
+            self.assertIsNone(get_local_repo_digest_for_repo("repo:tag", "ghcr.io/aicage/aicage"))
+
+        payload = ["ghcr.io/aicage/aicage@sha256:deadbeef", "other@sha256:skip"]
+        with mock.patch(
+            "aicage.docker.query.get_docker_client",
+            return_value=FakeClient(FakeImage(repo_digests=payload)),
+        ):
+            digest = get_local_repo_digest_for_repo("repo:tag", "ghcr.io/aicage/aicage")
+        self.assertEqual("sha256:deadbeef", digest)
+
+    def test_get_local_rootfs_layers(self) -> None:
+        with mock.patch(
+            "aicage.docker.query.get_docker_client",
+            return_value=FakeClient(None),
+        ):
+            self.assertIsNone(get_local_rootfs_layers("repo:tag"))
+
+        with mock.patch(
+            "aicage.docker.query.get_docker_client",
+            return_value=FakeClient(FakeImage(repo_digests=[], rootfs={"Layers": ["a", "b"]})),
+        ):
+            layers = get_local_rootfs_layers("repo:tag")
+        self.assertEqual(["a", "b"], layers)
 
     def test_local_image_exists_true_on_success(self) -> None:
         with mock.patch(

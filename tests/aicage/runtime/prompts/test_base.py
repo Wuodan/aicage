@@ -23,20 +23,12 @@ from aicage.config.images_metadata.models import (
 )
 from aicage.config.project_config import ProjectConfig
 from aicage.runtime.errors import RuntimeExecutionError
-from aicage.runtime.prompts import (
-    BaseSelectionRequest,
-    prompt_for_base,
-    prompt_yes_no,
-)
+from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
+from aicage.runtime.prompts.base import available_bases, base_options
 
 
 class PromptTests(TestCase):
-    def test_prompt_requires_tty(self) -> None:
-        with mock.patch("sys.stdin.isatty", return_value=False):
-            with self.assertRaises(RuntimeExecutionError):
-                prompt_yes_no("Continue?", default=False)
-
-    def test_prompt_validates_choice(self) -> None:
+    def test_prompt_for_base_validates_choice(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch(
             "builtins.input", return_value="fedora"
         ):
@@ -49,7 +41,7 @@ class PromptTests(TestCase):
                     )
                 )
 
-    def test_prompt_accepts_number_and_default(self) -> None:
+    def test_prompt_for_base_accepts_number_and_default(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", side_effect=["2", ""]):
             choice = prompt_for_base(
                 BaseSelectionRequest(
@@ -77,7 +69,7 @@ class PromptTests(TestCase):
                     )
                 )
 
-    def test_prompt_accepts_default_without_list(self) -> None:
+    def test_prompt_for_base_accepts_default_without_list(self) -> None:
         with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value=""):
             choice = prompt_for_base(
                 BaseSelectionRequest(
@@ -88,16 +80,15 @@ class PromptTests(TestCase):
             )
         self.assertEqual("ubuntu", choice)
 
-    def test_prompt_yes_no_defaults(self) -> None:
-        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value=""):
-            self.assertTrue(prompt_yes_no("Continue?", default=True))
-            self.assertFalse(prompt_yes_no("Continue?", default=False))
+    def test_base_options_returns_descriptions(self) -> None:
+        context = self._build_context(["ubuntu"])
+        options = base_options(context, self._agent_metadata(["ubuntu"]))
+        self.assertEqual([("ubuntu", "Default")], [(option.base, option.description) for option in options])
 
-    def test_prompt_yes_no_parses_input(self) -> None:
-        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value="y"):
-            self.assertTrue(prompt_yes_no("Continue?", default=False))
-        with mock.patch("sys.stdin.isatty", return_value=True), mock.patch("builtins.input", return_value="no"):
-            self.assertFalse(prompt_yes_no("Continue?", default=True))
+    def test_available_bases_returns_list(self) -> None:
+        context = self._build_context(["ubuntu", "alpine"])
+        options = base_options(context, self._agent_metadata(["ubuntu", "alpine"]))
+        self.assertEqual(["alpine", "ubuntu"], available_bases(options))
 
     @staticmethod
     def _build_context(bases: list[str]) -> ConfigContext:

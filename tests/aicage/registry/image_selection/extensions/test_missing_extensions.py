@@ -16,7 +16,7 @@ from aicage.registry.image_selection.extensions.missing_extensions import (
 
 
 class MissingExtensionsTests(TestCase):
-    def test_missing_extensions_returns_false_when_available(self) -> None:
+    def test_ensure_extensions_exist_returns_false_when_available(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             extension = ExtensionMetadata(
                 extension_id="extra",
@@ -43,7 +43,7 @@ class MissingExtensionsTests(TestCase):
             self.assertFalse(result)
             prompt_mock.assert_not_called()
 
-    def test_missing_extensions_resets_on_fresh_choice(self) -> None:
+    def test_ensure_extensions_exist_resets_on_fresh_choice(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_cfg = AgentConfig(extensions=["extra"], image_ref="aicage:codex-ubuntu")
             context = self._context(tmp_dir, agent_cfg)
@@ -67,7 +67,7 @@ class MissingExtensionsTests(TestCase):
                 context.project_cfg,
             )
 
-    def test_missing_extensions_raises_on_exit(self) -> None:
+    def test_ensure_extensions_exist_raises_on_exit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_cfg = AgentConfig(extensions=["extra"], image_ref="aicage:codex-ubuntu")
             context = self._context(tmp_dir, agent_cfg)
@@ -85,7 +85,7 @@ class MissingExtensionsTests(TestCase):
                         context=context,
                     )
 
-    def test_missing_extensions_raises_on_invalid_choice(self) -> None:
+    def test_ensure_extensions_exist_raises_on_invalid_choice(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_cfg = AgentConfig(extensions=["extra"], image_ref="aicage:codex-ubuntu")
             context = self._context(tmp_dir, agent_cfg)

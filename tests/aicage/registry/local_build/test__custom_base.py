@@ -14,6 +14,9 @@ from aicage.registry.local_build._custom_base_store import (
 
 
 class CustomBaseBuildTests(TestCase):
+    def test_custom_base_image_ref_uses_base(self) -> None:
+        self.assertEqual("aicage-image-base:custom", _custom_base.custom_base_image_ref("custom"))
+
     def test_ensure_custom_base_image_builds_when_missing(self) -> None:
         base_metadata = self._base_metadata()
         with tempfile.TemporaryDirectory() as tmp_dir:

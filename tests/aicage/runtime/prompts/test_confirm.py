@@ -20,15 +20,45 @@ class PromptConfirmTests(TestCase):
         ):
             self.assertTrue(confirm.prompt_yes_no("Continue?", default=False))
 
-    def test_prompt_wrappers_delegate(self) -> None:
+    def test_prompt_persist_entrypoint_delegates(self) -> None:
         with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_persist_entrypoint(Path("/tmp/entrypoint")))
+        prompt_mock.assert_called_once_with(
+            "Persist entrypoint '/tmp/entrypoint' for this project?",
+            default=True,
+        )
+
+    def test_prompt_persist_docker_socket_delegates(self) -> None:
+        with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_persist_docker_socket())
+        prompt_mock.assert_called_once_with(
+            "Persist mounting the Docker socket for this project?",
+            default=True,
+        )
+
+    def test_prompt_mount_git_config_delegates(self) -> None:
+        with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_git_config(Path("/tmp/gitconfig")))
+        prompt_mock.assert_called_once_with(
+            "Mount Git config from '/tmp/gitconfig' so Git uses your usual name/email?",
+            default=True,
+        )
+
+    def test_prompt_mount_gpg_keys_delegates(self) -> None:
+        with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_gpg_keys(Path("/tmp/gpg")))
+        prompt_mock.assert_called_once_with(
+            "Mount GnuPG keys from '/tmp/gpg' so Git signing works like on your host?",
+            default=True,
+        )
+
+    def test_prompt_mount_ssh_keys_delegates(self) -> None:
+        with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_ssh_keys(Path("/tmp/ssh")))
-            self.assertTrue(confirm.prompt_persist_docker_args("-it", None))
-        self.assertEqual(6, prompt_mock.call_count)
+        prompt_mock.assert_called_once_with(
+            "Mount SSH keys from '/tmp/ssh' so Git signing works like on your host?",
+            default=True,
+        )
 
     def test_prompt_persist_docker_args_replaces_existing(self) -> None:
         with mock.patch("aicage.runtime.prompts.confirm.prompt_yes_no", return_value=True) as prompt_mock:

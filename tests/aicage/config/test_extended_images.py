@@ -11,6 +11,15 @@ from ._fixtures import extended_image_definition, join_yaml
 
 
 class ExtendedImagesLoaderTests(TestCase):
+    def test_extended_image_config_path(self) -> None:
+        with mock.patch(
+            "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+            Path("/tmp/custom"),
+        ):
+            path = extended_images_module.extended_image_config_path("sample")
+
+        self.assertEqual(Path("/tmp/custom/sample/image-extended.yaml"), path)
+
     def test_load_extended_images_skips_missing_extensions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             images_dir = Path(tmp_dir) / "image-extended"

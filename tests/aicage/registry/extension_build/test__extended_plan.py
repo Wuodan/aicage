@@ -12,7 +12,7 @@ from aicage.registry.image_selection import ImageSelection
 
 
 class ExtendedPlanTests(TestCase):
-    def test_should_build_when_local_image_missing(self) -> None:
+    def test_should_build_extended_when_local_image_missing(self) -> None:
         run_config = self._run_config()
         record = self._record(run_config)
         with mock.patch(
@@ -28,7 +28,7 @@ class ExtendedPlanTests(TestCase):
                 )
             )
 
-    def test_should_build_returns_false_when_layers_unknown(self) -> None:
+    def test_should_build_extended_returns_false_when_layers_unknown(self) -> None:
         run_config = self._run_config()
         record = self._record(run_config)
         with (
@@ -50,7 +50,7 @@ class ExtendedPlanTests(TestCase):
                 )
             )
 
-    def test_should_build_when_base_layer_missing(self) -> None:
+    def test_should_build_extended_when_base_layer_missing(self) -> None:
         run_config = self._run_config()
         record = self._record(run_config)
         with (
@@ -72,7 +72,7 @@ class ExtendedPlanTests(TestCase):
                 )
             )
 
-    def test_should_build_returns_false_when_final_layers_unknown(self) -> None:
+    def test_should_build_extended_returns_false_when_final_layers_unknown(self) -> None:
         run_config = self._run_config()
         record = self._record(run_config)
         with (

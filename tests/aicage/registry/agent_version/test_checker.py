@@ -13,7 +13,7 @@ from aicage.registry.errors import RegistryError
 
 
 class AgentVersionCheckTests(TestCase):
-    def test_check_uses_host_success_and_persists(self) -> None:
+    def test_get_version_uses_host_success_and_persists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
@@ -42,7 +42,7 @@ class AgentVersionCheckTests(TestCase):
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
 
-    def test_check_uses_version_check_image_and_persists(self) -> None:
+    def test_get_version_uses_version_check_image_and_persists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
@@ -76,7 +76,7 @@ class AgentVersionCheckTests(TestCase):
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
 
-    def test_check_raises_when_version_check_image_fails(self) -> None:
+    def test_get_version_raises_when_version_check_image_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
@@ -110,7 +110,7 @@ class AgentVersionCheckTests(TestCase):
                     )
             self.assertIn("version check failed", str(raised.exception))
 
-    def test_check_raises_on_missing_version_script(self) -> None:
+    def test_get_version_raises_on_missing_version_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()

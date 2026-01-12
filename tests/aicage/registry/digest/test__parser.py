@@ -4,6 +4,10 @@ from aicage.registry.digest._parser import parse_image_ref
 
 
 class DigestParserTests(TestCase):
+    def test_full_repository_returns_registry_and_repo(self) -> None:
+        parsed = parse_image_ref("ghcr.io/org/repo:tag")
+        self.assertEqual("ghcr.io/org/repo", parsed.full_repository)
+
     def test_parse_image_ref_defaults_to_docker_registry(self) -> None:
         parsed = parse_image_ref("ubuntu:20.04")
         self.assertEqual("registry-1.docker.io", parsed.registry)

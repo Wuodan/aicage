@@ -7,7 +7,7 @@ from aicage.registry.agent_version import _images
 
 
 class AgentVersionImagesTests(TestCase):
-    def test_version_check_pulls_when_local_missing(self) -> None:
+    def test_ensure_version_check_image_pulls_when_local_missing(self) -> None:
         global_cfg = self._global_config()
         image_ref = global_cfg.version_check_image
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -33,7 +33,7 @@ class AgentVersionImagesTests(TestCase):
         remote_mock.assert_not_called()
         pull_mock.assert_called_once_with(image_ref, log_path)
 
-    def test_version_check_skips_pull_when_remote_unknown(self) -> None:
+    def test_ensure_version_check_image_skips_pull_when_remote_unknown(self) -> None:
         global_cfg = self._global_config()
         image_ref = global_cfg.version_check_image
         with tempfile.TemporaryDirectory() as tmp_dir:
