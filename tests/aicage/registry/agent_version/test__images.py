@@ -14,10 +14,10 @@ class AgentVersionImagesTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry.agent_version._images.get_local_repo_digest",
+                    "aicage.registry.agent_version._images.get_local_repo_digest_for_repo",
                     return_value=None,
                 ) as local_mock,
-                mock.patch("aicage.registry.agent_version._images.get_remote_repo_digest") as remote_mock,
+                mock.patch("aicage.registry.agent_version._images.get_remote_digest") as remote_mock,
                 mock.patch("aicage.registry.agent_version._images.run_pull") as pull_mock,
                 mock.patch(
                     "aicage.registry.agent_version._images.pull_log_path",
@@ -40,11 +40,11 @@ class AgentVersionImagesTests(TestCase):
             log_path = Path(tmp_dir) / "pull.log"
             with (
                 mock.patch(
-                    "aicage.registry.agent_version._images.get_local_repo_digest",
+                    "aicage.registry.agent_version._images.get_local_repo_digest_for_repo",
                     return_value="sha256:local",
                 ),
                 mock.patch(
-                    "aicage.registry.agent_version._images.get_remote_repo_digest",
+                    "aicage.registry.agent_version._images.get_remote_digest",
                     return_value=None,
                 ) as remote_mock,
                 mock.patch("aicage.registry.agent_version._images.run_pull") as pull_mock,

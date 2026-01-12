@@ -106,6 +106,41 @@ def run_extended_build(
     logger.info("Extended image build succeeded for %s", run_config.selection.image_ref)
 
 
+def run_custom_base_build(
+    dockerfile_path: Path,
+    build_root: Path,
+    from_image: str,
+    image_ref: str,
+    log_path: Path,
+) -> None:
+    logger = get_logger()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"[aicage] Building custom base image {image_ref} (logs: {log_path})...")
+    logger.info("Building custom base image %s (logs: %s)", image_ref, log_path)
+
+    command = [
+        "docker",
+        "build",
+        "--no-cache",
+        "--file",
+        str(dockerfile_path),
+        "--build-arg",
+        f"FROM_IMAGE={from_image}",
+        "--tag",
+        image_ref,
+        str(build_root),
+    ]
+    with log_path.open("w", encoding="utf-8") as log_handle:
+        result = subprocess.run(command, check=False, stdout=log_handle, stderr=subprocess.STDOUT)
+    if result.returncode != 0:
+        logger.error("Custom base image build failed for %s (logs: %s)", image_ref, log_path)
+        raise DockerError(
+            f"Custom base image build failed for {image_ref}. See log at {log_path}."
+        )
+
+    logger.info("Custom base image build succeeded for %s", image_ref)
+
+
 def _build_context_dir(run_config: RunConfig, dockerfile_path: Path) -> Path:
     agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     local_definition_dir = agent_metadata.local_definition_dir

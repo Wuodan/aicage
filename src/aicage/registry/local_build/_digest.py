@@ -1,38 +1,20 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from aicage._logging import get_logger
 from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest_for_repo
-from aicage.docker.remote_query import get_remote_repo_digest
-from aicage.docker.types import ImageRefRepository, RegistryApiConfig, RemoteImageRef
 from aicage.registry._logs import pull_log_path
+from aicage.registry.digest.remote_digest import get_remote_digest
 from aicage.registry.errors import RegistryError
-
-if TYPE_CHECKING:
-    from aicage.config.global_config import GlobalConfig
 
 
 def refresh_base_digest(
     base_image_ref: str,
     base_repository: str,
-    global_cfg: GlobalConfig,
 ) -> str | None:
     logger = get_logger()
     local_digest = get_local_repo_digest_for_repo(base_image_ref, base_repository)
-    remote_digest = get_remote_repo_digest(
-        RemoteImageRef(
-            image=ImageRefRepository(
-                image_ref=base_image_ref,
-                repository=global_cfg.image_base_repository,
-            ),
-            registry_api=RegistryApiConfig(
-                registry_api_url=global_cfg.image_registry_api_url,
-                registry_api_token_url=global_cfg.image_registry_api_token_url,
-            ),
-        )
-    )
+    remote_digest = get_remote_digest(base_image_ref)
     if remote_digest is None or remote_digest == local_digest:
         return local_digest
 

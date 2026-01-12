@@ -58,6 +58,7 @@ class EnsureExtendedImageTests(TestCase):
         extension = self._extension("ext")
         run_config = self._run_config(
             extensions=["ext"],
+            build_local=True,
             local_definition_dir=Path("/tmp/def"),
             available_extensions={"ext": extension},
         )
@@ -108,6 +109,7 @@ class EnsureExtendedImageTests(TestCase):
     @staticmethod
     def _run_config(
         extensions: list[str],
+        build_local: bool = False,
         local_definition_dir: Path | None = None,
         available_extensions: dict[str, ExtensionMetadata] | None = None,
     ) -> RunConfig:
@@ -131,6 +133,7 @@ class EnsureExtendedImageTests(TestCase):
                     agent_path="~/.codex",
                     agent_full_name="Codex",
                     agent_homepage="https://example.com",
+                    build_local=build_local,
                     valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
                     local_definition_dir=local_definition_dir,
                 )

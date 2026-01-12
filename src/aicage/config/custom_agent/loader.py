@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from aicage.config._yaml import maybe_str_list
+from aicage.config._yaml import expect_bool, maybe_str_list
 from aicage.config.errors import ConfigError
 from aicage.config.image_refs import local_image_ref
 from aicage.config.images_metadata.models import (
@@ -12,6 +12,7 @@ from aicage.config.images_metadata.models import (
     AGENT_PATH_KEY,
     BASE_DISTRO_EXCLUDE_KEY,
     BASE_EXCLUDE_KEY,
+    BUILD_LOCAL_KEY,
     AgentMetadata,
     ImagesMetadata,
 )
@@ -66,6 +67,7 @@ def _build_custom_agent(
     base_distro_exclude = maybe_str_list(
         normalized_mapping.get(BASE_DISTRO_EXCLUDE_KEY), BASE_DISTRO_EXCLUDE_KEY
     )
+    build_local = expect_bool(normalized_mapping.get(BUILD_LOCAL_KEY), BUILD_LOCAL_KEY)
     valid_bases = _build_valid_bases(
         agent_name=agent_name,
         images_metadata=images_metadata,
@@ -77,6 +79,7 @@ def _build_custom_agent(
         agent_path=expect_string(normalized_mapping.get(AGENT_PATH_KEY), AGENT_PATH_KEY),
         agent_full_name=expect_string(normalized_mapping.get(AGENT_FULL_NAME_KEY), AGENT_FULL_NAME_KEY),
         agent_homepage=expect_string(normalized_mapping.get(AGENT_HOMEPAGE_KEY), AGENT_HOMEPAGE_KEY),
+        build_local=build_local,
         valid_bases=valid_bases,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,

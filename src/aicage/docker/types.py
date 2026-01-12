@@ -14,8 +14,3 @@ class RegistryApiConfig:
     registry_api_url: str
     registry_api_token_url: str
 
-
-@dataclass(frozen=True)
-class RemoteImageRef:
-    image: ImageRefRepository
-    registry_api: RegistryApiConfig

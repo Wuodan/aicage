@@ -62,7 +62,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest"
+                    "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
                     "aicage.docker.pull.get_docker_client",
@@ -99,7 +99,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest"
+                    "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
                     "aicage.docker.pull.get_docker_client",
@@ -123,7 +123,7 @@ class DockerInvocationTests(TestCase):
                     return_value="same",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest",
+                    "aicage.registry._pull_decision.get_remote_digest",
                     return_value="same",
                 ),
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
@@ -145,7 +145,7 @@ class DockerInvocationTests(TestCase):
                     return_value="local",
                 ),
                 mock.patch(
-                    "aicage.registry._pull_decision.get_remote_repo_digest",
+                    "aicage.registry._pull_decision.get_remote_digest",
                     return_value=None,
                 ),
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,

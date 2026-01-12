@@ -55,6 +55,7 @@ def _merge_agent_custom_bases(
         agent_path=agent_metadata.agent_path,
         agent_full_name=agent_metadata.agent_full_name,
         agent_homepage=agent_metadata.agent_homepage,
+        build_local=agent_metadata.build_local,
         valid_bases=valid_bases,
         base_exclude=agent_metadata.base_exclude,
         base_distro_exclude=agent_metadata.base_distro_exclude,

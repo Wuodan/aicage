@@ -173,6 +173,7 @@ class PromptImageChoiceTests(TestCase):
             agent_path="~/.codex",
             agent_full_name="Codex",
             agent_homepage="https://example.com",
+            build_local=True,
             valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
             local_definition_dir=Path("/tmp/def"),
         )

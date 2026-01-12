@@ -56,6 +56,7 @@ class AgentMetadata:
     agent_path: str
     agent_full_name: str
     agent_homepage: str
+    build_local: bool
     valid_bases: dict[str, str]
     base_exclude: list[str] | None = None
     base_distro_exclude: list[str] | None = None
@@ -180,12 +181,10 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
                 agent_mapping.get(AGENT_HOMEPAGE_KEY),
                 f"{_AGENT_KEY}.{name}.{AGENT_HOMEPAGE_KEY}",
             ),
-            local_definition_dir=_local_definition_dir(
-                name,
-                expect_bool(
-                    agent_mapping.get(BUILD_LOCAL_KEY), f"{_AGENT_KEY}.{name}.{BUILD_LOCAL_KEY}"
-                ),
+            build_local=expect_bool(
+                agent_mapping.get(BUILD_LOCAL_KEY), f"{_AGENT_KEY}.{name}.{BUILD_LOCAL_KEY}"
             ),
+            local_definition_dir=_local_definition_dir(name),
             valid_bases=_expect_str_mapping(
                 agent_mapping.get(_VALID_BASES_KEY), f"{_AGENT_KEY}.{name}.{_VALID_BASES_KEY}"
             ),
@@ -200,9 +199,7 @@ def _parse_agents(value: Any) -> dict[str, AgentMetadata]:
     return agents
 
 
-def _local_definition_dir(agent_name: str, build_local: bool) -> Path | None:
-    if not build_local:
-        return None
+def _local_definition_dir(agent_name: str) -> Path:
     dockerfile = find_packaged_path("agent-build/Dockerfile")
     return dockerfile.parent / "agents" / agent_name
 

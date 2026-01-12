@@ -67,6 +67,7 @@ def test_version_check_falls_back_to_builder(
                 agent_path="~/.npm-agent",
                 agent_full_name="Npm Agent",
                 agent_homepage="https://example.com",
+                build_local=True,
                 valid_bases={},
             ),
             agent_dir,

@@ -10,7 +10,7 @@ from .errors import RegistryDiscoveryError
 from .types import RegistryApiConfig
 
 
-def fetch_pull_token_for_repository(api_config: RegistryApiConfig, repository: str) -> str:
+def _fetch_pull_token_for_repository(api_config: RegistryApiConfig, repository: str) -> str:
     url = f"{api_config.registry_api_token_url}:{repository}:pull"
     data, _ = _fetch_json(url, None)
     token = data.get("token")

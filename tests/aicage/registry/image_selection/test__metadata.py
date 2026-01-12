@@ -22,6 +22,7 @@ class ImageSelectionMetadataTests(TestCase):
             agent_path="~/.agent",
             agent_full_name="Agent",
             agent_homepage="https://example.com",
+            build_local=True,
             valid_bases={"ubuntu": "image", "alpine": "image"},
             local_definition_dir=Path("/tmp/agent"),
         )
@@ -35,6 +36,7 @@ class ImageSelectionMetadataTests(TestCase):
             agent_path="~/.agent",
             agent_full_name="Agent",
             agent_homepage="https://example.com",
+            build_local=True,
             valid_bases={"ubuntu": "image"},
             local_definition_dir=Path("/tmp/agent"),
         )

@@ -10,7 +10,7 @@ class RemoteApiTests(TestCase):
             return {"token": "abc"}, {}
 
         with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
-            token = _registry_api.fetch_pull_token_for_repository(
+            token = _registry_api._fetch_pull_token_for_repository(
                 RegistryApiConfig(
                     registry_api_url="https://example.test/api",
                     registry_api_token_url="https://example.test/token",
@@ -25,7 +25,7 @@ class RemoteApiTests(TestCase):
 
         with mock.patch("aicage.docker._registry_api._fetch_json", fake_fetch_json):
             with self.assertRaises(_registry_api.RegistryDiscoveryError):
-                _registry_api.fetch_pull_token_for_repository(
+                _registry_api._fetch_pull_token_for_repository(
                     RegistryApiConfig(
                         registry_api_url="https://example.test/api",
                         registry_api_token_url="https://example.test/token",

@@ -31,7 +31,18 @@ from ._fixtures import build_run_config
 
 class EnsureLocalImageTests(TestCase):
     def test_ensure_local_image_raises_without_definition(self) -> None:
-        run_config = build_run_config(build_local=False)
+        run_config = build_run_config(build_local=True)
+        agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
+        run_config.context.images_metadata.agents[run_config.agent] = AgentMetadata(
+            agent_path=agent_metadata.agent_path,
+            agent_full_name=agent_metadata.agent_full_name,
+            agent_homepage=agent_metadata.agent_homepage,
+            build_local=agent_metadata.build_local,
+            valid_bases=agent_metadata.valid_bases,
+            base_exclude=agent_metadata.base_exclude,
+            base_distro_exclude=agent_metadata.base_distro_exclude,
+            local_definition_dir=None,
+        )
         with mock.patch(
             "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
         ) as refresh_mock:
@@ -78,6 +89,56 @@ class EnsureLocalImageTests(TestCase):
             checker_cls.return_value.get_version.side_effect = RegistryError("version failed")
             with self.assertRaises(RegistryError):
                 ensure_local_image_module.ensure_local_image(run_config)
+
+    def test_ensure_local_image_uses_custom_base(self) -> None:
+        run_config = build_run_config()
+        run_config = RunConfig(
+            project_path=run_config.project_path,
+            agent=run_config.agent,
+            context=run_config.context,
+            selection=ImageSelection(
+                image_ref="aicage:claude-custom",
+                base="custom",
+                extensions=[],
+                base_image_ref="aicage:claude-custom",
+            ),
+            project_docker_args=run_config.project_docker_args,
+            mounts=run_config.mounts,
+        )
+        custom_base = _BaseMetadata(
+            from_image="ubuntu:latest",
+            base_image_distro="Ubuntu",
+            base_image_description="Custom",
+            os_installer="",
+            test_suite="",
+        )
+        with (
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.load_custom_base",
+                return_value=custom_base,
+            ),
+            mock.patch(
+                "aicage.registry.local_build._refs.load_custom_base",
+                return_value=custom_base,
+            ),
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.ensure_custom_base_image"
+            ) as base_mock,
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
+            ) as refresh_mock,
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.should_build",
+                return_value=False,
+            ),
+            mock.patch(
+                "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
+            ) as checker_cls,
+        ):
+            checker_cls.return_value.get_version.return_value = "1.2.3"
+            ensure_local_image_module.ensure_local_image(run_config)
+        base_mock.assert_called_once()
+        refresh_mock.assert_not_called()
 
     def test_ensure_local_image_builds_when_missing_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -198,6 +259,7 @@ class EnsureLocalImageTests(TestCase):
                     agent_path="~/.claude",
                     agent_full_name="Claude Code",
                     agent_homepage="https://example.com",
+                    build_local=True,
                     valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
                     local_definition_dir=Path("/tmp/definition"),
                 )
