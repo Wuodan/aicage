@@ -41,3 +41,20 @@ those by `chmod` by running them as arguments to `sh` (or `bash` if available on
 
 Prevent starting in HOME (error when creating symlink in entrypoint) or `/` or similar. Or warn user at least.  
 But accidentally calling `aicage` and forgetting to cd to a project folder happens frequently to me.
+
+## Plugins idea
+
+Aicage could have plugins in the style: Copy of RunConfig is handed to plugin, which returns RunConfig or defined parts
+of it.  
+The current features:
+- ask user about mounting .gitconfig and .gnupg
+- handle --docker parameter
+could potentially be moved to such plugins.
+
+Maybe we could even allow user added custom plugins.
+
+## Shellcheck version.sh
+
+The `version.sh` scripts for agents are run on the users system or as fallback in the Alpine `version-check` util-image
+(from submodule `aicage-image-util`). Those scripts should be strictly POSIX compliant and we should verify that with
+`shellcheck` in a GitHub release pipeline for `aicage-image` (where those scripts are defined).
