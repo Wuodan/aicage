@@ -8,10 +8,10 @@ class RegistryDigestTests(TestCase):
     def test_get_manifest_digest_reads_direct_digest(self) -> None:
         with (
             mock.patch(
-                "aicage.registry.digest._registry._head_request",
+                "aicage.registry.digest._registry.head_request",
                 return_value=(200, {"Docker-Content-Digest": "sha256:abc"}),
             ),
-            mock.patch("aicage.registry.digest._registry._fetch_bearer_token") as token_mock,
+            mock.patch("aicage.registry.digest._registry.fetch_bearer_token") as token_mock,
         ):
             digest = registry.get_manifest_digest("ghcr.io", "org/repo", "latest")
         self.assertEqual("sha256:abc", digest)
@@ -19,7 +19,7 @@ class RegistryDigestTests(TestCase):
 
     def test_get_manifest_digest_returns_none_on_non_auth_failure(self) -> None:
         with mock.patch(
-            "aicage.registry.digest._registry._head_request",
+            "aicage.registry.digest._registry.head_request",
             return_value=(404, {}),
         ):
             digest = registry.get_manifest_digest("ghcr.io", "org/repo", "latest")
@@ -27,7 +27,7 @@ class RegistryDigestTests(TestCase):
 
     def test_get_manifest_digest_returns_none_when_missing_auth_header(self) -> None:
         with mock.patch(
-            "aicage.registry.digest._registry._head_request",
+            "aicage.registry.digest._registry.head_request",
             return_value=(401, {}),
         ):
             digest = registry.get_manifest_digest("ghcr.io", "org/repo", "latest")
@@ -35,7 +35,7 @@ class RegistryDigestTests(TestCase):
 
     def test_get_manifest_digest_returns_none_for_basic_auth(self) -> None:
         with mock.patch(
-            "aicage.registry.digest._registry._head_request",
+            "aicage.registry.digest._registry.head_request",
             return_value=(401, {"WWW-Authenticate": "Basic realm=\"x\""}),
         ):
             digest = registry.get_manifest_digest("ghcr.io", "org/repo", "latest")
@@ -45,11 +45,11 @@ class RegistryDigestTests(TestCase):
         auth_header = 'Bearer realm="https://example.com/token",service="ghcr.io"'
         with (
             mock.patch(
-                "aicage.registry.digest._registry._head_request",
+                "aicage.registry.digest._registry.head_request",
                 return_value=(401, {"WWW-Authenticate": auth_header}),
             ),
             mock.patch(
-                "aicage.registry.digest._registry._fetch_bearer_token",
+                "aicage.registry.digest._registry.fetch_bearer_token",
                 return_value=None,
             ),
         ):
@@ -64,11 +64,11 @@ class RegistryDigestTests(TestCase):
         ]
         with (
             mock.patch(
-                "aicage.registry.digest._registry._head_request",
+                "aicage.registry.digest._registry.head_request",
                 side_effect=head_responses,
             ),
             mock.patch(
-                "aicage.registry.digest._registry._fetch_bearer_token",
+                "aicage.registry.digest._registry.fetch_bearer_token",
                 return_value="token",
             ) as token_mock,
         ):

@@ -6,7 +6,7 @@ from aicage.registry.digest import _auth
 
 class DigestAuthTests(TestCase):
     def test_parse_auth_header_handles_empty_params(self) -> None:
-        scheme, params = _auth._parse_auth_header("Bearer")
+        scheme, params = _auth.parse_auth_header("Bearer")
         self.assertEqual("bearer", scheme)
         self.assertEqual({}, params)
 
@@ -19,7 +19,7 @@ class DigestAuthTests(TestCase):
             "aicage.registry.digest._auth.urllib.request.urlopen",
             return_value=response,
         ):
-            token = _auth._fetch_bearer_token("https://example.test", "", "repo:pull")
+            token = _auth.fetch_bearer_token("https://example.test", "", "repo:pull")
         self.assertIsNone(token)
 
     def test_fetch_bearer_token_returns_none_on_missing_token(self) -> None:
@@ -31,7 +31,7 @@ class DigestAuthTests(TestCase):
             "aicage.registry.digest._auth.urllib.request.urlopen",
             return_value=response,
         ):
-            token = _auth._fetch_bearer_token("https://example.test", "", "repo:pull")
+            token = _auth.fetch_bearer_token("https://example.test", "", "repo:pull")
         self.assertIsNone(token)
 
     def test_fetch_bearer_token_accepts_access_token(self) -> None:
@@ -43,5 +43,5 @@ class DigestAuthTests(TestCase):
             "aicage.registry.digest._auth.urllib.request.urlopen",
             return_value=response,
         ):
-            token = _auth._fetch_bearer_token("https://example.test", "", "repo:pull")
+            token = _auth.fetch_bearer_token("https://example.test", "", "repo:pull")
         self.assertEqual("token", token)

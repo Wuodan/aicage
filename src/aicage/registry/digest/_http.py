@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
 
 
-def _head_request(url: str, headers: Mapping[str, str]) -> tuple[int | None, dict[str, str]]:
+def head_request(url: str, headers: Mapping[str, str]) -> tuple[int | None, dict[str, str]]:
     request = urllib.request.Request(url, headers=dict(headers), method="HEAD")
     try:
         with urllib.request.urlopen(request, timeout=REGISTRY_REQUEST_TIMEOUT_SECONDS) as response:
@@ -18,7 +18,7 @@ def _head_request(url: str, headers: Mapping[str, str]) -> tuple[int | None, dic
         return None, {}
 
 
-def _get_header(headers: Mapping[str, str], key: str) -> str | None:
+def get_header(headers: Mapping[str, str], key: str) -> str | None:
     for header, value in headers.items():
         if header.lower() == key:
             return value

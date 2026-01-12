@@ -11,7 +11,7 @@ from ._timeouts import REGISTRY_REQUEST_TIMEOUT_SECONDS
 _AUTH_HEADER_SPLIT_PARTS: int = 2
 
 
-def _parse_auth_header(value: str) -> tuple[str, dict[str, str]]:
+def parse_auth_header(value: str) -> tuple[str, dict[str, str]]:
     parts = value.split(" ", 1)
     if not parts:
         return "", {}
@@ -22,7 +22,7 @@ def _parse_auth_header(value: str) -> tuple[str, dict[str, str]]:
     return scheme, params
 
 
-def _fetch_bearer_token(realm: str, service: str, scope: str) -> str | None:
+def fetch_bearer_token(realm: str, service: str, scope: str) -> str | None:
     if not realm:
         return None
     query = {"service": service, "scope": scope} if service else {"scope": scope}
