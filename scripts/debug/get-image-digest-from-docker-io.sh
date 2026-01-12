@@ -24,6 +24,6 @@ DIGEST="$(
 )"
 
 echo "${IMAGE} -> ${DIGEST}"
-
-echo "Raw curl result:"
+echo
+echo "Debug output: Raw curl result:"
 echo "${RAW}"
