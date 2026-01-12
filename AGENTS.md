@@ -28,6 +28,8 @@ Meaning:
   so get this right.
 - pass wrapping objects when you can, don't split wrapping objects into variables
 - Respect `doc/python-test-structure-guidelines.md` when it comes to writing Python tests.
+- Test modules and test method names must mirror `src` module and method names per the test guidelines, allowing
+  descriptive suffixes after an underscore and excluding Protocol method declarations.
 
 ## Visibility rules
 
