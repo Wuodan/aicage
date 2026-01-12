@@ -20,3 +20,13 @@ This was in current form useful when `aicage` did not have all agents and could 
 But now it can. And we have to on-the-fly preprocess-update the data in its python mirror class `ImagesMetadata` to add
 in custom local agents and custom local bases. Extensions fly outside `ImagesMetadata` and are neatly stored in
 `ConfigContext` and read from there when needed (without pre-processing), this is much neater.
+
+## custom-bases loaded several times
+
+custom-agents are loaded only once with `load_custom_agents()`, then consumed from the loaded data throughout the entire
+aicage process.
+
+But custom-bases are loaded once with `load_custom_bases()` and single bases are later from several places loaded again
+with `load_custom_base()`.
+
+What must change so custom-bases are also loaded only once? (Possibly related to "## images-metadata.yaml" above.)
