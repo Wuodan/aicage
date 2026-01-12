@@ -1,0 +1,3 @@
+from_image: php:latest
+base_image_distro: Debian
+base_image_description: Official php image

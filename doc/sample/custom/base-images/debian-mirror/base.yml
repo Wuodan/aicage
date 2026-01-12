@@ -1,0 +1,3 @@
+from_image: ghcr.io/rblaine95/debian:latest
+base_image_distro: Debian
+base_image_description: Debian from rblaine95/dockerhub-mirror on GitHub
