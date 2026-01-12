@@ -290,7 +290,10 @@ So this shall be split into several subtasks from early on with these steps and 
 
 ## Task/SubTask Workflow
 
-Don't forget to read AGENTS.md and always use the existing venv.
+Don't forget to always use the existing venv.
+Also read:
+- AGENTS.md
+- doc/python-test-structure-guidelines.md
 
 You shall follow this order:
 1. Read documentation and code to understand the task.
