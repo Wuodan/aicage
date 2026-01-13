@@ -62,3 +62,7 @@ The `version.sh` scripts for agents are run on the users system or as fallback i
 ## Replace configi.yml with Python constants
 
 As constants can be imported and must not be passes around.
+
+## Tune locking of ~/.aicage
+
+The implementation is from an earlier state where we had less files. New files are not locked.
