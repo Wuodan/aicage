@@ -67,7 +67,7 @@ class ExtensionRefsTests(TestCase):
             )
             (base_dir / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_base.loader.DEFAULT_CUSTOM_BASES_DIR",
+                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 result = base_image_ref(agent_metadata, "codex", "custom", context)

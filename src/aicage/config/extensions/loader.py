@@ -9,7 +9,7 @@ from aicage.config._yaml import expect_string
 from aicage.config.errors import ConfigError
 from aicage.config.extensions._validation import validate_extension_mapping
 from aicage.config.yaml_loader import load_yaml
-from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, DEFAULT_CUSTOM_EXTENSIONS_DIR
+from aicage.paths import CUSTOM_EXTENSION_DEFINITION_FILES, CUSTOM_EXTENSIONS_DIR
 
 _EXTENSION_NAME_KEY: str = "name"
 _EXTENSION_DESCRIPTION_KEY: str = "description"
@@ -36,7 +36,7 @@ class ExtensionMetadata:
 
 
 def load_extensions() -> dict[str, ExtensionMetadata]:
-    extensions_dir = DEFAULT_CUSTOM_EXTENSIONS_DIR.expanduser()
+    extensions_dir = CUSTOM_EXTENSIONS_DIR
     if not extensions_dir.is_dir():
         return {}
     extensions: dict[str, ExtensionMetadata] = {}

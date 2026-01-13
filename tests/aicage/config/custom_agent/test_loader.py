@@ -33,7 +33,7 @@ class CustomAgentLoaderTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 missing,
             ):
                 custom_agents = load_custom_agents(metadata, "aicage")
@@ -62,7 +62,7 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 custom_agents = load_custom_agents(metadata, "aicage")
@@ -88,7 +88,7 @@ class CustomAgentLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 with self.assertRaises(ConfigError):

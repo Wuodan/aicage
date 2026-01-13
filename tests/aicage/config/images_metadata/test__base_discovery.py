@@ -32,7 +32,7 @@ class BaseDiscoveryTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-bases"
             with mock.patch(
-                "aicage.config.custom_base.loader.DEFAULT_CUSTOM_BASES_DIR",
+                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 missing,
             ):
                 discovered = discover_bases(metadata, "aicage")
@@ -52,7 +52,7 @@ class BaseDiscoveryTests(TestCase):
             )
             (base_dir / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_base.loader.DEFAULT_CUSTOM_BASES_DIR",
+                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 discovered = discover_bases(metadata, "aicage")
@@ -84,7 +84,7 @@ class BaseDiscoveryTests(TestCase):
             )
             (fedora_base / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_base.loader.DEFAULT_CUSTOM_BASES_DIR",
+                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 discovered = discover_bases(metadata, "aicage")

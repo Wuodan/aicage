@@ -4,7 +4,8 @@ from aicage.docker import _client
 
 
 class DockerClientTests(TestCase):
-    def test_get_docker_client_uses_timeout(self) -> None:
+    @staticmethod
+    def test_get_docker_client_uses_timeout() -> None:
         with mock.patch("aicage.docker._client.docker.from_env") as from_env:
             _client.get_docker_client()
 

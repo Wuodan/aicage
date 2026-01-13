@@ -32,7 +32,7 @@ class AgentDiscoveryTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 missing,
             ):
                 discovered = discover_agents(metadata, "aicage")
@@ -57,7 +57,7 @@ class AgentDiscoveryTests(TestCase):
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 discovered = discover_agents(metadata, "aicage")
@@ -89,7 +89,7 @@ class AgentDiscoveryTests(TestCase):
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_agent.loader.DEFAULT_CUSTOM_AGENTS_DIR",
+                "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 discovered = discover_agents(metadata, "aicage")

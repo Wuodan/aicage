@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import logging
 import os
-from pathlib import Path
+
+from aicage.paths import GLOBAL_LOG_PATH
 
 _LOGGER_NAME = "aicage"
 _LOG_LEVEL_ENV = "AICAGE_LOG_LEVEL"
 _DEFAULT_LEVEL = "INFO"
-_LOG_PATH = "~/.aicage/logs/aicage.log"
 
 
 def get_logger() -> logging.Logger:
@@ -15,7 +15,7 @@ def get_logger() -> logging.Logger:
     if logger.handlers:
         return logger
 
-    log_path = Path(os.path.expanduser(_LOG_PATH))
+    log_path = GLOBAL_LOG_PATH
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     level = _resolve_level(os.getenv(_LOG_LEVEL_ENV, _DEFAULT_LEVEL))

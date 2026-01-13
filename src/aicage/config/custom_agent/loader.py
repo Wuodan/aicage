@@ -17,7 +17,7 @@ from aicage.config.images_metadata.models import (
     ImagesMetadata,
 )
 from aicage.config.yaml_loader import load_yaml
-from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, DEFAULT_CUSTOM_AGENTS_DIR
+from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, CUSTOM_AGENTS_DIR
 
 from ._validation import ensure_required_files, expect_string, validate_agent_mapping
 
@@ -26,7 +26,7 @@ def load_custom_agents(
     images_metadata: ImagesMetadata,
     local_image_repository: str,
 ) -> dict[str, AgentMetadata]:
-    agents_dir = DEFAULT_CUSTOM_AGENTS_DIR.expanduser()
+    agents_dir = CUSTOM_AGENTS_DIR
     if not agents_dir.is_dir():
         return {}
 
@@ -83,7 +83,7 @@ def _build_custom_agent(
         valid_bases=valid_bases,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,
-        local_definition_dir=DEFAULT_CUSTOM_AGENTS_DIR.expanduser() / agent_name,
+        local_definition_dir=CUSTOM_AGENTS_DIR / agent_name,
     )
 
 

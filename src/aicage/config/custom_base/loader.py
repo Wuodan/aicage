@@ -5,7 +5,7 @@ from pathlib import Path
 from aicage.config._yaml import expect_string
 from aicage.config.errors import ConfigError
 from aicage.config.yaml_loader import load_yaml
-from aicage.paths import CUSTOM_BASE_DEFINITION_FILES, DEFAULT_CUSTOM_BASES_DIR
+from aicage.paths import CUSTOM_BASE_DEFINITION_FILES, CUSTOM_BASES_DIR
 
 from ..images_metadata.models import BaseMetadata
 from ._validation import validate_base_mapping
@@ -18,7 +18,7 @@ _DOCKERFILE_NAME: str = "Dockerfile"
 
 
 def load_custom_bases() -> dict[str, BaseMetadata]:
-    bases_dir = DEFAULT_CUSTOM_BASES_DIR.expanduser()
+    bases_dir = CUSTOM_BASES_DIR
     if not bases_dir.is_dir():
         return {}
 
@@ -32,7 +32,7 @@ def load_custom_bases() -> dict[str, BaseMetadata]:
 
 
 def load_custom_base(base_name: str) -> BaseMetadata | None:
-    base_dir = DEFAULT_CUSTOM_BASES_DIR.expanduser() / base_name
+    base_dir = CUSTOM_BASES_DIR / base_name
     if not base_dir.is_dir():
         return None
     return _load_custom_base(base_dir)

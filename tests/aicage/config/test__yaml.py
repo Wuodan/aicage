@@ -43,5 +43,6 @@ class YamlHelpersTests(TestCase):
         with self.assertRaises(ConfigError):
             _yaml.expect_keys({"name": "x", "extra": True}, required={"name"}, optional=set(), context="payload")
 
-    def test_expect_keys_accepts_valid(self) -> None:
+    @staticmethod
+    def test_expect_keys_accepts_valid() -> None:
         _yaml.expect_keys({"name": "x"}, required={"name"}, optional={"extra"}, context="payload")

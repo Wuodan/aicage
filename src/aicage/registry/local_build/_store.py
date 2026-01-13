@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from aicage.paths import DEFAULT_LOCAL_BUILD_STATE_DIR
+from aicage.paths import IMAGE_BUILD_STATE_DIR
 from aicage.registry._sanitize import sanitize
 
 _AGENT_KEY: str = "agent"
@@ -28,7 +28,7 @@ class BuildRecord:
 
 class BuildStore:
     def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or DEFAULT_LOCAL_BUILD_STATE_DIR.expanduser()
+        self._base_dir = base_dir or IMAGE_BUILD_STATE_DIR
 
     def load(self, agent: str, base: str) -> BuildRecord | None:
         path = self._path(agent, base)

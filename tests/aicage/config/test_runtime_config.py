@@ -31,11 +31,11 @@ from aicage.runtime.run_args import MountSpec
 class RuntimeConfigTests(TestCase):
     def test_load_run_config_reads_docker_args_and_mount_prefs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            base_dir = Path(tmp_dir) / "config"
-            project_path = Path(tmp_dir) / "project"
+            projects_dir = Path(tmp_dir)
+            project_path = projects_dir / "project"
             project_path.mkdir()
 
-            store = SettingsStore(base_dir=base_dir)
+            store = SettingsStore()
 
             project_cfg = store.load_project(project_path)
             project_cfg.agents["codex"] = AgentConfig(
@@ -46,7 +46,7 @@ class RuntimeConfigTests(TestCase):
             store.save_project(project_path, project_cfg)
 
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
-                return SettingsStore(base_dir=base_dir)
+                return SettingsStore()
 
             mounts = [MountSpec(host_path=Path("/tmp/host"), container_path=Path("/tmp/container"))]
             with (
@@ -76,11 +76,10 @@ class RuntimeConfigTests(TestCase):
 
     def test_load_run_config_persists_new_docker_args(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            base_dir = Path(tmp_dir) / "config"
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
 
-            store = SettingsStore(base_dir=base_dir)
+            store = SettingsStore()
             project_cfg = store.load_project(project_path)
             project_cfg.agents["codex"] = AgentConfig(
                 base="ubuntu",
@@ -89,7 +88,7 @@ class RuntimeConfigTests(TestCase):
             store.save_project(project_path, project_cfg)
 
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
-                return SettingsStore(base_dir=base_dir)
+                return SettingsStore()
 
             parsed = ParsedArgs(
                 dry_run=False,
@@ -126,17 +125,16 @@ class RuntimeConfigTests(TestCase):
 
     def test_load_run_config_defaults_base_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            base_dir = Path(tmp_dir) / "config"
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
 
-            store = SettingsStore(base_dir=base_dir)
+            store = SettingsStore()
             project_cfg = store.load_project(project_path)
             project_cfg.agents["codex"] = AgentConfig()
             store.save_project(project_path, project_cfg)
 
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
-                return SettingsStore(base_dir=base_dir)
+                return SettingsStore()
 
             with (
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),

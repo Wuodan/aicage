@@ -56,7 +56,7 @@ class EnsureLocalImageTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -90,7 +90,8 @@ class EnsureLocalImageTests(TestCase):
             with self.assertRaises(RegistryError):
                 ensure_local_image_module.ensure_local_image(run_config)
 
-    def test_ensure_local_image_uses_custom_base(self) -> None:
+    @staticmethod
+    def test_ensure_local_image_uses_custom_base() -> None:
         run_config = build_run_config()
         run_config = RunConfig(
             project_path=run_config.project_path,
@@ -148,12 +149,12 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._logs._DEFAULT_LOG_DIR",
-                    str(log_dir),
+                    "aicage.registry.local_build._logs.IMAGE_BUILD_LOG_DIR",
+                    log_dir,
                 ),
                 mock.patch(
                     "aicage.registry.local_build._plan.local_image_exists",
@@ -202,12 +203,12 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
-                    "aicage.registry.local_build._logs._DEFAULT_LOG_DIR",
-                    str(log_dir),
+                    "aicage.registry.local_build._logs.IMAGE_BUILD_LOG_DIR",
+                    log_dir,
                 ),
                 mock.patch(
                     "aicage.registry.local_build._plan.local_image_exists",

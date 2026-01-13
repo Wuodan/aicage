@@ -13,7 +13,7 @@ from ._fixtures import extended_image_definition, join_yaml
 class ExtendedImagesLoaderTests(TestCase):
     def test_extended_image_config_path(self) -> None:
         with mock.patch(
-            "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+            "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
             Path("/tmp/custom"),
         ):
             path = extended_images_module.extended_image_config_path("sample")
@@ -36,7 +36,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 configs = extended_images_module.load_extended_images(set())
@@ -49,7 +49,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir.mkdir(parents=True)
             (images_dir / "README.md").write_text("ignore", encoding="utf-8")
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 configs = extended_images_module.load_extended_images(set())
@@ -72,7 +72,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 configs = extended_images_module.load_extended_images({"marker"})
@@ -86,7 +86,7 @@ class ExtendedImagesLoaderTests(TestCase):
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -100,7 +100,7 @@ class ExtendedImagesLoaderTests(TestCase):
             config_path = config_dir / "image-extended.yaml"
             config_path.write_text("- not-a-mapping\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -129,7 +129,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -151,7 +151,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -175,7 +175,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -200,7 +200,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):
@@ -223,7 +223,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extended_images.DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR",
+                "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
                 Path(images_dir),
             ):
                 with self.assertRaises(ConfigError):

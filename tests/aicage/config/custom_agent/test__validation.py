@@ -14,7 +14,8 @@ from aicage.config.images_metadata.models import (
 
 
 class CustomAgentValidationTests(TestCase):
-    def test_ensure_required_files_accepts_valid(self) -> None:
+    @staticmethod
+    def test_ensure_required_files_accepts_valid() -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir)
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")

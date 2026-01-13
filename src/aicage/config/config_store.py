@@ -1,21 +1,16 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from aicage.paths import CONFIG_FILENAME
-
+from aicage.paths import CONFIG_FILENAME, PROJECTS_DIR
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path
 from .yaml_loader import load_yaml
-
-_DEFAULT_BASE_DIR = "~/.aicage"
-_PROJECTS_SUBDIR = "projects"
 
 
 class SettingsStore:
@@ -23,10 +18,8 @@ class SettingsStore:
     Persists per-project configuration under ~/.aicage.
     """
 
-    def __init__(self, base_dir: Path | None = None) -> None:
-        self.base_dir = base_dir or Path(os.path.expanduser(_DEFAULT_BASE_DIR))
-        self.projects_dir = self.base_dir / _PROJECTS_SUBDIR
-        self.base_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self) -> None:
+        self.projects_dir = PROJECTS_DIR
         self.projects_dir.mkdir(parents=True, exist_ok=True)
 
     @staticmethod

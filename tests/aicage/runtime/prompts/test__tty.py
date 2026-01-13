@@ -10,6 +10,7 @@ class PromptTtyTests(TestCase):
             with self.assertRaises(RuntimeExecutionError):
                 ensure_tty_for_prompt()
 
-    def test_ensure_tty_for_prompt_allows_tty(self) -> None:
+    @staticmethod
+    def test_ensure_tty_for_prompt_allows_tty() -> None:
         with mock.patch("sys.stdin.isatty", return_value=True):
             ensure_tty_for_prompt()

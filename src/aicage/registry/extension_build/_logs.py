@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
+from aicage.paths import IMAGE_EXTENDED_BUILD_LOG_DIR
 from aicage.registry._sanitize import sanitize
 from aicage.registry._time import timestamp
 
-_DEFAULT_LOG_DIR = "~/.aicage/logs/build"
-
 
 def build_log_path_for_image(image_ref: str) -> Path:
-    log_dir = Path(os.path.expanduser(_DEFAULT_LOG_DIR))
-    return log_dir / f"{sanitize(image_ref)}-{timestamp()}.log"
+    return IMAGE_EXTENDED_BUILD_LOG_DIR / f"{sanitize(image_ref)}-{timestamp()}.log"

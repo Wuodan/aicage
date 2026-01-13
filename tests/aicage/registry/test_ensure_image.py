@@ -6,7 +6,8 @@ from aicage.registry.ensure_image import ensure_image
 
 
 class EnsureImageTests(TestCase):
-    def test_ensure_image_pulls_when_not_local(self) -> None:
+    @staticmethod
+    def test_ensure_image_pulls_when_not_local() -> None:
         run_config = _run_config(build_local=False, extensions=[])
         with (
             mock.patch("aicage.registry.ensure_image.load_custom_base", return_value=None),
@@ -20,7 +21,8 @@ class EnsureImageTests(TestCase):
         local_mock.assert_not_called()
         extended_mock.assert_not_called()
 
-    def test_ensure_image_builds_local_when_custom_base(self) -> None:
+    @staticmethod
+    def test_ensure_image_builds_local_when_custom_base() -> None:
         run_config = _run_config(build_local=False, extensions=[])
         with (
             mock.patch("aicage.registry.ensure_image.load_custom_base", return_value=mock.Mock()),
@@ -32,7 +34,8 @@ class EnsureImageTests(TestCase):
         pull_mock.assert_not_called()
         local_mock.assert_called_once_with(run_config)
 
-    def test_ensure_image_runs_extended_build(self) -> None:
+    @staticmethod
+    def test_ensure_image_runs_extended_build() -> None:
         run_config = _run_config(build_local=True, extensions=["extra"])
         with (
             mock.patch("aicage.registry.ensure_image.load_custom_base", return_value=None),

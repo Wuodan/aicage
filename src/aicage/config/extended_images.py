@@ -9,7 +9,7 @@ from aicage._logging import get_logger
 from aicage.config._yaml import expect_keys, expect_string, read_str_list
 from aicage.config.errors import ConfigError
 from aicage.config.yaml_loader import load_yaml
-from aicage.paths import DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
+from aicage.paths import IMAGE_EXTENDED_STATE_DIR, EXTENDED_IMAGE_DEFINITION_FILENAME
 
 _AGENT_KEY: str = "agent"
 _BASE_KEY: str = "base"
@@ -28,7 +28,7 @@ class ExtendedImageConfig:
 
 
 def load_extended_images(available_extensions: set[str]) -> dict[str, ExtendedImageConfig]:
-    images_dir = DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR.expanduser()
+    images_dir = IMAGE_EXTENDED_STATE_DIR
     if not images_dir.is_dir():
         return {}
     configs: dict[str, ExtendedImageConfig] = {}
@@ -81,7 +81,7 @@ def write_extended_image_config(config: ExtendedImageConfig) -> None:
 
 def extended_image_config_path(name: str) -> Path:
     return (
-        DEFAULT_CUSTOM_EXTENDED_IMAGES_DIR.expanduser()
+        IMAGE_EXTENDED_STATE_DIR
         / name
         / EXTENDED_IMAGE_DEFINITION_FILENAME
     )

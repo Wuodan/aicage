@@ -38,9 +38,15 @@ class ImageSelectionTests(TestCase):
             project_path.mkdir()
             store = mock.Mock(spec=SettingsStore)
             context = build_context(store, project_path, bases=["alpine", "ubuntu"])
-            with mock.patch(
-                "aicage.registry.image_selection._fresh_selection.prompt_for_base",
-                return_value="alpine",
+            with (
+                mock.patch(
+                    "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
+                    Path(tmp_dir) / "extended-images",
+                ),
+                mock.patch(
+                    "aicage.registry.image_selection._fresh_selection.prompt_for_base",
+                    return_value="alpine",
+                ),
             ):
                 image_selection.select_agent_image("codex", context)
 

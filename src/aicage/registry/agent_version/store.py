@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from aicage.paths import DEFAULT_VERSION_CHECK_STATE_DIR
+from aicage.paths import AGENT_VERSION_CHECK_STATE_DIR
 from aicage.registry._time import now_iso
 
 _AGENT_KEY: str = "agent"
@@ -14,7 +14,7 @@ _CHECKED_AT_KEY: str = "checked_at"
 
 class VersionCheckStore:
     def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or DEFAULT_VERSION_CHECK_STATE_DIR.expanduser()
+        self._base_dir = base_dir or AGENT_VERSION_CHECK_STATE_DIR
 
     def save(self, agent: str, version: str) -> Path:
         self._base_dir.mkdir(parents=True, exist_ok=True)

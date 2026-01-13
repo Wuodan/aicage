@@ -12,7 +12,7 @@ import pytest
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.docker.query import get_local_rootfs_layers
-from aicage.paths import DEFAULT_CUSTOM_AGENTS_DIR, DEFAULT_CUSTOM_EXTENSIONS_DIR
+from aicage.paths import CUSTOM_AGENTS_DIR, CUSTOM_EXTENSIONS_DIR
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
 
@@ -174,7 +174,7 @@ def build_cli_env(home_dir: Path) -> dict[str, str]:
 
 
 def custom_agents_dir() -> Path:
-    return DEFAULT_CUSTOM_AGENTS_DIR.expanduser()
+    return CUSTOM_AGENTS_DIR
 
 
 def copy_forge_sample(target_dir: Path) -> None:
@@ -186,7 +186,7 @@ def copy_forge_sample(target_dir: Path) -> None:
 
 
 def custom_extensions_dir() -> Path:
-    return DEFAULT_CUSTOM_EXTENSIONS_DIR.expanduser()
+    return CUSTOM_EXTENSIONS_DIR
 
 
 def copy_marker_extension_sample(target_dir: Path) -> None:

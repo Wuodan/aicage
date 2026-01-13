@@ -11,12 +11,12 @@ class LoggingTests(TestCase):
     def test_get_logger(self) -> None:
         logger = _logging.get_logger()
         handlers = list(logger.handlers)
-        original_log_path = _logging._LOG_PATH
+        original_log_path = _logging.GLOBAL_LOG_PATH
         try:
             logger.handlers.clear()
             with tempfile.TemporaryDirectory() as temp_dir:
                 log_path = Path(temp_dir) / "test.log"
-                _logging._LOG_PATH = str(log_path)
+                _logging.GLOBAL_LOG_PATH = Path(log_path)
                 first_logger = _logging.get_logger()
                 second_logger = _logging.get_logger()
                 self.assertIs(first_logger, second_logger)

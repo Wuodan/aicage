@@ -13,7 +13,7 @@ class RegistryLogsTests(TestCase):
 
     def test_pull_log_path_uses_base_dir(self) -> None:
         with (
-            mock.patch("aicage.registry._logs._DEFAULT_LOG_DIR", "/tmp/logs"),
+            mock.patch("aicage.registry._logs.IMAGE_PULL_LOG_DIR", Path("/tmp/logs")),
             mock.patch("aicage.registry._logs.timestamp", return_value="stamp"),
         ):
             log_path = _logs.pull_log_path("ghcr.io/aicage/aicage:codex-ubuntu")

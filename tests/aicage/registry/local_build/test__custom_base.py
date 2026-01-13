@@ -26,7 +26,7 @@ class CustomBaseBuildTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -68,7 +68,7 @@ class CustomBaseBuildTests(TestCase):
             )
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -96,7 +96,7 @@ class CustomBaseBuildTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.DEFAULT_LOCAL_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(

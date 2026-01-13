@@ -10,7 +10,8 @@ from aicage.runtime.run_args import DockerRunArgs, MountSpec
 
 
 class RunCommandTests(TestCase):
-    def test_run_container_executes_command(self) -> None:
+    @staticmethod
+    def test_run_container_executes_command() -> None:
         args = DockerRunArgs(
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             project_path=Path("/work/project"),
@@ -28,7 +29,8 @@ class RunCommandTests(TestCase):
 
         run_mock.assert_called_once_with(["docker", "run"], check=True)
 
-    def test_print_run_command_outputs_command(self) -> None:
+    @staticmethod
+    def test_print_run_command_outputs_command() -> None:
         args = DockerRunArgs(
             image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             project_path=Path("/work/project"),

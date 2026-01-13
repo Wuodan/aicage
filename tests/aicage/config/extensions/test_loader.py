@@ -16,7 +16,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -32,7 +32,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_dir = extension_root / "sample"
             write_extension(extension_dir, name="Sample", description="Desc")
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -51,7 +51,7 @@ class ExtensionDiscoveryTests(TestCase):
             write_extension(extension_dir, name="Sample", description="Desc")
             (extension_dir / "Dockerfile").write_text("FROM ubuntu:latest\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -68,7 +68,7 @@ class ExtensionDiscoveryTests(TestCase):
             extension_root.mkdir(parents=True)
             (extension_root / "README.md").write_text("ignore", encoding="utf-8")
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 extensions = extensions_module.load_extensions()
@@ -85,7 +85,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):
@@ -98,7 +98,7 @@ class ExtensionDiscoveryTests(TestCase):
             scripts_dir = extension_dir / "scripts"
             scripts_dir.mkdir(parents=True, exist_ok=True)
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):
@@ -115,7 +115,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):
@@ -138,7 +138,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):
@@ -155,7 +155,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):
@@ -172,7 +172,7 @@ class ExtensionDiscoveryTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.extensions.loader.DEFAULT_CUSTOM_EXTENSIONS_DIR",
+                "aicage.config.extensions.loader.CUSTOM_EXTENSIONS_DIR",
                 Path(extension_root),
             ):
                 with self.assertRaises(ConfigError):

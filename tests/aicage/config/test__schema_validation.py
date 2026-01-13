@@ -18,9 +18,9 @@ class SchemaValidationTests(TestCase):
         }
 
         def normalizer(mapping: dict[str, object]) -> dict[str, object]:
-            payload = dict(mapping)
-            payload.setdefault("enabled", True)
-            return payload
+            _payload = dict(mapping)
+            _payload.setdefault("enabled", True)
+            return _payload
 
         def validator(value: object, schema_entry: dict[str, object], context: str) -> None:
             if schema_entry.get("type") == "string" and not isinstance(value, str):

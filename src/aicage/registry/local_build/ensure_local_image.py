@@ -6,7 +6,7 @@ from aicage.config.custom_base.loader import load_custom_base
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
-from aicage.paths import DEFAULT_CUSTOM_BASES_DIR
+from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry._time import now_iso
 from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.errors import RegistryError
@@ -29,7 +29,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
     base_image = get_base_image_ref(run_config)
     image_ref = run_config.selection.base_image_ref
     if custom_base is not None:
-        base_dir = DEFAULT_CUSTOM_BASES_DIR.expanduser() / run_config.selection.base
+        base_dir = CUSTOM_BASES_DIR / run_config.selection.base
         ensure_custom_base_image(run_config.selection.base, custom_base, base_dir)
     else:
         base_repo = base_repository(run_config)
