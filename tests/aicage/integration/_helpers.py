@@ -219,6 +219,16 @@ def custom_extensions_dir() -> Path:
     return _custom_root_dir() / "extensions"
 
 
+def custom_bases_dir() -> Path:
+    return _custom_root_dir() / "base-images"
+
+
+def copy_custom_base_sample(sample_name: str, target_dir: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[3]
+    source_dir = repo_root / "doc/sample/custom/base-images" / sample_name
+    copytree(source_dir, target_dir, dirs_exist_ok=True)
+
+
 def copy_marker_extension_sample(target_dir: Path) -> None:
     repo_root = Path(__file__).resolve().parents[3]
     source_dir = repo_root / "doc/sample/custom/extensions/marker"
