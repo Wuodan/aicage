@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from aicage.config.custom_base.loader import load_custom_bases
 from aicage.config.image_refs import local_image_ref
 
 from .models import AgentMetadata, BaseMetadata, ImagesMetadata
@@ -9,8 +8,8 @@ from .models import AgentMetadata, BaseMetadata, ImagesMetadata
 def discover_bases(
     images_metadata: ImagesMetadata,
     local_image_repository: str,
+    custom_bases: dict[str, BaseMetadata],
 ) -> ImagesMetadata:
-    custom_bases = load_custom_bases()
     if not custom_bases:
         return images_metadata
 

@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.custom_base.loader import load_custom_bases
 from aicage.config.images_metadata._base_discovery import discover_bases
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -35,7 +36,8 @@ class BaseDiscoveryTests(TestCase):
                 "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 missing,
             ):
-                discovered = discover_bases(metadata, "aicage")
+                custom_bases = load_custom_bases()
+                discovered = discover_bases(metadata, "aicage", custom_bases)
         self.assertIs(discovered, metadata)
 
     def test_discover_bases_overrides_release_base(self) -> None:
@@ -55,7 +57,8 @@ class BaseDiscoveryTests(TestCase):
                 "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
-                discovered = discover_bases(metadata, "aicage")
+                custom_bases = load_custom_bases()
+                discovered = discover_bases(metadata, "aicage", custom_bases)
 
         base = discovered.bases["ubuntu"]
         self.assertEqual("Custom Debian", base.base_image_description)
@@ -87,7 +90,8 @@ class BaseDiscoveryTests(TestCase):
                 "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
-                discovered = discover_bases(metadata, "aicage")
+                custom_bases = load_custom_bases()
+                discovered = discover_bases(metadata, "aicage", custom_bases)
 
         valid_bases = discovered.agents["codex"].valid_bases
         self.assertNotIn("custom", valid_bases)

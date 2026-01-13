@@ -3,6 +3,7 @@ from unittest import TestCase, mock
 
 from aicage.config import config_store as config_store_module
 from aicage.config.context import ConfigContext
+from aicage.config.custom_base import loader as custom_base_module
 from aicage.config.extensions import loader as extensions_module
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata import loader as images_loader_module
@@ -65,11 +66,13 @@ class ContextTests(TestCase):
             mock.patch("aicage.config.config_store.SettingsStore") as store_cls,
             mock.patch("pathlib.Path.cwd", return_value=Path("/work/project")),
             mock.patch("aicage.config.images_metadata.loader.load_images_metadata") as load_metadata,
+            mock.patch("aicage.config.custom_base.loader.load_custom_bases") as load_bases,
             mock.patch("aicage.config.extensions.loader.load_extensions") as load_extensions,
         ):
             store = store_cls.return_value
             store.load_global.return_value = global_cfg
             store.load_project.return_value = project_cfg
+            load_bases.return_value = {}
             load_metadata.return_value = self._get_images_metadata()
             load_extensions.return_value = {}
 
@@ -79,7 +82,7 @@ class ContextTests(TestCase):
         self.assertEqual(project_cfg, context.project_cfg)
         self.assertEqual(self._get_images_metadata(), context.images_metadata)
         self.assertEqual({}, context.extensions)
-        load_metadata.assert_called_once_with("aicage")
+        load_metadata.assert_called_once_with("aicage", {})
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:
@@ -113,7 +116,11 @@ def _build_config_context() -> ConfigContext:
     store = config_store_module.SettingsStore()
     project_path = Path.cwd().resolve()
     global_cfg = store.load_global()
-    images_metadata = images_loader_module.load_images_metadata(global_cfg.local_image_repository)
+    custom_bases = custom_base_module.load_custom_bases()
+    images_metadata = images_loader_module.load_images_metadata(
+        global_cfg.local_image_repository,
+        custom_bases,
+    )
     project_cfg = store.load_project(project_path)
     extensions = extensions_module.load_extensions()
     return ConfigContext(
@@ -122,4 +129,5 @@ def _build_config_context() -> ConfigContext:
         global_cfg=global_cfg,
         images_metadata=images_metadata,
         extensions=extensions,
+        custom_bases=custom_bases,
     )

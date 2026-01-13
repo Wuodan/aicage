@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aicage.config.custom_base.loader import load_custom_base
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
@@ -25,7 +24,7 @@ def ensure_local_image(run_config: RunConfig) -> None:
     if definition_dir is None:
         raise RegistryError(f"Missing local definition for '{run_config.agent}'.")
 
-    custom_base = load_custom_base(run_config.selection.base)
+    custom_base = run_config.context.custom_bases.get(run_config.selection.base)
     base_image = get_base_image_ref(run_config)
     image_ref = run_config.selection.base_image_ref
     if custom_base is not None:

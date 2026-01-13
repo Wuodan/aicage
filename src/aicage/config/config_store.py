@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 
 from aicage.paths import CONFIG_FILENAME, PROJECTS_DIR
+
 from .global_config import GlobalConfig
 from .project_config import ProjectConfig
 from .resources import find_packaged_path

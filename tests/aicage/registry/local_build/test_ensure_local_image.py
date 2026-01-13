@@ -113,15 +113,8 @@ class EnsureLocalImageTests(TestCase):
             os_installer="",
             test_suite="",
         )
+        run_config.context.custom_bases = {"custom": custom_base}
         with (
-            mock.patch(
-                "aicage.registry.local_build.ensure_local_image.load_custom_base",
-                return_value=custom_base,
-            ),
-            mock.patch(
-                "aicage.registry.local_build._refs.load_custom_base",
-                return_value=custom_base,
-            ),
             mock.patch(
                 "aicage.registry.local_build.ensure_local_image.ensure_custom_base_image"
             ) as base_mock,

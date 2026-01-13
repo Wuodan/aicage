@@ -54,6 +54,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=mounts),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
+                mock.patch("aicage.config.runtime_config.load_custom_bases", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
@@ -104,6 +105,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
+                mock.patch("aicage.config.runtime_config.load_custom_bases", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),
@@ -141,6 +143,7 @@ class RuntimeConfigTests(TestCase):
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
                 mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
+                mock.patch("aicage.config.runtime_config.load_custom_bases", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_images_metadata",
                     return_value=self._get_images_metadata(),

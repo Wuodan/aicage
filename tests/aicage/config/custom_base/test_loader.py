@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config import ConfigError
-from aicage.config.custom_base.loader import load_custom_base, load_custom_bases
+from aicage.config.custom_base.loader import _load_custom_base, load_custom_bases
 from aicage.paths import CUSTOM_BASE_DEFINITION_FILES
 
 
@@ -25,7 +25,7 @@ class CustomBaseLoaderTests(TestCase):
                 "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
-                custom_base = load_custom_base("missing")
+                custom_base = _load_custom_base("missing")
         self.assertIsNone(custom_base)
 
     def test_load_custom_bases_reads_definition(self) -> None:

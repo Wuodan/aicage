@@ -8,8 +8,9 @@ class LocalBuildRefsTests(TestCase):
         run_config = mock.Mock()
         run_config.selection = mock.Mock()
         run_config.selection.base = "custom"
-        with mock.patch("aicage.registry.local_build._refs.load_custom_base", return_value=mock.Mock()):
-            ref = _refs.get_base_image_ref(run_config)
+        run_config.context = mock.Mock()
+        run_config.context.custom_bases = {"custom": mock.Mock()}
+        ref = _refs.get_base_image_ref(run_config)
 
         self.assertEqual("aicage-image-base:custom", ref)
 
@@ -21,8 +22,8 @@ class LocalBuildRefsTests(TestCase):
         run_config.context.global_cfg = mock.Mock()
         run_config.context.global_cfg.image_registry = "ghcr.io"
         run_config.context.global_cfg.image_base_repository = "aicage/aicage-image-base"
-        with mock.patch("aicage.registry.local_build._refs.load_custom_base", return_value=None):
-            ref = _refs.get_base_image_ref(run_config)
+        run_config.context.custom_bases = {}
+        ref = _refs.get_base_image_ref(run_config)
 
         self.assertEqual("ghcr.io/aicage/aicage-image-base:ubuntu", ref)
 

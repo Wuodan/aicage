@@ -1,12 +1,15 @@
-import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import (
+    AgentMetadata,
+    BaseMetadata,
+    ImagesMetadata,
+    _ImageReleaseInfo,
+)
 from aicage.config.project_config import ProjectConfig
-from aicage.paths import CUSTOM_BASE_DEFINITION_FILES
 from aicage.registry.image_selection.extensions.refs import base_image_ref
 
 
@@ -51,26 +54,16 @@ class ExtensionRefsTests(TestCase):
             valid_bases={"custom": "ghcr.io/aicage/aicage:codex-custom"},
             local_definition_dir=None,
         )
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            custom_dir = Path(tmp_dir)
-            base_dir = custom_dir / "custom"
-            base_dir.mkdir()
-            (base_dir / CUSTOM_BASE_DEFINITION_FILES[0]).write_text(
-                "\n".join(
-                    [
-                        "from_image: ubuntu:latest",
-                        "base_image_distro: Ubuntu",
-                        "base_image_description: Custom",
-                    ]
-                ),
-                encoding="utf-8",
+        context.custom_bases = {
+            "custom": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Custom",
+                os_installer="",
+                test_suite="",
             )
-            (base_dir / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
-            with mock.patch(
-                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
-                custom_dir,
-            ):
-                result = base_image_ref(agent_metadata, "codex", "custom", context)
+        }
+        result = base_image_ref(agent_metadata, "codex", "custom", context)
 
         self.assertEqual("local:codex-custom", result)
 
