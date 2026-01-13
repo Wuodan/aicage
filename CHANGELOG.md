@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.7] - 2026-01-13
+
+### Added
+
+- Custom base image discovery and validation for local base image definitions.
+- Local custom base build pipeline with digest lookup and stored metadata.
+- Customization samples and Dockerfile examples for custom base images.
+
+### Changed
+
+- Custom directories now live under `~/.aicage-custom`.
+- Storage/log paths for custom and local builds are consolidated under the new custom root.
+- Custom base metadata loads once per run instead of on every access.
+- Global config file removed in favor of constants.
+
+### Internal
+
+- Refactored registry digest helpers and expanded digest coverage.
+- Enforced test-structure mapping rules and updated test module names.
+- Updated image submodules to the latest revisions.
+
 ## [0.8.1] - 2026-01-11
 
 ### Added
