@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import (
     AgentMetadata,
     BaseMetadata,
@@ -10,6 +9,7 @@ from aicage.config.images_metadata.models import (
     _ImageReleaseInfo,
 )
 from aicage.config.project_config import ProjectConfig
+from aicage.constants import LOCAL_IMAGE_REPOSITORY
 from aicage.registry.image_selection.extensions.refs import base_image_ref
 
 
@@ -27,7 +27,7 @@ class ExtensionRefsTests(TestCase):
 
         result = base_image_ref(agent_metadata, "codex", "ubuntu", context)
 
-        self.assertEqual("local:codex-ubuntu", result)
+        self.assertEqual(f"{LOCAL_IMAGE_REPOSITORY}:codex-ubuntu", result)
 
     def test_base_image_ref_uses_remote_for_builtin_agent(self) -> None:
         context = self._context()
@@ -65,24 +65,13 @@ class ExtensionRefsTests(TestCase):
         }
         result = base_image_ref(agent_metadata, "codex", "custom", context)
 
-        self.assertEqual("local:codex-custom", result)
+        self.assertEqual(f"{LOCAL_IMAGE_REPOSITORY}:codex-custom", result)
 
     @staticmethod
     def _context() -> ConfigContext:
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                image_base_repository="aicage/aicage-image-base",
-                default_image_base="ubuntu",
-                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-                local_image_repository="local",
-                agents={},
-            ),
             images_metadata=ImagesMetadata(
                 aicage_image=_ImageReleaseInfo(version="0.3.3"),
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),

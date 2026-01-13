@@ -33,14 +33,12 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
     project_config_path = store.project_config_path(project_path)
 
     with lock_project_config(project_config_path):
-        global_cfg = store.load_global()
         custom_bases = load_custom_bases()
-        images_metadata = load_images_metadata(global_cfg.local_image_repository, custom_bases)
+        images_metadata = load_images_metadata(custom_bases)
         project_cfg = store.load_project(project_path)
         context = ConfigContext(
             store=store,
             project_cfg=project_cfg,
-            global_cfg=global_cfg,
             images_metadata=images_metadata,
             extensions=load_extensions(),
             custom_bases=custom_bases,

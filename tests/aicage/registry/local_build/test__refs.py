@@ -19,9 +19,6 @@ class LocalBuildRefsTests(TestCase):
         run_config.selection = mock.Mock()
         run_config.selection.base = "ubuntu"
         run_config.context = mock.Mock()
-        run_config.context.global_cfg = mock.Mock()
-        run_config.context.global_cfg.image_registry = "ghcr.io"
-        run_config.context.global_cfg.image_base_repository = "aicage/aicage-image-base"
         run_config.context.custom_bases = {}
         ref = _refs.get_base_image_ref(run_config)
 
@@ -29,10 +26,6 @@ class LocalBuildRefsTests(TestCase):
 
     def test_base_repository_includes_registry(self) -> None:
         run_config = mock.Mock()
-        run_config.context = mock.Mock()
-        run_config.context.global_cfg = mock.Mock()
-        run_config.context.global_cfg.image_registry = "ghcr.io"
-        run_config.context.global_cfg.image_base_repository = "aicage/aicage-image-base"
 
         repository = _refs.base_repository(run_config)
 

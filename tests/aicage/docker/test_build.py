@@ -5,13 +5,12 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.docker import build
 from aicage.docker.errors import DockerError
-from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.image_selection import ImageSelection
 
 from ._fixtures import build_run_config
@@ -214,17 +213,6 @@ def _extension(extension_id: str) -> ExtensionMetadata:
 
 
 def _run_config() -> RunConfig:
-    global_cfg = GlobalConfig(
-        image_registry="ghcr.io",
-        image_registry_api_url="https://ghcr.io/v2",
-        image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-        image_repository="aicage/aicage",
-        image_base_repository="aicage/aicage-image-base",
-        default_image_base="ubuntu",
-        version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-        local_image_repository="aicage",
-        agents={},
-    )
     images_metadata = ImagesMetadata(
         aicage_image=_ImageReleaseInfo(version="0.3.3"),
         aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
@@ -237,7 +225,6 @@ def _run_config() -> RunConfig:
         context=ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            global_cfg=global_cfg,
             images_metadata=images_metadata,
             extensions={},
         ),

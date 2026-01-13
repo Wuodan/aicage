@@ -12,7 +12,7 @@ from aicage.registry import image_selection
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
 
-from ._fixtures import build_context, global_config, metadata_with_bases
+from ._fixtures import build_context, metadata_with_bases
 
 
 class ImageSelectionTests(TestCase):
@@ -76,7 +76,6 @@ class ImageSelectionTests(TestCase):
             context = ConfigContext(
                 store=store,
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
-                global_cfg=global_config(),
                 images_metadata=metadata_with_bases(
                     ["ubuntu"],
                     agent_name="claude",
@@ -141,7 +140,6 @@ class ImageSelectionTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(spec=SettingsStore),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            global_cfg=global_config(),
             images_metadata=ImagesMetadata(
                 aicage_image=_ImageReleaseInfo(version="0.3.3"),
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),

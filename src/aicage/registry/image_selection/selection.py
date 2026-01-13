@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from aicage.config.context import ConfigContext
-from aicage.config.project_config import AGENT_BASE_KEY, AgentConfig
+from aicage.config.project_config import AgentConfig
 
 from ._fresh_selection import fresh_selection
 from ._metadata import require_agent_metadata, validate_base
@@ -18,7 +18,7 @@ def select_agent_image(agent: str, context: ConfigContext) -> ImageSelection:
     extensions = context.extensions
     agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
     agent_metadata = require_agent_metadata(agent, context.images_metadata)
-    base = agent_cfg.base or context.global_cfg.agents.get(agent, {}).get(AGENT_BASE_KEY)
+    base = agent_cfg.base
 
     if agent_cfg.image_ref:
         if base is None:

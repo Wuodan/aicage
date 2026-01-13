@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from aicage.config.image_refs import local_image_ref
+from aicage.constants import LOCAL_IMAGE_REPOSITORY
 
 from .models import AgentMetadata, BaseMetadata, ImagesMetadata
 
 
 def discover_bases(
     images_metadata: ImagesMetadata,
-    local_image_repository: str,
     custom_bases: dict[str, BaseMetadata],
 ) -> ImagesMetadata:
     if not custom_bases:
@@ -20,7 +20,6 @@ def discover_bases(
             agent_name=name,
             agent_metadata=agent_metadata,
             custom_bases=custom_bases,
-            local_image_repository=local_image_repository,
         )
         for name, agent_metadata in images_metadata.agents.items()
     }
@@ -36,7 +35,6 @@ def _merge_agent_custom_bases(
     agent_name: str,
     agent_metadata: AgentMetadata,
     custom_bases: dict[str, BaseMetadata],
-    local_image_repository: str,
 ) -> AgentMetadata:
     valid_bases = dict(agent_metadata.valid_bases)
     base_exclude_set = _normalize_exclude(agent_metadata.base_exclude)
@@ -49,7 +47,7 @@ def _merge_agent_custom_bases(
             base_distro_exclude_set,
         ):
             continue
-        valid_bases[base_name] = local_image_ref(local_image_repository, agent_name, base_name)
+        valid_bases[base_name] = local_image_ref(LOCAL_IMAGE_REPOSITORY, agent_name, base_name)
     return AgentMetadata(
         agent_path=agent_metadata.agent_path,
         agent_full_name=agent_metadata.agent_full_name,

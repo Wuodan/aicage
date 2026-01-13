@@ -18,15 +18,15 @@ class CustomBaseLoaderTests(TestCase):
                 custom_bases = load_custom_bases()
         self.assertEqual({}, custom_bases)
 
-    def test_load_custom_base_returns_none_when_missing(self) -> None:
+    def test_load_custom_base_raises_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             custom_dir = Path(tmp_dir)
             with mock.patch(
                 "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
-                custom_base = _load_custom_base("missing")
-        self.assertIsNone(custom_base)
+                with self.assertRaises(ConfigError):
+                    _load_custom_base("missing")
 
     def test_load_custom_bases_reads_definition(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

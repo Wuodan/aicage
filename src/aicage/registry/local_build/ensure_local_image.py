@@ -74,7 +74,7 @@ def _get_agent_version(
     agent_metadata: AgentMetadata,
     definition_dir: Path,
 ) -> str:
-    checker = AgentVersionChecker(run_config.context.global_cfg)
+    checker = AgentVersionChecker()
     return checker.get_version(
         run_config.agent,
         agent_metadata,

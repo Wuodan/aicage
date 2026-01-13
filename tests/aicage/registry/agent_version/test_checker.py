@@ -4,7 +4,6 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
 from aicage.registry.agent_version import _command as command
@@ -20,7 +19,6 @@ class AgentVersionCheckTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
             checker = AgentVersionChecker(
-                global_cfg=self._global_config(),
                 store=VersionCheckStore(store_dir),
             )
 
@@ -49,7 +47,6 @@ class AgentVersionCheckTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
             checker = AgentVersionChecker(
-                global_cfg=self._global_config(),
                 store=VersionCheckStore(store_dir),
             )
 
@@ -83,7 +80,6 @@ class AgentVersionCheckTests(TestCase):
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
             checker = AgentVersionChecker(
-                global_cfg=self._global_config(),
                 store=VersionCheckStore(store_dir),
             )
 
@@ -116,7 +112,6 @@ class AgentVersionCheckTests(TestCase):
             agent_dir.mkdir()
             store_dir = Path(tmp_dir) / "state"
             checker = AgentVersionChecker(
-                global_cfg=self._global_config(),
                 store=VersionCheckStore(store_dir),
             )
             with self.assertRaises(RegistryError):
@@ -126,20 +121,6 @@ class AgentVersionCheckTests(TestCase):
                     definition_dir=agent_dir,
                 )
             self.assertFalse((store_dir / "custom.yaml").exists())
-
-    @staticmethod
-    def _global_config() -> GlobalConfig:
-        return GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
 
     @staticmethod
     def _agent_metadata() -> AgentMetadata:

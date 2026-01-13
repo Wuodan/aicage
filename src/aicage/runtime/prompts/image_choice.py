@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from aicage._logging import get_logger
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata
+from aicage.constants import DEFAULT_IMAGE_BASE
 from aicage.runtime.errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
@@ -68,14 +69,14 @@ def _render_image_prompt(
 ) -> str:
     title = f"Select image for '{request.agent}' (runtime to use inside the container):"
     if not options:
-        return f"{title} [{request.context.global_cfg.default_image_base}]: "
+        return f"{title} [{DEFAULT_IMAGE_BASE}]: "
     print(title)
     for idx, (label, choice) in enumerate(options, start=1):
         suffix = ""
-        if choice.kind == "base" and choice.value == request.context.global_cfg.default_image_base:
+        if choice.kind == "base" and choice.value == DEFAULT_IMAGE_BASE:
             suffix = " (default)"
         print(f"  {idx}) {label}{suffix}")
-    return f"Enter number or name [{request.context.global_cfg.default_image_base}]: "
+    return f"Enter number or name [{DEFAULT_IMAGE_BASE}]: "
 
 
 def _parse_image_choice_response(
@@ -86,7 +87,7 @@ def _parse_image_choice_response(
     options: list[tuple[str, ImageChoice]],
 ) -> ImageChoice:
     if not response:
-        return ImageChoice(kind="base", value=request.context.global_cfg.default_image_base)
+        return ImageChoice(kind="base", value=DEFAULT_IMAGE_BASE)
     if response.isdigit() and options:
         idx = int(response)
         if idx < 1 or idx > len(options):

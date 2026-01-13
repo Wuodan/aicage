@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from aicage.config.global_config import GlobalConfig
+from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY
 from aicage.docker.query import get_local_repo_digest
 from aicage.docker.types import ImageRefRepository
 from aicage.registry.digest.remote_digest import get_remote_digest
 
 
-def decide_pull(image_ref: str, global_cfg: GlobalConfig) -> bool:
+def decide_pull(image_ref: str) -> bool:
     # Local digests include registry prefix; registry API uses repository only.
-    local_repository = f"{global_cfg.image_registry}/{global_cfg.image_repository}"
+    local_repository = f"{IMAGE_REGISTRY}/{IMAGE_REPOSITORY}"
     local_digest = get_local_repo_digest(
         ImageRefRepository(
             image_ref=image_ref,

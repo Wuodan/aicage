@@ -35,7 +35,7 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 missing,
             ):
-                discovered = discover_agents(metadata, "aicage")
+                discovered = discover_agents(metadata)
         self.assertIs(discovered, metadata)
 
     def test_discover_agents_overrides_release_agent(self) -> None:
@@ -60,7 +60,7 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
-                discovered = discover_agents(metadata, "aicage")
+                discovered = discover_agents(metadata)
 
         agent = discovered.agents["codex"]
         self.assertEqual(custom_dir / "codex", agent.local_definition_dir)
@@ -92,7 +92,7 @@ class AgentDiscoveryTests(TestCase):
                 "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
-                discovered = discover_agents(metadata, "aicage")
+                discovered = discover_agents(metadata)
 
         agent = discovered.agents["custom"]
         self.assertEqual(custom_dir / "custom", agent.local_definition_dir)

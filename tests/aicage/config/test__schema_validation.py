@@ -6,7 +6,7 @@ from aicage.config.errors import ConfigError
 
 class SchemaValidationTests(TestCase):
     def test_load_schema_reads_packaged_schema(self) -> None:
-        payload = load_schema("validation/config.schema.json")
+        payload = load_schema("validation/base.schema.json")
 
         self.assertIsInstance(payload.get("properties"), dict)
 

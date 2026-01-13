@@ -4,7 +4,6 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry.errors import RegistryError
@@ -187,17 +186,6 @@ class MissingExtensionsTests(TestCase):
         return ConfigContext(
             store=store,
             project_cfg=project_cfg,
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                image_base_repository="aicage/aicage-image-base",
-                default_image_base="ubuntu",
-                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-                local_image_repository="aicage",
-                agents={},
-            ),
             images_metadata=ImagesMetadata(
                 aicage_image=_ImageReleaseInfo(version="0.3.3"),
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),

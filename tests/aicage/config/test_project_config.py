@@ -2,10 +2,10 @@ from pathlib import Path
 from unittest import TestCase
 
 from aicage.config.project_config import (
+    _AGENT_BASE_KEY,
     _DOCKER_ARGS_KEY,
     _PROJECT_AGENTS_KEY,
     _PROJECT_PATH_KEY,
-    AGENT_BASE_KEY,
     AgentConfig,
     ProjectConfig,
 )
@@ -20,6 +20,6 @@ class ProjectConfigTests(TestCase):
     def test_to_mapping_round_trip(self) -> None:
         cfg = ProjectConfig(path="/repo", agents={"codex": AgentConfig(base="ubuntu")})
         self.assertEqual(
-            {_PROJECT_PATH_KEY: "/repo", _PROJECT_AGENTS_KEY: {"codex": {AGENT_BASE_KEY: "ubuntu"}}},
+            {_PROJECT_PATH_KEY: "/repo", _PROJECT_AGENTS_KEY: {"codex": {_AGENT_BASE_KEY: "ubuntu"}}},
             cfg.to_mapping(),
         )

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from aicage._logging import get_logger
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata
+from aicage.constants import DEFAULT_IMAGE_BASE
 from aicage.runtime.errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
@@ -30,15 +31,15 @@ def prompt_for_base(request: BaseSelectionRequest) -> str:
     if bases:
         print(title)
         for idx, option in enumerate(bases, start=1):
-            suffix = " (default)" if option.base == request.context.global_cfg.default_image_base else ""
+            suffix = " (default)" if option.base == DEFAULT_IMAGE_BASE else ""
             print(f"  {idx}) {option.base}: {option.description}{suffix}")
-        prompt = f"Enter number or name [{request.context.global_cfg.default_image_base}]: "
+        prompt = f"Enter number or name [{DEFAULT_IMAGE_BASE}]: "
     else:
-        prompt = f"{title} [{request.context.global_cfg.default_image_base}]: "
+        prompt = f"{title} [{DEFAULT_IMAGE_BASE}]: "
 
     response = input(prompt).strip()
     if not response:
-        choice = request.context.global_cfg.default_image_base
+        choice = DEFAULT_IMAGE_BASE
     elif response.isdigit() and bases:
         idx = int(response)
         if idx < 1 or idx > len(bases):

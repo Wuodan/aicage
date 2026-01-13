@@ -5,7 +5,6 @@ from aicage.config import config_store as config_store_module
 from aicage.config.context import ConfigContext
 from aicage.config.custom_base import loader as custom_base_module
 from aicage.config.extensions import loader as extensions_module
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata import loader as images_loader_module
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
@@ -26,6 +25,7 @@ from aicage.config.images_metadata.models import (
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
+from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY
 
 
 class ContextTests(TestCase):
@@ -33,34 +33,12 @@ class ContextTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/work/project", agents={}),
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                image_base_repository="aicage/aicage-image-base",
-                default_image_base="ubuntu",
-                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-                local_image_repository="aicage",
-                agents={},
-            ),
             images_metadata=self._get_images_metadata(),
             extensions={},
         )
-        self.assertEqual("ghcr.io/aicage/aicage", context.image_repository_ref())
+        self.assertEqual(f"{IMAGE_REGISTRY}/{IMAGE_REPOSITORY}", context.image_repository_ref())
 
     def test_build_config_context_uses_store(self) -> None:
-        global_cfg = GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
         project_cfg = ProjectConfig(path="/work/project", agents={})
         with (
             mock.patch("aicage.config.config_store.SettingsStore") as store_cls,
@@ -70,7 +48,6 @@ class ContextTests(TestCase):
             mock.patch("aicage.config.extensions.loader.load_extensions") as load_extensions,
         ):
             store = store_cls.return_value
-            store.load_global.return_value = global_cfg
             store.load_project.return_value = project_cfg
             load_bases.return_value = {}
             load_metadata.return_value = self._get_images_metadata()
@@ -78,11 +55,10 @@ class ContextTests(TestCase):
 
             context = _build_config_context()
 
-        self.assertEqual(global_cfg, context.global_cfg)
         self.assertEqual(project_cfg, context.project_cfg)
         self.assertEqual(self._get_images_metadata(), context.images_metadata)
         self.assertEqual({}, context.extensions)
-        load_metadata.assert_called_once_with("aicage", {})
+        load_metadata.assert_called_once_with({})
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:
@@ -115,18 +91,13 @@ class ContextTests(TestCase):
 def _build_config_context() -> ConfigContext:
     store = config_store_module.SettingsStore()
     project_path = Path.cwd().resolve()
-    global_cfg = store.load_global()
     custom_bases = custom_base_module.load_custom_bases()
-    images_metadata = images_loader_module.load_images_metadata(
-        global_cfg.local_image_repository,
-        custom_bases,
-    )
+    images_metadata = images_loader_module.load_images_metadata(custom_bases)
     project_cfg = store.load_project(project_path)
     extensions = extensions_module.load_extensions()
     return ConfigContext(
         store=store,
         project_cfg=project_cfg,
-        global_cfg=global_cfg,
         images_metadata=images_metadata,
         extensions=extensions,
         custom_bases=custom_bases,

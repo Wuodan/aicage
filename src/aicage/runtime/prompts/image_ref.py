@@ -1,4 +1,4 @@
-from ...paths import DEFAULT_EXTENDED_IMAGE_NAME
+from ...constants import DEFAULT_EXTENDED_IMAGE_NAME
 from ._tty import ensure_tty_for_prompt
 
 

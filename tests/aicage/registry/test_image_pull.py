@@ -6,7 +6,6 @@ from unittest import TestCase, mock
 
 from docker.errors import DockerException
 
-from aicage.config.global_config import GlobalConfig
 from aicage.registry import image_pull
 
 
@@ -29,24 +28,8 @@ class FakeDockerClient:
 
 
 class DockerInvocationTests(TestCase):
-    @staticmethod
-    def _build_global_cfg() -> GlobalConfig:
-        return GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
-
-
     def test_pull_image_success_writes_log(self) -> None:
         image_ref = "repo:tag"
-        global_cfg = self._build_global_cfg()
         api = FakeDockerApi(
             events=[
                 {"status": "Pulling from org/repo", "id": "repo:tag"},
@@ -71,7 +54,7 @@ class DockerInvocationTests(TestCase):
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                image_pull.pull_image(image_ref, global_cfg)
+                image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
             self.assertIn("Pulling image repo:tag", stdout.getvalue())
             log_lines = log_path.read_text(encoding="utf-8").splitlines()
@@ -88,7 +71,6 @@ class DockerInvocationTests(TestCase):
 
     def test_pull_image_raises_on_sdk_error(self) -> None:
         image_ref = "repo:tag"
-        global_cfg = self._build_global_cfg()
         api = FakeDockerApi(events=[], exc=DockerException("network down"))
         client = FakeDockerClient(api)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -109,12 +91,11 @@ class DockerInvocationTests(TestCase):
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
                 with self.assertRaises(DockerException):
-                    image_pull.pull_image(image_ref, global_cfg)
+                    image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
 
     def test_pull_image_skips_when_up_to_date(self) -> None:
         image_ref = "repo:tag"
-        global_cfg = self._build_global_cfg()
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "pull.log"
             with (
@@ -130,13 +111,12 @@ class DockerInvocationTests(TestCase):
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                image_pull.pull_image(image_ref, global_cfg)
+                image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
 
     def test_pull_image_skips_when_remote_unknown(self) -> None:
         image_ref = "repo:tag"
-        global_cfg = self._build_global_cfg()
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "pull.log"
             with (
@@ -152,6 +132,6 @@ class DockerInvocationTests(TestCase):
                 mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
-                image_pull.pull_image(image_ref, global_cfg)
+                image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())

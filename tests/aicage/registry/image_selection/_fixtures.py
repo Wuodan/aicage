@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.config import GlobalConfig, ProjectConfig
+from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
@@ -33,23 +33,8 @@ def build_context(
     return ConfigContext(
         store=store,
         project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
-        global_cfg=global_config(),
         images_metadata=metadata_with_bases(bases),
         extensions={},
-    )
-
-
-def global_config() -> GlobalConfig:
-    return GlobalConfig(
-        image_registry="ghcr.io",
-        image_registry_api_url="https://ghcr.io/v2",
-        image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-        image_repository="aicage/aicage",
-        image_base_repository="aicage/aicage-image-base",
-        default_image_base="ubuntu",
-        version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-        local_image_repository="aicage",
-        agents={},
     )
 
 

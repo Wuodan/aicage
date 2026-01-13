@@ -37,7 +37,7 @@ class BaseDiscoveryTests(TestCase):
                 missing,
             ):
                 custom_bases = load_custom_bases()
-                discovered = discover_bases(metadata, "aicage", custom_bases)
+                discovered = discover_bases(metadata, custom_bases)
         self.assertIs(discovered, metadata)
 
     def test_discover_bases_overrides_release_base(self) -> None:
@@ -58,7 +58,7 @@ class BaseDiscoveryTests(TestCase):
                 custom_dir,
             ):
                 custom_bases = load_custom_bases()
-                discovered = discover_bases(metadata, "aicage", custom_bases)
+                discovered = discover_bases(metadata, custom_bases)
 
         base = discovered.bases["ubuntu"]
         self.assertEqual("Custom Debian", base.base_image_description)
@@ -91,7 +91,7 @@ class BaseDiscoveryTests(TestCase):
                 custom_dir,
             ):
                 custom_bases = load_custom_bases()
-                discovered = discover_bases(metadata, "aicage", custom_bases)
+                discovered = discover_bases(metadata, custom_bases)
 
         valid_bases = discovered.agents["codex"].valid_bases
         self.assertNotIn("custom", valid_bases)

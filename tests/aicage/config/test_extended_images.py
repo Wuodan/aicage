@@ -6,7 +6,7 @@ from aicage.config import ConfigError
 from aicage.config import extended_images as extended_images_module
 from aicage.config.extended_images import ExtendedImageConfig
 from aicage.config.yaml_loader import load_yaml
-from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
+from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 
 from ._fixtures import extended_image_definition, join_yaml
 

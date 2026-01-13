@@ -7,9 +7,8 @@ from .models import ImagesMetadata
 
 def discover_agents(
     images_metadata: ImagesMetadata,
-    local_image_repository: str,
 ) -> ImagesMetadata:
-    custom_agents = load_custom_agents(images_metadata, local_image_repository)
+    custom_agents = load_custom_agents(images_metadata)
     if not custom_agents:
         return images_metadata
 

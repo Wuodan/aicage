@@ -6,11 +6,9 @@ from typing import Any
 
 import yaml
 
-from aicage.paths import CONFIG_FILENAME, PROJECTS_DIR
+from aicage.paths import PROJECTS_DIR
 
-from .global_config import GlobalConfig
 from .project_config import ProjectConfig
-from .resources import find_packaged_path
 from .yaml_loader import load_yaml
 
 
@@ -29,14 +27,6 @@ class SettingsStore:
         with path.open("w", encoding="utf-8") as handle:
             yaml.safe_dump(data, handle, sort_keys=True)
 
-    def load_global(self) -> GlobalConfig:
-        path = self._global_config()
-        if not path.exists():
-            data = {}
-        else:
-            data = load_yaml(path)
-        return GlobalConfig.from_mapping(data)
-
     def _project_path(self, project_realpath: Path) -> Path:
         digest = hashlib.sha256(str(project_realpath).encode("utf-8")).hexdigest()
         return self.projects_dir / f"{digest}.yaml"
@@ -51,14 +41,6 @@ class SettingsStore:
 
     def save_project(self, project_realpath: Path, config: ProjectConfig) -> None:
         self._save_yaml(self._project_path(project_realpath), config.to_mapping())
-
-
-    @staticmethod
-    def _global_config() -> Path:
-        """
-        Returns the path to the packaged global config file.
-        """
-        return find_packaged_path(CONFIG_FILENAME)
 
     def project_config_path(self, project_realpath: Path) -> Path:
         """

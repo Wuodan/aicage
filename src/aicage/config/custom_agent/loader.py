@@ -17,6 +17,7 @@ from aicage.config.images_metadata.models import (
     ImagesMetadata,
 )
 from aicage.config.yaml_loader import load_yaml
+from aicage.constants import LOCAL_IMAGE_REPOSITORY
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, CUSTOM_AGENTS_DIR
 
 from ._validation import ensure_required_files, expect_string, validate_agent_mapping
@@ -24,7 +25,6 @@ from ._validation import ensure_required_files, expect_string, validate_agent_ma
 
 def load_custom_agents(
     images_metadata: ImagesMetadata,
-    local_image_repository: str,
 ) -> dict[str, AgentMetadata]:
     agents_dir = CUSTOM_AGENTS_DIR
     if not agents_dir.is_dir():
@@ -42,7 +42,6 @@ def load_custom_agents(
             agent_name=agent_name,
             agent_mapping=agent_mapping,
             images_metadata=images_metadata,
-            local_image_repository=local_image_repository,
         )
     return custom_agents
 
@@ -60,7 +59,6 @@ def _build_custom_agent(
     agent_name: str,
     agent_mapping: dict[str, Any],
     images_metadata: ImagesMetadata,
-    local_image_repository: str,
 ) -> AgentMetadata:
     normalized_mapping = validate_agent_mapping(agent_mapping)
     base_exclude = maybe_str_list(normalized_mapping.get(BASE_EXCLUDE_KEY), BASE_EXCLUDE_KEY)
@@ -73,7 +71,6 @@ def _build_custom_agent(
         images_metadata=images_metadata,
         base_exclude=base_exclude,
         base_distro_exclude=base_distro_exclude,
-        local_image_repository=local_image_repository,
     )
     return AgentMetadata(
         agent_path=expect_string(normalized_mapping.get(AGENT_PATH_KEY), AGENT_PATH_KEY),
@@ -92,7 +89,6 @@ def _build_valid_bases(
     images_metadata: ImagesMetadata,
     base_exclude: list[str] | None,
     base_distro_exclude: list[str] | None,
-    local_image_repository: str,
 ) -> dict[str, str]:
     valid_bases: dict[str, str] = {}
     base_exclude_set = _normalize_exclude(base_exclude)
@@ -106,7 +102,7 @@ def _build_valid_bases(
             base_distro_exclude_set,
         ):
             continue
-        valid_bases[base_name] = local_image_ref(local_image_repository, agent_name, base_name)
+        valid_bases[base_name] = local_image_ref(LOCAL_IMAGE_REPOSITORY, agent_name, base_name)
     return valid_bases
 
 

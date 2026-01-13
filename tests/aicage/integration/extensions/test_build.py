@@ -4,7 +4,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig
-from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
+from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 
 from .._helpers import (

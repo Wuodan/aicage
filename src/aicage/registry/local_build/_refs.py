@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from aicage.config.runtime_config import RunConfig
+from aicage.constants import IMAGE_BASE_REPOSITORY, IMAGE_REGISTRY
 
 from ._custom_base import custom_base_image_ref
 
@@ -12,8 +13,5 @@ def get_base_image_ref(run_config: RunConfig) -> str:
     return f"{repository}:{run_config.selection.base}"
 
 
-def base_repository(run_config: RunConfig) -> str:
-    return (
-        f"{run_config.context.global_cfg.image_registry}/"
-        f"{run_config.context.global_cfg.image_base_repository}"
-    )
+def base_repository(_run_config: RunConfig) -> str:
+    return f"{IMAGE_REGISTRY}/{IMAGE_BASE_REPOSITORY}"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from logging import Logger
 
-from aicage.config.global_config import GlobalConfig
+from aicage.constants import IMAGE_REGISTRY
 from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest_for_repo
 from aicage.registry._logs import pull_log_path
@@ -10,10 +10,10 @@ from aicage.registry.digest.remote_digest import get_remote_digest
 from aicage.registry.errors import RegistryError
 
 
-def ensure_version_check_image(image_ref: str, global_cfg: GlobalConfig, logger: Logger) -> None:
+def ensure_version_check_image(image_ref: str, logger: Logger) -> None:
     local_digest = get_local_repo_digest_for_repo(
         image_ref,
-        _local_repository(image_ref, global_cfg.image_registry),
+        _local_repository(image_ref, IMAGE_REGISTRY),
     )
     if local_digest is None:
         _pull_version_check_image(image_ref, logger)

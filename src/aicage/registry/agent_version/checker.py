@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from aicage._logging import get_logger
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata
+from aicage.constants import VERSION_CHECK_IMAGE
 from aicage.registry.errors import RegistryError
 
 from ._command import run_host, run_version_check_image
@@ -13,8 +13,7 @@ from .store import VersionCheckStore
 
 
 class AgentVersionChecker:
-    def __init__(self, global_cfg: GlobalConfig, store: VersionCheckStore | None = None) -> None:
-        self._global_cfg = global_cfg
+    def __init__(self, store: VersionCheckStore | None = None) -> None:
         self._store = store or VersionCheckStore()
 
     def get_version(
@@ -42,8 +41,8 @@ class AgentVersionChecker:
         )
         errors.append(host_result.error)
 
-        ensure_version_check_image(self._global_cfg.version_check_image, self._global_cfg, logger)
-        image_result = run_version_check_image(self._global_cfg.version_check_image, definition_dir)
+        ensure_version_check_image(VERSION_CHECK_IMAGE, logger)
+        image_result = run_version_check_image(VERSION_CHECK_IMAGE, definition_dir)
         if image_result.success:
             logger.info("Version check succeeded in version check image for %s", agent_name)
             self._store.save(agent_name, image_result.output)

@@ -3,7 +3,6 @@ from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import (
     _AGENT_KEY,
     _AICAGE_IMAGE_BASE_KEY,
@@ -33,17 +32,6 @@ class ResolverTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                image_base_repository="aicage/aicage-image-base",
-                default_image_base="ubuntu",
-                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-                local_image_repository="aicage",
-                agents={},
-            ),
             images_metadata=self._get_images_metadata(),
             extensions={},
         )
@@ -79,17 +67,6 @@ class ResolverTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
-            global_cfg=GlobalConfig(
-                image_registry="ghcr.io",
-                image_registry_api_url="https://ghcr.io/v2",
-                image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-                image_repository="aicage/aicage",
-                image_base_repository="aicage/aicage-image-base",
-                default_image_base="ubuntu",
-                version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-                local_image_repository="aicage",
-                agents={},
-            ),
             images_metadata=self._get_images_metadata(),
             extensions={},
         )

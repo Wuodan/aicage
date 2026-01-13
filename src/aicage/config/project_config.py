@@ -8,7 +8,7 @@ _PROJECT_PATH_KEY: str = "path"
 _PROJECT_AGENTS_KEY: str = "agents"
 _DOCKER_ARGS_KEY: str = "docker_args"
 
-AGENT_BASE_KEY: str = "base"
+_AGENT_BASE_KEY: str = "base"
 _AGENT_ENTRYPOINT_KEY: str = "entrypoint"
 _AGENT_MOUNTS_KEY: str = "mounts"
 _AGENT_IMAGE_REF_KEY: str = "image_ref"
@@ -62,7 +62,7 @@ class AgentConfig:
     def from_mapping(cls, data: dict[str, Any]) -> "AgentConfig":
         mounts = _AgentMounts.from_mapping(data.get(_AGENT_MOUNTS_KEY, {}) or {})
         return cls(
-            base=data.get(AGENT_BASE_KEY),
+            base=data.get(_AGENT_BASE_KEY),
             docker_args=data.get(_DOCKER_ARGS_KEY, "") or "",
             entrypoint=data.get(_AGENT_ENTRYPOINT_KEY),
             mounts=mounts,
@@ -73,7 +73,7 @@ class AgentConfig:
     def to_mapping(self) -> dict[str, Any]:
         payload: dict[str, Any] = {}
         if self.base:
-            payload[AGENT_BASE_KEY] = self.base
+            payload[_AGENT_BASE_KEY] = self.base
         if self.docker_args:
             payload[_DOCKER_ARGS_KEY] = self.docker_args
         if self.entrypoint:
@@ -110,4 +110,3 @@ class ProjectConfig:
     def to_mapping(self) -> dict[str, Any]:
         agents_payload = {name: cfg.to_mapping() for name, cfg in self.agents.items()}
         return {_PROJECT_PATH_KEY: self.path, _PROJECT_AGENTS_KEY: agents_payload}
-

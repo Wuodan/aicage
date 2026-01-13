@@ -3,7 +3,6 @@ from __future__ import annotations
 from os.path import expanduser
 from pathlib import Path
 
-CONFIG_FILENAME: str = "config.yaml"
 IMAGES_METADATA_FILENAME: str = "images-metadata.yaml"
 _AGENT_DEFINITION_FILENAME: str = "agent.yaml"
 EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yaml"
@@ -16,8 +15,6 @@ IMAGE_BUILD_STATE_DIR: Path = _CONFIG_BASE_DIR / "state/image/build"
 AGENT_VERSION_CHECK_STATE_DIR: Path = _CONFIG_BASE_DIR / "state/agent/version-check/state"
 IMAGE_EXTENDED_STATE_DIR: Path = _CONFIG_BASE_DIR / "state/image-extended"
 IMAGE_EXTENDED_BUILD_STATE_DIR: Path = IMAGE_EXTENDED_STATE_DIR / "build"
-
-DEFAULT_EXTENDED_IMAGE_NAME: str = "aicage-extended"
 
 _LOG_DIR: Path = _CONFIG_BASE_DIR / "logs"
 GLOBAL_LOG_PATH: Path = _LOG_DIR / "aicage.log"

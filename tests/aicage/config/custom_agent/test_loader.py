@@ -36,7 +36,7 @@ class CustomAgentLoaderTests(TestCase):
                 "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 missing,
             ):
-                custom_agents = load_custom_agents(metadata, "aicage")
+                custom_agents = load_custom_agents(metadata)
         self.assertEqual({}, custom_agents)
 
     def test_load_custom_agents_builds_bases(self) -> None:
@@ -65,7 +65,7 @@ class CustomAgentLoaderTests(TestCase):
                 "aicage.config.custom_agent.loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
-                custom_agents = load_custom_agents(metadata, "aicage")
+                custom_agents = load_custom_agents(metadata)
 
         agent = custom_agents["custom"]
         self.assertEqual(custom_dir / "custom", agent.local_definition_dir)
@@ -92,7 +92,7 @@ class CustomAgentLoaderTests(TestCase):
                 custom_dir,
             ):
                 with self.assertRaises(ConfigError):
-                    load_custom_agents(metadata, "aicage")
+                    load_custom_agents(metadata)
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:

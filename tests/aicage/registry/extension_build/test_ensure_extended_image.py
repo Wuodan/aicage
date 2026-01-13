@@ -3,11 +3,10 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
+from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
@@ -114,17 +113,6 @@ class EnsureExtendedImageTests(TestCase):
         local_definition_dir: Path | None = None,
         available_extensions: dict[str, ExtensionMetadata] | None = None,
     ) -> RunConfig:
-        global_cfg = GlobalConfig(
-            image_registry="ghcr.io",
-            image_registry_api_url="https://ghcr.io/v2",
-            image_registry_api_token_url="https://ghcr.io/token?service=ghcr.io&scope=repository",
-            image_repository="aicage/aicage",
-            image_base_repository="aicage/aicage-image-base",
-            default_image_base="ubuntu",
-            version_check_image="ghcr.io/aicage/aicage-image-util:agent-version",
-            local_image_repository="aicage",
-            agents={},
-        )
         images_metadata = ImagesMetadata(
             aicage_image=_ImageReleaseInfo(version="0.3.3"),
             aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
@@ -146,7 +134,6 @@ class EnsureExtendedImageTests(TestCase):
             context=ConfigContext(
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-                global_cfg=global_cfg,
                 images_metadata=images_metadata,
                 extensions=available_extensions or {},
             ),

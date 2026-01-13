@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
+from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.runtime.prompts.image_ref import prompt_for_image_ref
 
 

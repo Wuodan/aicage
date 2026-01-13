@@ -10,7 +10,7 @@ def ensure_image(run_config: RunConfig) -> None:
     agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     custom_base = run_config.context.custom_bases.get(run_config.selection.base)
     if not agent_metadata.build_local and custom_base is None:
-        pull_image(run_config.selection.base_image_ref, run_config.context.global_cfg)
+        pull_image(run_config.selection.base_image_ref)
     else:
         ensure_local_image(run_config)
     if run_config.selection.extensions:

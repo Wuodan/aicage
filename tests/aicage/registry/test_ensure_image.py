@@ -64,7 +64,6 @@ def _run_config(
     run_config.selection.base_image_ref = "ghcr.io/aicage/aicage:codex-ubuntu"
     run_config.selection.extensions = extensions
     run_config.context = mock.Mock()
-    run_config.context.global_cfg = mock.Mock()
     run_config.context.images_metadata = mock.Mock()
     run_config.context.custom_bases = custom_bases or {}
     run_config.context.images_metadata.agents = {

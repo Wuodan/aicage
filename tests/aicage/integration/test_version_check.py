@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 
-from aicage.config.config_store import SettingsStore
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry.agent_version import AgentVersionChecker
 
@@ -59,8 +58,7 @@ def test_version_check_falls_back_to_builder(
         )
         _write_executable(agent_dir / "version.sh", version_sh)
 
-        store = SettingsStore()
-        checker = AgentVersionChecker(store.load_global())
+        checker = AgentVersionChecker()
         result = checker.get_version(
             "npm-agent",
             AgentMetadata(

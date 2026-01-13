@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from aicage._logging import get_logger
-from aicage.config.global_config import GlobalConfig
 from aicage.docker.pull import run_pull
 from aicage.registry._logs import pull_log_path
 from aicage.registry._pull_decision import decide_pull
 
 
-def pull_image(image_ref: str, global_cfg: GlobalConfig) -> None:
+def pull_image(image_ref: str) -> None:
     logger = get_logger()
-    should_pull = decide_pull(image_ref, global_cfg)
+    should_pull = decide_pull(image_ref)
     if not should_pull:
         logger.info("Image pull not required for %s", image_ref)
         return
