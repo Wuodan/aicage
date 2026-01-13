@@ -4,6 +4,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 
 from .._helpers import (
@@ -37,7 +38,7 @@ def test_extension_builds_and_runs(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     project_cfg.agents["codex"] = AgentConfig(
         base="ubuntu",
         docker_args="--entrypoint=/bin/bash",
-        image_ref="aicage-extended:codex-ubuntu-marker",
+        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker",
         extensions=["marker"],
     )
     store.save_project(workspace, project_cfg)
@@ -70,7 +71,7 @@ def test_extension_rebuilds_on_base_image_change(
     project_cfg.agents["claude"] = AgentConfig(
         base="ubuntu",
         docker_args="--entrypoint=/bin/bash",
-        image_ref="aicage-extended:claude-ubuntu-marker",
+        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:claude-ubuntu-marker",
         extensions=["marker"],
     )
     store.save_project(workspace, project_cfg)
@@ -83,7 +84,7 @@ def test_extension_rebuilds_on_base_image_change(
     assert exit_code == 0, output
 
     extended_store = ExtendedBuildStore()
-    record = extended_store.load("aicage-extended:claude-ubuntu-marker")
+    record = extended_store.load(f"{DEFAULT_EXTENDED_IMAGE_NAME}:claude-ubuntu-marker")
     assert record is not None
 
     replace_final_image(record.base_image, tmp_path)

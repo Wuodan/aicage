@@ -7,6 +7,7 @@ from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.image_selection.extensions.context import ExtensionSelectionContext
 from aicage.registry.image_selection.extensions.handler import handle_extension_selection
 
@@ -54,7 +55,7 @@ class ExtensionHandlerTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.image_selection.extensions.handler.prompt_for_image_ref",
-                    return_value="aicage-extended:custom",
+                    return_value=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
                 ),
                 mock.patch(
                     "aicage.registry.image_selection.extensions.handler.write_extended_image_config"
@@ -62,7 +63,7 @@ class ExtensionHandlerTests(TestCase):
             ):
                 result = handle_extension_selection(selection)
 
-            self.assertEqual("aicage-extended:custom", result.image_ref)
+            self.assertEqual(f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom", result.image_ref)
             self.assertEqual(["extra"], agent_cfg.extensions)
             write_mock.assert_called_once()
             context.store.save_project.assert_called_once()

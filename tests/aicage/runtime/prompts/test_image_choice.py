@@ -5,6 +5,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.runtime.errors import RuntimeExecutionError
 from aicage.runtime.prompts.base import base_options
 from aicage.runtime.prompts.image_choice import (
@@ -42,7 +43,7 @@ class PromptImageChoiceTests(TestCase):
                 base="ubuntu",
                 description="Custom",
                 extensions=["ext"],
-                image_ref="aicage-extended:custom",
+                image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
             )
         ]
         request = ImageChoiceRequest(
@@ -106,7 +107,7 @@ class PromptImageChoiceTests(TestCase):
                 base="ubuntu",
                 description="Custom",
                 extensions=["ext"],
-                image_ref="aicage-extended:custom",
+                image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
             )
         ]
         request = ImageChoiceRequest(

@@ -7,6 +7,7 @@ from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
@@ -150,7 +151,7 @@ class EnsureExtendedImageTests(TestCase):
                 extensions=available_extensions or {},
             ),
             selection=ImageSelection(
-                image_ref="aicage-extended:codex-ubuntu-ext",
+                image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-ext",
                 base="ubuntu",
                 extensions=extensions,
                 base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",

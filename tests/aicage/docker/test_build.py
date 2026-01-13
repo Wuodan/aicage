@@ -11,6 +11,7 @@ from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.docker import build
 from aicage.docker.errors import DockerError
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.image_selection import ImageSelection
 
 from ._fixtures import build_run_config
@@ -241,7 +242,7 @@ def _run_config() -> RunConfig:
             extensions={},
         ),
         selection=ImageSelection(
-            image_ref="aicage-extended:codex-ubuntu-extra",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra",
             base="ubuntu",
             extensions=["extra"],
             base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",

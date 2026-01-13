@@ -6,6 +6,7 @@ from aicage.config import ConfigError
 from aicage.config import extended_images as extended_images_module
 from aicage.config.extended_images import ExtendedImageConfig
 from aicage.config.yaml_loader import load_yaml
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 
 from ._fixtures import extended_image_definition, join_yaml
 
@@ -31,7 +32,7 @@ class ExtendedImagesLoaderTests(TestCase):
                     agent="codex",
                     base="ubuntu",
                     extensions=["missing"],
-                    image_ref="aicage-extended:codex-ubuntu-missing",
+                    image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-missing",
                 ),
                 encoding="utf-8",
             )
@@ -67,7 +68,7 @@ class ExtendedImagesLoaderTests(TestCase):
                     agent="codex",
                     base="ubuntu",
                     extensions=["marker"],
-                    image_ref="aicage-extended:codex-ubuntu-marker",
+                    image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker",
                 ),
                 encoding="utf-8",
             )
@@ -123,7 +124,7 @@ class ExtendedImagesLoaderTests(TestCase):
                     agent="codex",
                     base="ubuntu",
                     extensions=[],
-                    image_ref="aicage-extended:codex-ubuntu",
+                    image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu",
                     extra_lines=["extra: true"],
                 ),
                 encoding="utf-8",
@@ -146,7 +147,7 @@ class ExtendedImagesLoaderTests(TestCase):
                     agent="\"\"",
                     base="ubuntu",
                     extensions=[],
-                    image_ref="aicage-extended:codex-ubuntu",
+                    image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu",
                 ),
                 encoding="utf-8",
             )
@@ -237,7 +238,7 @@ class ExtendedImagesLoaderTests(TestCase):
                 agent="codex",
                 base="ubuntu",
                 extensions=["extra"],
-                image_ref="aicage-extended:codex-ubuntu-extra",
+                image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra",
                 path=config_path,
             )
             extended_images_module.write_extended_image_config(config)

@@ -5,6 +5,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 
 from .._helpers import (
@@ -50,7 +51,7 @@ def test_remote_builtin_extension_rebuilds_on_base_change(
     project_cfg.agents["codex"] = AgentConfig(
         base="ubuntu",
         docker_args="--entrypoint=/bin/sh",
-        image_ref="aicage-extended:codex-ubuntu-marker",
+        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker",
         extensions=["marker"],
     )
     store.save_project(workspace, project_cfg)
@@ -63,7 +64,7 @@ def test_remote_builtin_extension_rebuilds_on_base_change(
     assert exit_code == 0, output
 
     extended_store = ExtendedBuildStore()
-    record = extended_store.load("aicage-extended:codex-ubuntu-marker")
+    record = extended_store.load(f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker")
     assert record is not None
 
     dummy_id = build_dummy_image(record.base_image, tmp_path)

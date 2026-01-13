@@ -17,6 +17,8 @@ AGENT_VERSION_CHECK_STATE_DIR: Path = _CONFIG_BASE_DIR / "state/agent/version-ch
 IMAGE_EXTENDED_STATE_DIR: Path = _CONFIG_BASE_DIR / "state/image-extended"
 IMAGE_EXTENDED_BUILD_STATE_DIR: Path = IMAGE_EXTENDED_STATE_DIR / "build"
 
+DEFAULT_EXTENDED_IMAGE_NAME: str = "aicage-extended"
+
 _LOG_DIR: Path = _CONFIG_BASE_DIR / "logs"
 GLOBAL_LOG_PATH: Path = _LOG_DIR / "aicage.log"
 IMAGE_PULL_LOG_DIR: Path = _LOG_DIR / "image/pull"

@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.config_store import SettingsStore
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection import _fresh_selection
 from aicage.registry.image_selection.models import ImageSelection
@@ -19,7 +20,7 @@ class ImageSelectionFreshTests(TestCase):
                 base="ubuntu",
                 description="Custom",
                 extensions=["extra"],
-                image_ref="aicage-extended:codex-ubuntu-extra",
+                image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra",
             )
         ]
         with (
@@ -38,7 +39,7 @@ class ImageSelectionFreshTests(TestCase):
             mock.patch(
                 "aicage.registry.image_selection._fresh_selection.apply_extended_selection",
                 return_value=ImageSelection(
-                    image_ref="aicage-extended:codex-ubuntu-extra",
+                    image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra",
                     base="ubuntu",
                     extensions=["extra"],
                     base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
@@ -51,7 +52,7 @@ class ImageSelectionFreshTests(TestCase):
                 agent_metadata=context.images_metadata.agents["codex"],
                 extensions={},
             )
-        self.assertEqual("aicage-extended:codex-ubuntu-extra", selection.image_ref)
+        self.assertEqual(f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra", selection.image_ref)
         apply_mock.assert_called_once()
 
     def test_fresh_selection_raises_on_empty_bases(self) -> None:

@@ -7,6 +7,7 @@ from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.global_config import GlobalConfig
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
 from aicage.config.project_config import AgentConfig, ProjectConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.extensions.extended_images import (
     apply_extended_selection,
@@ -23,7 +24,7 @@ class ExtendedImageSelectionTests(TestCase):
             agent="codex",
             base="ubuntu",
             extensions=["ext"],
-            image_ref="aicage-extended:custom",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
             path=Path("/tmp/custom/image-extended.yaml"),
         )
         wrong_base = ExtendedImageConfig(
@@ -31,7 +32,7 @@ class ExtendedImageSelectionTests(TestCase):
             agent="codex",
             base="debian",
             extensions=["ext"],
-            image_ref="aicage-extended:wrong-base",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:wrong-base",
             path=Path("/tmp/wrong/image-extended.yaml"),
         )
         other = ExtendedImageConfig(
@@ -39,7 +40,7 @@ class ExtendedImageSelectionTests(TestCase):
             agent="claude",
             base="ubuntu",
             extensions=["ext"],
-            image_ref="aicage-extended:other",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:other",
             path=Path("/tmp/other/image-extended.yaml"),
         )
         with mock.patch(
@@ -59,7 +60,7 @@ class ExtendedImageSelectionTests(TestCase):
             base="ubuntu",
             description="Custom",
             extensions=["ext"],
-            image_ref="aicage-extended:custom",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
         )
         self.assertEqual(option, resolve_extended_image("custom", [option]))
         with self.assertRaises(RegistryError):
@@ -73,7 +74,7 @@ class ExtendedImageSelectionTests(TestCase):
             base="ubuntu",
             description="Custom",
             extensions=["ext"],
-            image_ref="aicage-extended:custom",
+            image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
         )
         selection = apply_extended_selection(
             agent="codex",
@@ -84,12 +85,12 @@ class ExtendedImageSelectionTests(TestCase):
         )
         self.assertEqual("ubuntu", agent_cfg.base)
         self.assertEqual(["ext"], agent_cfg.extensions)
-        self.assertEqual("aicage-extended:custom", agent_cfg.image_ref)
+        self.assertEqual(f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom", agent_cfg.image_ref)
         context.store.save_project.assert_called_once_with(
             Path(context.project_cfg.path),
             context.project_cfg,
         )
-        self.assertEqual("aicage-extended:custom", selection.image_ref)
+        self.assertEqual(f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom", selection.image_ref)
 
     @staticmethod
     def _extension() -> ExtensionMetadata:

@@ -4,6 +4,7 @@ import pytest
 
 from aicage.config.config_store import SettingsStore
 from aicage.config.project_config import AgentConfig
+from aicage.paths import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 from aicage.registry.local_build._store import BuildStore
 
@@ -51,7 +52,7 @@ def test_local_custom_extension_rebuilds_on_agent_version(
     assert updated is not None
     assert updated.agent_version != "0.0.0"
 
-    extended_record = ExtendedBuildStore().load("aicage-extended:forge-ubuntu-marker")
+    extended_record = ExtendedBuildStore().load(f"{DEFAULT_EXTENDED_IMAGE_NAME}:forge-ubuntu-marker")
     assert extended_record is not None
     assert_base_layer_present(extended_record.base_image, extended_record.image_ref)
 
@@ -65,7 +66,7 @@ def test_local_custom_extension_rebuilds_on_base_layer(
     assert exit_code == 0, output
 
     extended_store = ExtendedBuildStore()
-    record = extended_store.load("aicage-extended:forge-ubuntu-marker")
+    record = extended_store.load(f"{DEFAULT_EXTENDED_IMAGE_NAME}:forge-ubuntu-marker")
     assert record is not None
 
     replace_final_image(record.image_ref, tmp_path)
@@ -97,7 +98,7 @@ def _setup_extension_workspace(
     project_cfg.agents["forge"] = AgentConfig(
         base="ubuntu",
         docker_args="--entrypoint=/bin/sh",
-        image_ref="aicage-extended:forge-ubuntu-marker",
+        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:forge-ubuntu-marker",
         extensions=["marker"],
     )
     store.save_project(workspace, project_cfg)
