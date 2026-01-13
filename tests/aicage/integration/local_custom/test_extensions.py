@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 from aicage.config.config_store import SettingsStore
-from aicage.config.project_config import AgentConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 from aicage.registry.local_build._store import BuildStore
@@ -95,12 +94,11 @@ def _setup_extension_workspace(
 
     store = SettingsStore()
     project_cfg = store.load_project(workspace)
-    project_cfg.agents["forge"] = AgentConfig(
-        base="ubuntu",
-        docker_args="--entrypoint=/bin/sh",
-        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:forge-ubuntu-marker",
-        extensions=["marker"],
-    )
+    agent_cfg = project_cfg.agents["forge"]
+    agent_cfg.base = "ubuntu"
+    agent_cfg.docker_args = "--entrypoint=/bin/sh"
+    agent_cfg.image_ref = f"{DEFAULT_EXTENDED_IMAGE_NAME}:forge-ubuntu-marker"
+    agent_cfg.extensions = ["marker"]
     store.save_project(workspace, project_cfg)
     return workspace, env
 

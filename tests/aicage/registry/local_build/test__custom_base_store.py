@@ -1,6 +1,6 @@
 import tempfile
 from pathlib import Path
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from aicage.registry.local_build._custom_base_store import (
     CustomBaseBuildRecord,
@@ -11,8 +11,13 @@ from aicage.registry.local_build._custom_base_store import (
 class CustomBaseBuildStoreTests(TestCase):
     def test_load_returns_none_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            store = CustomBaseBuildStore(Path(tmp_dir))
-            self.assertIsNone(store.load("missing"))
+            base_dir = Path(tmp_dir)
+            with mock.patch(
+                "aicage.registry.local_build._custom_base_store.paths_module.BASE_IMAGE_BUILD_STATE_DIR",
+                base_dir,
+            ):
+                store = CustomBaseBuildStore()
+                self.assertIsNone(store.load("missing"))
 
     def test_save_persists_record(self) -> None:
         record = CustomBaseBuildRecord(
@@ -24,10 +29,14 @@ class CustomBaseBuildStoreTests(TestCase):
         )
         with tempfile.TemporaryDirectory() as tmp_dir:
             base_dir = Path(tmp_dir)
-            store = CustomBaseBuildStore(base_dir)
+            with mock.patch(
+                "aicage.registry.local_build._custom_base_store.paths_module.BASE_IMAGE_BUILD_STATE_DIR",
+                base_dir,
+            ):
+                store = CustomBaseBuildStore()
 
-            path = store.save(record)
-            loaded = store.load("custom")
+                path = store.save(record)
+                loaded = store.load("custom")
 
-            self.assertTrue(path.is_file())
-            self.assertEqual(record, loaded)
+                self.assertTrue(path.is_file())
+                self.assertEqual(record, loaded)

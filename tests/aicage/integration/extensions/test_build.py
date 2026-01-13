@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 from aicage.config.config_store import SettingsStore
-from aicage.config.project_config import AgentConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_store import ExtendedBuildStore
 
@@ -35,12 +34,11 @@ def test_extension_builds_and_runs(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
 
     store = SettingsStore()
     project_cfg = store.load_project(workspace)
-    project_cfg.agents["codex"] = AgentConfig(
-        base="ubuntu",
-        docker_args="--entrypoint=/bin/bash",
-        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker",
-        extensions=["marker"],
-    )
+    agent_cfg = project_cfg.agents["codex"]
+    agent_cfg.base = "ubuntu"
+    agent_cfg.docker_args = "--entrypoint=/bin/bash"
+    agent_cfg.image_ref = f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-marker"
+    agent_cfg.extensions = ["marker"]
     store.save_project(workspace, project_cfg)
 
     exit_code, output = run_cli_pty(
@@ -68,12 +66,11 @@ def test_extension_rebuilds_on_base_image_change(
 
     store = SettingsStore()
     project_cfg = store.load_project(workspace)
-    project_cfg.agents["claude"] = AgentConfig(
-        base="ubuntu",
-        docker_args="--entrypoint=/bin/bash",
-        image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:claude-ubuntu-marker",
-        extensions=["marker"],
-    )
+    agent_cfg = project_cfg.agents["claude"]
+    agent_cfg.base = "ubuntu"
+    agent_cfg.docker_args = "--entrypoint=/bin/bash"
+    agent_cfg.image_ref = f"{DEFAULT_EXTENDED_IMAGE_NAME}:claude-ubuntu-marker"
+    agent_cfg.extensions = ["marker"]
     store.save_project(workspace, project_cfg)
 
     exit_code, output = run_cli_pty(

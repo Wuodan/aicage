@@ -9,10 +9,11 @@ from shutil import copytree
 
 import pytest
 
+from aicage import paths as paths_module
+from aicage.config import config_store as config_store_module
 from aicage.config.config_store import SettingsStore
-from aicage.config.project_config import AgentConfig, ProjectConfig
+from aicage.config.project_config import AgentConfig, ProjectConfig, _AgentMounts
 from aicage.docker.query import get_local_rootfs_layers
-from aicage.paths import CUSTOM_AGENTS_DIR, CUSTOM_EXTENSIONS_DIR
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
 
@@ -68,9 +69,34 @@ def setup_workspace(
     workspace.mkdir()
     monkeypatch.setenv("HOME", str(home_dir))
     monkeypatch.chdir(workspace)
+    projects_dir = home_dir / ".aicage/projects"
+    custom_root_dir = home_dir / ".aicage-custom"
+    custom_bases_dir = custom_root_dir / "base-images"
+    custom_agents_dir = custom_root_dir / "agents"
+    custom_extensions_dir = custom_root_dir / "extensions"
+    image_build_dir = home_dir / ".aicage/state/image/build"
+    extended_build_dir = home_dir / ".aicage/state/image-extended/build"
+    base_image_build_dir = home_dir / ".aicage/state/base-image/build"
+    version_check_dir = home_dir / ".aicage/state/agent/version-check/state"
+    monkeypatch.setattr(paths_module, "PROJECTS_DIR", projects_dir)
+    monkeypatch.setattr(config_store_module, "PROJECTS_DIR", projects_dir)
+    monkeypatch.setattr(paths_module, "CUSTOM_BASES_DIR", custom_bases_dir)
+    monkeypatch.setattr(paths_module, "CUSTOM_AGENTS_DIR", custom_agents_dir)
+    monkeypatch.setattr(paths_module, "CUSTOM_EXTENSIONS_DIR", custom_extensions_dir)
+    monkeypatch.setattr(paths_module, "IMAGE_BUILD_STATE_DIR", image_build_dir)
+    monkeypatch.setattr(paths_module, "IMAGE_EXTENDED_BUILD_STATE_DIR", extended_build_dir)
+    monkeypatch.setattr(paths_module, "BASE_IMAGE_BUILD_STATE_DIR", base_image_build_dir)
+    monkeypatch.setattr(paths_module, "AGENT_VERSION_CHECK_STATE_DIR", version_check_dir)
 
     store = SettingsStore()
+    store.projects_dir = projects_dir
     agent_cfg = AgentConfig(base="ubuntu")
+    agent_cfg.mounts = _AgentMounts(
+        gitconfig=False,
+        gnupg=False,
+        ssh=False,
+        docker=False,
+    )
     if docker_args:
         agent_cfg.docker_args = docker_args
     project_cfg = ProjectConfig(
@@ -173,8 +199,12 @@ def build_cli_env(home_dir: Path) -> dict[str, str]:
     return env
 
 
+def _custom_root_dir() -> Path:
+    return Path(os.path.expanduser("~/.aicage-custom"))
+
+
 def custom_agents_dir() -> Path:
-    return CUSTOM_AGENTS_DIR
+    return _custom_root_dir() / "agents"
 
 
 def copy_forge_sample(target_dir: Path) -> None:
@@ -186,7 +216,7 @@ def copy_forge_sample(target_dir: Path) -> None:
 
 
 def custom_extensions_dir() -> Path:
-    return CUSTOM_EXTENSIONS_DIR
+    return _custom_root_dir() / "extensions"
 
 
 def copy_marker_extension_sample(target_dir: Path) -> None:

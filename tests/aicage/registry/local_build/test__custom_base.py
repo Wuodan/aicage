@@ -26,7 +26,7 @@ class CustomBaseBuildTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.paths_module.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -56,19 +56,9 @@ class CustomBaseBuildTests(TestCase):
             base_dir.mkdir()
             (base_dir / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
             state_dir = Path(tmp_dir) / "state"
-            store = CustomBaseBuildStore(state_dir)
-            store.save(
-                CustomBaseBuildRecord(
-                    base="custom",
-                    from_image=base_metadata.from_image,
-                    from_image_digest="sha256:remote",
-                    image_ref=_custom_base.custom_base_image_ref("custom"),
-                    built_at="2024-01-01T00:00:00+00:00",
-                )
-            )
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.paths_module.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -83,6 +73,16 @@ class CustomBaseBuildTests(TestCase):
                     "aicage.registry.local_build._custom_base.run_custom_base_build"
                 ) as build_mock,
             ):
+                store = CustomBaseBuildStore()
+                store.save(
+                    CustomBaseBuildRecord(
+                        base="custom",
+                        from_image=base_metadata.from_image,
+                        from_image_digest="sha256:remote",
+                        image_ref=_custom_base.custom_base_image_ref("custom"),
+                        built_at="2024-01-01T00:00:00+00:00",
+                    )
+                )
                 _custom_base.ensure_custom_base_image("custom", base_metadata, base_dir)
 
             build_mock.assert_not_called()
@@ -96,7 +96,7 @@ class CustomBaseBuildTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._custom_base_store.BASE_IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._custom_base_store.paths_module.BASE_IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(

@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config.images_metadata.models import AgentMetadata
-from aicage.registry.agent_version import AgentVersionChecker, VersionCheckStore
+from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.agent_version import _command as command
 from aicage.registry.agent_version.store import _VERSION_KEY
 from aicage.registry.errors import RegistryError
@@ -18,16 +18,18 @@ class AgentVersionCheckTests(TestCase):
             agent_dir.mkdir()
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
-            checker = AgentVersionChecker(
-                store=VersionCheckStore(store_dir),
-            )
 
             with (
+                mock.patch(
+                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    store_dir,
+                ),
                 mock.patch(
                     "aicage.registry.agent_version.checker.run_host",
                     return_value=command._CommandResult(success=True, output="1.2.3", error=""),
                 ),
             ):
+                checker = AgentVersionChecker()
                 result = checker.get_version(
                     "custom",
                     self._agent_metadata(),
@@ -46,11 +48,12 @@ class AgentVersionCheckTests(TestCase):
             agent_dir.mkdir()
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
-            checker = AgentVersionChecker(
-                store=VersionCheckStore(store_dir),
-            )
 
             with (
+                mock.patch(
+                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    store_dir,
+                ),
                 mock.patch(
                     "aicage.registry.agent_version.checker.run_host",
                     return_value=command._CommandResult(success=False, output="", error="host failed"),
@@ -61,6 +64,7 @@ class AgentVersionCheckTests(TestCase):
                     return_value=command._CommandResult(success=True, output="1.2.3", error=""),
                 ),
             ):
+                checker = AgentVersionChecker()
                 result = checker.get_version(
                     "custom",
                     self._agent_metadata(),
@@ -79,11 +83,12 @@ class AgentVersionCheckTests(TestCase):
             agent_dir.mkdir()
             (agent_dir / "version.sh").write_text("echo 1.2.3\n", encoding="utf-8")
             store_dir = Path(tmp_dir) / "state"
-            checker = AgentVersionChecker(
-                store=VersionCheckStore(store_dir),
-            )
 
             with (
+                mock.patch(
+                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    store_dir,
+                ),
                 mock.patch(
                     "aicage.registry.agent_version.checker.run_host",
                     return_value=command._CommandResult(success=False, output="", error="host failed"),
@@ -98,6 +103,7 @@ class AgentVersionCheckTests(TestCase):
                     ),
                 ),
             ):
+                checker = AgentVersionChecker()
                 with self.assertRaises(RegistryError) as raised:
                     checker.get_version(
                         "custom",
@@ -111,15 +117,17 @@ class AgentVersionCheckTests(TestCase):
             agent_dir = Path(tmp_dir) / "custom"
             agent_dir.mkdir()
             store_dir = Path(tmp_dir) / "state"
-            checker = AgentVersionChecker(
-                store=VersionCheckStore(store_dir),
-            )
-            with self.assertRaises(RegistryError):
-                checker.get_version(
-                    "custom",
-                    self._agent_metadata(),
-                    definition_dir=agent_dir,
-                )
+            with mock.patch(
+                "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                store_dir,
+            ):
+                checker = AgentVersionChecker()
+                with self.assertRaises(RegistryError):
+                    checker.get_version(
+                        "custom",
+                        self._agent_metadata(),
+                        definition_dir=agent_dir,
+                    )
             self.assertFalse((store_dir / "custom.yaml").exists())
 
     @staticmethod

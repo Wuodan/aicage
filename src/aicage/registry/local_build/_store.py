@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from aicage.paths import IMAGE_BUILD_STATE_DIR
+from aicage import paths as paths_module
 from aicage.registry._sanitize import sanitize
 
 _AGENT_KEY: str = "agent"
@@ -27,8 +27,8 @@ class BuildRecord:
 
 
 class BuildStore:
-    def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or IMAGE_BUILD_STATE_DIR
+    def __init__(self) -> None:
+        self._base_dir = paths_module.IMAGE_BUILD_STATE_DIR
 
     def load(self, agent: str, base: str) -> BuildRecord | None:
         path = self._path(agent, base)
@@ -63,4 +63,3 @@ class BuildStore:
     def _path(self, agent: str, base: str) -> Path:
         filename = f"{sanitize(agent)}-{base}.yaml"
         return self._base_dir / filename
-

@@ -55,7 +55,7 @@ class EnsureLocalImageTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.paths_module.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -141,7 +141,7 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.paths_module.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(
@@ -195,7 +195,7 @@ class EnsureLocalImageTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.local_build._store.IMAGE_BUILD_STATE_DIR",
+                    "aicage.registry.local_build._store.paths_module.IMAGE_BUILD_STATE_DIR",
                     state_dir,
                 ),
                 mock.patch(

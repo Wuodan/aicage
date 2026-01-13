@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from aicage.paths import BASE_IMAGE_BUILD_STATE_DIR
+from aicage import paths as paths_module
 from aicage.registry._sanitize import sanitize
 
 _BASE_KEY: str = "base"
@@ -25,8 +25,8 @@ class CustomBaseBuildRecord:
 
 
 class CustomBaseBuildStore:
-    def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or BASE_IMAGE_BUILD_STATE_DIR
+    def __init__(self) -> None:
+        self._base_dir = paths_module.BASE_IMAGE_BUILD_STATE_DIR
 
     def load(self, base: str) -> CustomBaseBuildRecord | None:
         path = self._path(base)

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import yaml
 
+from aicage import paths as paths_module
 from aicage._lists import read_str_list_or_empty
-from aicage.paths import IMAGE_EXTENDED_BUILD_STATE_DIR
 from aicage.registry._sanitize import sanitize
 
 _AGENT_KEY: str = "agent"
@@ -30,8 +30,8 @@ class ExtendedBuildRecord:
 
 
 class ExtendedBuildStore:
-    def __init__(self, base_dir: Path | None = None) -> None:
-        self._base_dir = base_dir or IMAGE_EXTENDED_BUILD_STATE_DIR
+    def __init__(self) -> None:
+        self._base_dir = paths_module.IMAGE_EXTENDED_BUILD_STATE_DIR
 
     def load(self, image_ref: str) -> ExtendedBuildRecord | None:
         path = self._path(image_ref)
