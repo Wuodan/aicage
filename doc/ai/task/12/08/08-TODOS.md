@@ -3,14 +3,6 @@
 These are my personal work-in-progress notes about things I don't want to forget. Not all are todos, most are reminders
 to look into something.
 
-## Custom folder
-
-Move location of custom additions by user to `~/.aicage-custom` (or maybe `~/.aicage-custom/custom`).
-Right now `~/.aicage-custom` contains an ugly mix of user-additions and folders managed by `aicage`.
-Those folders managed by aicage should not be in a `custom` folder for clarity, they store stuff for aicage.
-
-And currently I cannot just delete `~/.aicage` as I would lose my custom additions
-
 ## images-metadata.yaml
 
 Currently produced by `aicage-image` as a merge of bases from `aicage-image-base` and the agents in `aicage-image`.
