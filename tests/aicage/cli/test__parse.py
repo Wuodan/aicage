@@ -7,14 +7,9 @@ from aicage.cli.errors import CliError
 
 class ParseCliTests(TestCase):
     def test_parse_cli_with_docker_args(self) -> None:
-        parsed = parse_cli(["--dry-run", "--network=host", "codex", "--foo"])
-        self.assertTrue(parsed.dry_run)
-        self.assertEqual("--network=host", parsed.docker_args)
-        self.assertEqual("codex", parsed.agent)
-        self.assertEqual(["--foo"], parsed.agent_args)
-        self.assertIsNone(parsed.entrypoint)
-        self.assertFalse(parsed.docker_socket)
-        self.assertIsNone(parsed.config_action)
+        with self.assertRaises(CliError) as ctx:
+            parse_cli(["--dry-run", "--network=host", "codex", "--foo"])
+        self.assertEqual("Docker args require '--' before the agent.", str(ctx.exception))
 
     def test_parse_cli_with_separator(self) -> None:
         parsed = parse_cli(["--dry-run", "--", "codex", "--bar"])
@@ -61,6 +56,11 @@ class ParseCliTests(TestCase):
     def test_parse_cli_requires_agent_name(self) -> None:
         with self.assertRaises(CliError):
             parse_cli([""])
+
+    def test_parse_cli_requires_separator_for_docker_args(self) -> None:
+        with self.assertRaises(CliError) as ctx:
+            parse_cli(["-v", "/tmp/folder:/tmp/folder", "codex"])
+        self.assertEqual("Docker args require '--' before the agent.", str(ctx.exception))
 
     def test_parse_cli_config_print(self) -> None:
         parsed = parse_cli(["--config", "print"])

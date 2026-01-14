@@ -107,7 +107,5 @@ def _parse_agent_section(
         raise CliError("Missing arguments. Provide an agent name (and optional docker args).")
     first: str = remaining[0]
     if first.startswith("-") or "=" in first:
-        if len(remaining) < _MIN_REMAINING_WITH_AGENT:
-            raise CliError("Missing agent name after docker args. Use '--' before the agent.")
-        return first, remaining[1], remaining[2:]
+        raise CliError("Docker args require '--' before the agent.")
     return "", first, remaining[1:]
