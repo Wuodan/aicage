@@ -94,7 +94,7 @@ class PromptImageChoiceTests(TestCase):
         )
         bases = base_options(context, request.agent_metadata)
         options = _build_image_options(bases, [])
-        choice = _parse_image_choice_response("ubuntu", request, bases, [], options)
+        choice = _parse_image_choice_response("ubuntu", bases, [], options)
         self.assertEqual("base", choice.kind)
         self.assertEqual("ubuntu", choice.value)
 
@@ -117,7 +117,7 @@ class PromptImageChoiceTests(TestCase):
         )
         bases = base_options(context, request.agent_metadata)
         options = _build_image_options(bases, extended)
-        choice = _parse_image_choice_response("custom", request, bases, extended, options)
+        choice = _parse_image_choice_response("custom", bases, extended, options)
         self.assertEqual("extended", choice.kind)
         self.assertEqual("custom", choice.value)
 
@@ -132,7 +132,7 @@ class PromptImageChoiceTests(TestCase):
         bases = base_options(context, request.agent_metadata)
         options = _build_image_options(bases, [])
         with self.assertRaises(RuntimeExecutionError):
-            _parse_image_choice_response("99", request, bases, [], options)
+            _parse_image_choice_response("99", bases, [], options)
 
     @staticmethod
     def _context() -> ConfigContext:

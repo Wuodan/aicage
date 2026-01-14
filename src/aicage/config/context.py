@@ -16,5 +16,6 @@ class ConfigContext:
     extensions: dict[str, ExtensionMetadata]
     custom_bases: dict[str, BaseMetadata] = field(default_factory=dict)
 
-    def image_repository_ref(self) -> str:
+    @staticmethod
+    def image_repository_ref() -> str:
         return f"{IMAGE_REGISTRY}/{IMAGE_REPOSITORY}"

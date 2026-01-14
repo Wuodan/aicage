@@ -41,7 +41,7 @@ def prompt_for_image_choice(request: ImageChoiceRequest) -> ImageChoice:
     options = _build_image_options(bases, extended)
     prompt = _render_image_prompt(request, options)
     response = input(prompt).strip()
-    choice = _parse_image_choice_response(response, request, bases, extended, options)
+    choice = _parse_image_choice_response(response, bases, extended, options)
     logger.info("Selected %s '%s' for agent '%s'", choice.kind, choice.value, request.agent)
     return choice
 
@@ -81,7 +81,6 @@ def _render_image_prompt(
 
 def _parse_image_choice_response(
     response: str,
-    request: ImageChoiceRequest,
     bases: list[BaseOption],
     extended: list[ExtendedImageOption],
     options: list[tuple[str, ImageChoice]],
