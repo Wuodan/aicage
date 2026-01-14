@@ -3,9 +3,9 @@
 # https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
 
 aicage-image:
-  version: 0.8.1
+  version: 0.8.12
 aicage-image-base:
-  version: 0.8.0
+  version: 0.8.10
 bases:
   act:
     from_image: ghcr.io/catthehacker/ubuntu:act-latest
@@ -31,12 +31,6 @@ bases:
     base_image_description: For RedHat/Fedora users
     os_installer: distro/redhat/install.sh
     test_suite: default
-  minimal:
-    from_image: node:alpine
-    base_image_distro: Alpine
-    base_image_description: (Alpine) For quick CI/CD tests; reduced packages
-    os_installer: distro/alpine-minimal/install.sh
-    test_suite: minimal
   node:
     from_image: node:lts-slim
     base_image_distro: Ubuntu
@@ -61,7 +55,6 @@ agent:
       alpine: aicage:claude-alpine
       debian: aicage:claude-debian
       fedora: aicage:claude-fedora
-      minimal: aicage:claude-minimal
       node: aicage:claude-node
       ubuntu: aicage:claude-ubuntu
   codex:
@@ -74,7 +67,6 @@ agent:
       alpine: ghcr.io/aicage/aicage:codex-alpine
       debian: ghcr.io/aicage/aicage:codex-debian
       fedora: ghcr.io/aicage/aicage:codex-fedora
-      minimal: ghcr.io/aicage/aicage:codex-minimal
       node: ghcr.io/aicage/aicage:codex-node
       ubuntu: ghcr.io/aicage/aicage:codex-ubuntu
   copilot:
@@ -103,7 +95,6 @@ agent:
       alpine: ghcr.io/aicage/aicage:crush-alpine
       debian: ghcr.io/aicage/aicage:crush-debian
       fedora: ghcr.io/aicage/aicage:crush-fedora
-      minimal: ghcr.io/aicage/aicage:crush-minimal
       node: ghcr.io/aicage/aicage:crush-node
       ubuntu: ghcr.io/aicage/aicage:crush-ubuntu
   droid:
@@ -117,7 +108,6 @@ agent:
       alpine: aicage:droid-alpine
       debian: aicage:droid-debian
       fedora: aicage:droid-fedora
-      minimal: aicage:droid-minimal
       node: aicage:droid-node
       ubuntu: aicage:droid-ubuntu
   gemini:
@@ -130,7 +120,6 @@ agent:
       alpine: ghcr.io/aicage/aicage:gemini-alpine
       debian: ghcr.io/aicage/aicage:gemini-debian
       fedora: ghcr.io/aicage/aicage:gemini-fedora
-      minimal: ghcr.io/aicage/aicage:gemini-minimal
       node: ghcr.io/aicage/aicage:gemini-node
       ubuntu: ghcr.io/aicage/aicage:gemini-ubuntu
   goose:
@@ -143,7 +132,6 @@ agent:
       alpine: ghcr.io/aicage/aicage:goose-alpine
       debian: ghcr.io/aicage/aicage:goose-debian
       fedora: ghcr.io/aicage/aicage:goose-fedora
-      minimal: ghcr.io/aicage/aicage:goose-minimal
       node: ghcr.io/aicage/aicage:goose-node
       ubuntu: ghcr.io/aicage/aicage:goose-ubuntu
   qwen:
@@ -156,6 +144,5 @@ agent:
       alpine: ghcr.io/aicage/aicage:qwen-alpine
       debian: ghcr.io/aicage/aicage:qwen-debian
       fedora: ghcr.io/aicage/aicage:qwen-fedora
-      minimal: ghcr.io/aicage/aicage:qwen-minimal
       node: ghcr.io/aicage/aicage:qwen-node
       ubuntu: ghcr.io/aicage/aicage:qwen-ubuntu
