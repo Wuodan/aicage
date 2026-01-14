@@ -40,15 +40,12 @@ class _ImageReleaseInfo:
 
 
 @dataclass(frozen=True)
-class _BaseMetadata:
+class BaseMetadata:
     from_image: str
     base_image_distro: str
     base_image_description: str
     os_installer: str
     test_suite: str
-
-
-BaseMetadata = _BaseMetadata
 
 
 @dataclass(frozen=True)
@@ -125,7 +122,7 @@ def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
             optional=set(),
             context=f"{_BASES_KEY}.{name}",
         )
-        bases[name] = _BaseMetadata(
+        bases[name] = BaseMetadata(
             from_image=_expect_string(
                 base_mapping.get(_FROM_IMAGE_KEY),
                 f"{_BASES_KEY}.{name}.{_FROM_IMAGE_KEY}",

@@ -8,7 +8,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
     AgentMetadata,
     ImagesMetadata,
-    _BaseMetadata,
+    BaseMetadata,
     _ImageReleaseInfo,
 )
 from aicage.config.project_config import ProjectConfig
@@ -105,7 +105,7 @@ class EnsureLocalImageTests(TestCase):
             project_docker_args=run_config.project_docker_args,
             mounts=run_config.mounts,
         )
-        custom_base = _BaseMetadata(
+        custom_base = BaseMetadata(
             from_image="ubuntu:latest",
             base_image_distro="Ubuntu",
             base_image_description="Custom",
@@ -228,7 +228,7 @@ class EnsureLocalImageTests(TestCase):
             aicage_image=_ImageReleaseInfo(version="0.3.3"),
             aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
             bases={
-                "ubuntu": _BaseMetadata(
+                "ubuntu": BaseMetadata(
                     from_image="ubuntu:latest",
                     base_image_distro="Ubuntu",
                     base_image_description="Default",

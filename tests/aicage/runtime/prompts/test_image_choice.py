@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _BaseMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, BaseMetadata, _ImageReleaseInfo
 from aicage.config.project_config import ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.runtime.errors import RuntimeExecutionError
@@ -143,7 +143,7 @@ class PromptImageChoiceTests(TestCase):
                 aicage_image=_ImageReleaseInfo(version="0.3.3"),
                 aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
                 bases={
-                    "ubuntu": _BaseMetadata(
+                    "ubuntu": BaseMetadata(
                         from_image="ubuntu:latest",
                         base_image_distro="Ubuntu",
                         base_image_description="Default",
