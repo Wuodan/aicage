@@ -25,6 +25,7 @@ packages = ["src/aicage"]
 [tool.hatch.build.targets.wheel.shared-data]
 "config/images-metadata.yaml" = "config/images-metadata.yaml"
 "config/agent-build" = "config/agent-build"
+"config/base-build" = "config/base-build"
 "config/extension-build" = "config/extension-build"
 "config/validation/agent.schema.json" = "config/validation/agent.schema.json"
 "config/validation/base.schema.json" = "config/validation/base.schema.json"
@@ -34,6 +35,7 @@ packages = ["src/aicage"]
 include = [
   "config/images-metadata.yaml",
   "config/agent-build/**",
+  "config/base-build/**",
   "config/extension-build/**",
   "config/validation/agent.schema.json",
   "config/validation/base.schema.json",
@@ -45,6 +47,7 @@ include = [
   "src/aicage/**",
   "config/images-metadata.yaml",
   "config/agent-build/**",
+  "config/base-build/**",
   "config/extension-build/**",
   "config/validation/agent.schema.json",
   "config/validation/base.schema.json",
