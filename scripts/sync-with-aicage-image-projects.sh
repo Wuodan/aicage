@@ -5,6 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TMPDIR="$(mktemp -d)"
 
+echo "# Syncing with sub-project 'aicage-image-base'" >&2
+"${SCRIPT_DIR}"/get-aicage-release-artifact.sh aicage-image-base "${TMPDIR}"
+
+echo "- Update config/base-build/bases/" >&2
+rm -rf config/base-build/bases/
+cp -r "${TMPDIR}"/bases config/base-build/
+
 echo "# Syncing with sub-project 'aicage-image'" >&2
 "${SCRIPT_DIR}"/get-aicage-release-artifact.sh aicage-image "${TMPDIR}"
 

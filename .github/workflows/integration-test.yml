@@ -19,7 +19,7 @@ jobs:
 
       - name: Syncing metadata and agents with sub-project 'aicage-image'
         run: |
-          scripts/sync-with-aicage-image.sh
+          scripts/sync-with-aicage-image-projects.sh
 
       - name: Set up Python
         uses: actions/setup-python@v6.1.0
@@ -72,7 +72,7 @@ jobs:
 
       - name: Syncing metadata and agents with sub-project 'aicage-image'
         run: |
-          scripts/sync-with-aicage-image.sh
+          scripts/sync-with-aicage-image-projects.sh
 
       - name: Set up Python
         uses: actions/setup-python@v6.1.0

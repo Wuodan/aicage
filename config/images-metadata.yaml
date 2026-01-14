@@ -1,11 +1,7 @@
-# Warning: This is just a working copy
-# This file is generated with releases of aicage-image and overwritten for each release of aicage with
-# https://github.com/aicage/aicage-image/releases/latest/download/images-metadata.yaml
-
 aicage-image:
-  version: 0.8.12
+  version: 0.8.14
 aicage-image-base:
-  version: 0.8.10
+  version: 0.8.14
 bases:
   act:
     from_image: ghcr.io/catthehacker/ubuntu:act-latest
