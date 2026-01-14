@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "AICAGE custom base definition",
+  "title": "AICAGE base definition",
   "type": "object",
   "required": [
     "from_image",

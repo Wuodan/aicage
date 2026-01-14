@@ -6,12 +6,12 @@ from aicage.config._schema_validation import load_schema, validate_schema_mappin
 from aicage.config._yaml import expect_string
 from aicage.config.errors import ConfigError
 
-_CUSTOM_BASE_SCHEMA_PATH: str = "validation/base.schema.json"
+_BASE_SCHEMA_PATH: str = "validation/base.schema.json"
 _CUSTOM_BASE_CONTEXT: str = "custom base metadata"
 
 
 def validate_base_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
-    schema = load_schema(_CUSTOM_BASE_SCHEMA_PATH)
+    schema = load_schema(_BASE_SCHEMA_PATH)
     return validate_schema_mapping(
         mapping,
         schema,
