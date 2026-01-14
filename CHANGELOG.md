@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.12] - 2026-01-14
+
+### Added
+
+- Integration test coverage for custom bases across built-in and custom agents, including extensions.
+- Custom base images documentation in `doc/custom-base-images.md`.
+
 ## [0.8.7] - 2026-01-13
 
 ### Added
