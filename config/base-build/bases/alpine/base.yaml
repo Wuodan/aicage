@@ -1,5 +1,3 @@
 from_image: alpine:latest
 base_image_distro: Alpine
 base_image_description: Minimal footprint; experimental
-os_installer: distro/alpine/install.sh
-test_suite: default

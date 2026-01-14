@@ -22,8 +22,6 @@ _VERSION_KEY: str = "version"
 _FROM_IMAGE_KEY: str = "from_image"
 _BASE_IMAGE_DISTRO_KEY: str = "base_image_distro"
 _BASE_IMAGE_DESCRIPTION_KEY: str = "base_image_description"
-_OS_INSTALLER_KEY: str = "os_installer"
-_TEST_SUITE_KEY: str = "test_suite"
 
 AGENT_PATH_KEY: str = "agent_path"
 AGENT_FULL_NAME_KEY: str = "agent_full_name"
@@ -44,8 +42,6 @@ class BaseMetadata:
     from_image: str
     base_image_distro: str
     base_image_description: str
-    os_installer: str
-    test_suite: str
 
 
 @dataclass(frozen=True)
@@ -116,8 +112,6 @@ def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
                 _FROM_IMAGE_KEY,
                 _BASE_IMAGE_DISTRO_KEY,
                 _BASE_IMAGE_DESCRIPTION_KEY,
-                _OS_INSTALLER_KEY,
-                _TEST_SUITE_KEY,
             },
             optional=set(),
             context=f"{_BASES_KEY}.{name}",
@@ -134,14 +128,6 @@ def _parse_bases(value: Any) -> dict[str, BaseMetadata]:
             base_image_description=_expect_string(
                 base_mapping.get(_BASE_IMAGE_DESCRIPTION_KEY),
                 f"{_BASES_KEY}.{name}.{_BASE_IMAGE_DESCRIPTION_KEY}",
-            ),
-            os_installer=_expect_string(
-                base_mapping.get(_OS_INSTALLER_KEY),
-                f"{_BASES_KEY}.{name}.{_OS_INSTALLER_KEY}",
-            ),
-            test_suite=_expect_string(
-                base_mapping.get(_TEST_SUITE_KEY),
-                f"{_BASES_KEY}.{name}.{_TEST_SUITE_KEY}",
             ),
         )
     return bases

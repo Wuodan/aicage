@@ -9,8 +9,6 @@ from aicage.config.images_metadata.models import (
     _BASE_IMAGE_DISTRO_KEY,
     _BASES_KEY,
     _FROM_IMAGE_KEY,
-    _OS_INSTALLER_KEY,
-    _TEST_SUITE_KEY,
     _VALID_BASES_KEY,
     _VERSION_KEY,
     AGENT_FULL_NAME_KEY,
@@ -115,8 +113,6 @@ class PromptTests(TestCase):
                         _FROM_IMAGE_KEY: "ubuntu:latest",
                         _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
                         _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                        _OS_INSTALLER_KEY: "distro/debian/install.sh",
-                        _TEST_SUITE_KEY: "default",
                     }
                     for name in bases
                 },

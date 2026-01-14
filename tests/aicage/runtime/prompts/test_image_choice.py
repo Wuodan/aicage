@@ -147,8 +147,6 @@ class PromptImageChoiceTests(TestCase):
                         from_image="ubuntu:latest",
                         base_image_distro="Ubuntu",
                         base_image_description="Default",
-                        os_installer="distro/debian/install.sh",
-                        test_suite="default",
                     )
                 },
                 agents={},

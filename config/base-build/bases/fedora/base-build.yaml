@@ -1,0 +1,2 @@
+os_installer: distro/redhat/install.sh
+test_suite: default

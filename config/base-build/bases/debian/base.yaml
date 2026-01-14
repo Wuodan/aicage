@@ -1,5 +1,3 @@
 from_image: debian:latest
 base_image_distro: Debian
 base_image_description: For Debian users
-os_installer: distro/debian/install.sh
-test_suite: default

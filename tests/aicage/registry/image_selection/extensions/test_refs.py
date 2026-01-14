@@ -59,8 +59,6 @@ class ExtensionRefsTests(TestCase):
                 from_image="ubuntu:latest",
                 base_image_distro="Ubuntu",
                 base_image_description="Custom",
-                os_installer="",
-                test_suite="",
             )
         }
         result = base_image_ref(agent_metadata, "codex", "custom", context)

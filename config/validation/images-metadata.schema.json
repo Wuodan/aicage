@@ -40,9 +40,7 @@
         "required": [
           "from_image",
           "base_image_distro",
-          "base_image_description",
-          "os_installer",
-          "test_suite"
+          "base_image_description"
         ],
         "properties": {
           "from_image": {
@@ -52,12 +50,6 @@
             "type": "string"
           },
           "base_image_description": {
-            "type": "string"
-          },
-          "os_installer": {
-            "type": "string"
-          },
-          "test_suite": {
             "type": "string"
           }
         },

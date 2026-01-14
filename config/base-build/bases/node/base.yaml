@@ -1,5 +1,3 @@
 from_image: node:lts-slim
 base_image_distro: Ubuntu
 base_image_description: (Ubuntu) Official Node image (all base images have Node)
-os_installer: distro/debian/install.sh
-test_suite: default

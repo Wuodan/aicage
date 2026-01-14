@@ -43,8 +43,6 @@ def _load_custom_base(base_name: str) -> BaseMetadata:
             mapping.get(_BASE_IMAGE_DESCRIPTION_KEY),
             _BASE_IMAGE_DESCRIPTION_KEY,
         ),
-        os_installer="",
-        test_suite="",
     )
 
 

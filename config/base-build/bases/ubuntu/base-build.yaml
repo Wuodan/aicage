@@ -1,0 +1,2 @@
+os_installer: distro/debian/install.sh
+test_suite: default

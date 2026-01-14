@@ -120,6 +120,4 @@ class CustomBaseBuildTests(TestCase):
             from_image="ubuntu:latest",
             base_image_distro="Ubuntu",
             base_image_description="Custom",
-            os_installer="",
-            test_suite="",
         )

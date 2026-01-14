@@ -1,44 +1,32 @@
 aicage-image:
-  version: 0.8.14
+  version: 0.8.15
 aicage-image-base:
-  version: 0.8.14
+  version: 0.8.15
 bases:
   act:
     from_image: ghcr.io/catthehacker/ubuntu:act-latest
     base_image_distro: Ubuntu
     base_image_description: (Ubuntu) Runner image from act (act runs GitHub Actions locally)
-    os_installer: distro/debian/install.sh
-    test_suite: default
   alpine:
     from_image: alpine:latest
     base_image_distro: Alpine
     base_image_description: Minimal footprint; experimental
-    os_installer: distro/alpine/install.sh
-    test_suite: default
   debian:
     from_image: debian:latest
     base_image_distro: Debian
     base_image_description: For Debian users
-    os_installer: distro/debian/install.sh
-    test_suite: default
   fedora:
     from_image: fedora:latest
     base_image_distro: Fedora
     base_image_description: For RedHat/Fedora users
-    os_installer: distro/redhat/install.sh
-    test_suite: default
   node:
     from_image: node:lts-slim
     base_image_distro: Ubuntu
     base_image_description: (Ubuntu) Official Node image (all base images have Node)
-    os_installer: distro/debian/install.sh
-    test_suite: default
   ubuntu:
     from_image: ubuntu:latest
     base_image_distro: Ubuntu
     base_image_description: Good default for most users
-    os_installer: distro/debian/install.sh
-    test_suite: default
 agent:
   claude:
     agent_path: ~/.claude
