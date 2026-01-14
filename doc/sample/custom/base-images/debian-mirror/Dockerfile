@@ -1,3 +1,4 @@
+# check=skip=InvalidDefaultArgInFrom
 ARG FROM_IMAGE
 
 FROM ${FROM_IMAGE} AS from_image

@@ -1,5 +1,6 @@
-ARG BASE_IMAGE=base
-ARG AGENT=codex
+# check=skip=InvalidDefaultArgInFrom
+ARG BASE_IMAGE
+ARG AGENT
 
 FROM ${BASE_IMAGE} AS runtime
 
