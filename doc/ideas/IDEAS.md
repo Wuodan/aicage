@@ -32,11 +32,6 @@ development. But by now this:
 - is ugly
 - the code is mature enough by now to change this
 
-## Avoid `chmod` on users shell scripts
-
-We use `chmod` if the users config has non-executable `*.sh` scripts. But we might avoid changing
-those by `chmod` by running them as arguments to `sh` (or `bash` if available on host).
-
 ## Prevent starting in HOME
 
 Prevent starting in HOME (error when creating symlink in entrypoint) or `/` or similar. Or warn user at least.  
@@ -58,10 +53,6 @@ Maybe we could even allow user added custom plugins.
 The `version.sh` scripts for agents are run on the users system or as fallback in the Alpine `version-check` util-image
 (from submodule `aicage-image-util`). Those scripts should be strictly POSIX compliant and we should verify that with
 `shellcheck` in a GitHub release pipeline for `aicage-image` (where those scripts are defined).
-
-## Replace configi.yml with Python constants
-
-As constants can be imported and must not be passes around.
 
 ## Tune locking of ~/.aicage
 
