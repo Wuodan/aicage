@@ -2,7 +2,7 @@ from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
 from aicage.config.runtime_config import RunConfig
-from aicage.runtime.agent_config import AgentConfig, resolve_agent_config
+from aicage.runtime._agent_config import AgentConfig, resolve_agent_config
 from aicage.runtime.run_args import DockerRunArgs, merge_docker_args
 
 

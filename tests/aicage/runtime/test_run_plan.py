@@ -11,7 +11,7 @@ from aicage.config.images_metadata.models import (
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.image_selection.models import ImageSelection
-from aicage.runtime.agent_config import AgentConfig
+from aicage.runtime._agent_config import AgentConfig
 from aicage.runtime.run_plan import build_run_args
 
 
