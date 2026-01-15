@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.16] - 2026-01-15
+
+### Added
+
+- Packaged base definitions under `config/base-build/bases/` with per-base `base.yaml` and `base-build.yaml`.
+- Shared helper to download release artifacts from `aicage-image`/`aicage-image-base`.
+
+### Changed
+
+- CLI requires a `--` separator before agent args when passing Docker args.
+- Runtime selection and image resolution now use `ConfigContext` and `RunConfig.selection` directly.
+- Removed `config/images-metadata.yaml` and related schema in favor of base and agent configs.
+
+### Internal
+
+- Consolidated base/agent loaders under `aicage.config.base` and `aicage.config.agent`.
+- Tightened module visibility and removed unused `__future__` imports.
+- Updated sync scripts and workflows for base-image metadata packaging.
+
 ## [0.8.12] - 2026-01-14
 
 ### Added
