@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
@@ -97,8 +97,6 @@ class ExtendedPlanTests(TestCase):
     @staticmethod
     def _run_config() -> RunConfig:
         images_metadata = ImagesMetadata(
-            aicage_image=_ImageReleaseInfo(version="0.3.3"),
-            aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
             bases={},
             agents={},
         )
@@ -109,6 +107,8 @@ class ExtendedPlanTests(TestCase):
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
                 images_metadata=images_metadata,
+                agents={},
+                bases={},
                 extensions={},
             ),
             selection=ImageSelection(

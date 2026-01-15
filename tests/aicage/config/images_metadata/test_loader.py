@@ -1,70 +1,31 @@
-import tempfile
 from pathlib import Path
-from unittest import TestCase, mock
+from unittest import TestCase
 
-from aicage.config import ConfigError
 from aicage.config.images_metadata.loader import load_images_metadata
-from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
-)
-from aicage.paths import IMAGES_METADATA_FILENAME
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
 
 
 class ImagesMetadataLoaderTests(TestCase):
-    def test_load_images_metadata_reads_local_file(self) -> None:
-        payload = _valid_payload()
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            path = Path(tmp_dir) / IMAGES_METADATA_FILENAME
-            path.write_text(payload, encoding="utf-8")
-            with mock.patch(
-                "aicage.config.images_metadata.loader.find_packaged_path",
-                return_value=path,
-            ):
-                metadata = load_images_metadata({})
-            self.assertEqual("0.3.3", metadata.aicage_image.version)
-
-    def test_load_images_metadata_raises_without_file(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            missing = Path(tmp_dir) / IMAGES_METADATA_FILENAME
-            with (
-                mock.patch(
-                    "aicage.config.images_metadata.loader.find_packaged_path",
-                    return_value=missing,
-                ),
-                self.assertRaises(ConfigError),
-            ):
-                load_images_metadata({})
-
-
-def _valid_payload() -> str:
-    return f"""
-{_AICAGE_IMAGE_KEY}:
-  {_VERSION_KEY}: 0.3.3
-{_AICAGE_IMAGE_BASE_KEY}:
-  {_VERSION_KEY}: 0.3.3
-{_BASES_KEY}:
-  ubuntu:
-    {_FROM_IMAGE_KEY}: ubuntu:latest
-    {_BASE_IMAGE_DISTRO_KEY}: Ubuntu
-    {_BASE_IMAGE_DESCRIPTION_KEY}: Good default
-{_AGENT_KEY}:
-  codex:
-    {AGENT_PATH_KEY}: ~/.codex
-    {AGENT_FULL_NAME_KEY}: Codex CLI
-    {AGENT_HOMEPAGE_KEY}: https://example.com
-    {BUILD_LOCAL_KEY}: false
-    {_VALID_BASES_KEY}:
-      ubuntu: ghcr.io/aicage/aicage:codex-ubuntu
-"""
+    def test_load_images_metadata_returns_inputs(self) -> None:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Good default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/base"),
+            )
+        }
+        agents = {
+            "codex": AgentMetadata(
+                agent_path="~/.codex",
+                agent_full_name="Codex CLI",
+                agent_homepage="https://example.com",
+                build_local=False,
+                valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
+                local_definition_dir=Path("/tmp/agent"),
+            )
+        }
+        metadata = load_images_metadata(bases, agents)
+        self.assertEqual(bases, metadata.bases)
+        self.assertEqual(agents, metadata.agents)

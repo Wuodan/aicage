@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
@@ -28,7 +28,7 @@ class EnsureExtendedImageTests(TestCase):
         extension = self._extension("ext")
         run_config = self._run_config(
             extensions=["ext"],
-            local_definition_dir=None,
+            local_definition_dir=Path("/tmp/def"),
             available_extensions={"ext": extension},
         )
         store = mock.Mock()
@@ -110,13 +110,20 @@ class EnsureExtendedImageTests(TestCase):
     def _run_config(
         extensions: list[str],
         build_local: bool = False,
-        local_definition_dir: Path | None = None,
+        local_definition_dir: Path = Path("/tmp/def"),
         available_extensions: dict[str, ExtensionMetadata] | None = None,
     ) -> RunConfig:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/base"),
+            )
+        }
         images_metadata = ImagesMetadata(
-            aicage_image=_ImageReleaseInfo(version="0.3.3"),
-            aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-            bases={},
+            bases=bases,
             agents={
                 "codex": AgentMetadata(
                     agent_path="~/.codex",
@@ -135,6 +142,8 @@ class EnsureExtendedImageTests(TestCase):
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
                 images_metadata=images_metadata,
+                agents=images_metadata.agents,
+                bases=images_metadata.bases,
                 extensions=available_extensions or {},
             ),
             selection=ImageSelection(

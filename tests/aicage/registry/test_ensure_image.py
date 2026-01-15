@@ -1,7 +1,9 @@
+from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.images_metadata.models import AgentMetadata
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
 from aicage.config.runtime_config import RunConfig
+from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry.ensure_image import ensure_image
 
 
@@ -26,7 +28,7 @@ class EnsureImageTests(TestCase):
             build_local=False,
             extensions=[],
             base="custom",
-            custom_bases={"custom": mock.Mock()},
+            base_definition_dir=CUSTOM_BASES_DIR / "custom",
         )
         with (
             mock.patch("aicage.registry.ensure_image.pull_image") as pull_mock,
@@ -55,8 +57,9 @@ def _run_config(
     extensions: list[str],
     *,
     base: str = "ubuntu",
-    custom_bases: dict[str, object] | None = None,
+    base_definition_dir: Path | None = None,
 ) -> RunConfig:
+    base_dir = base_definition_dir or Path("/tmp/base")
     run_config = mock.Mock(spec=RunConfig)
     run_config.agent = "codex"
     run_config.selection = mock.Mock()
@@ -65,7 +68,15 @@ def _run_config(
     run_config.selection.extensions = extensions
     run_config.context = mock.Mock()
     run_config.context.images_metadata = mock.Mock()
-    run_config.context.custom_bases = custom_bases or {}
+    run_config.context.bases = {
+        base: BaseMetadata(
+            from_image="ubuntu:latest",
+            base_image_distro="Ubuntu",
+            base_image_description="Default",
+            build_local=False,
+            local_definition_dir=base_dir,
+        )
+    }
     run_config.context.images_metadata.agents = {
         "codex": AgentMetadata(
             agent_path="~/.custom",
@@ -73,7 +84,7 @@ def _run_config(
             agent_homepage="https://example.com",
             build_local=build_local,
             valid_bases={},
-            local_definition_dir=None,
+            local_definition_dir=Path("/tmp/agent"),
         )
     }
     return run_config

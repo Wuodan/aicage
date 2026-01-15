@@ -3,19 +3,8 @@ from pathlib import Path
 from unittest import TestCase
 
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
+    AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.runtime.agent_config import resolve_agent_config
@@ -26,40 +15,32 @@ class AgentConfigTests(TestCase):
     def test_resolve_agent_config_reads_metadata_and_creates_dir(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             agent_dir = Path(tmp_dir) / ".codex"
-            metadata = ImagesMetadata.from_mapping(
-                {
-                    _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                    _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                    _BASES_KEY: {
-                        "ubuntu": {
-                            _FROM_IMAGE_KEY: "ubuntu:latest",
-                            _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                            _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                        }
-                    },
-                    _AGENT_KEY: {
-                        "codex": {
-                            AGENT_PATH_KEY: str(agent_dir),
-                            AGENT_FULL_NAME_KEY: "Codex CLI",
-                            AGENT_HOMEPAGE_KEY: "https://example.com",
-                            BUILD_LOCAL_KEY: False,
-                            _VALID_BASES_KEY: {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-                        }
-                    },
-                }
+            metadata = ImagesMetadata(
+                bases={
+                    "ubuntu": BaseMetadata(
+                        from_image="ubuntu:latest",
+                        base_image_distro="Ubuntu",
+                        base_image_description="Default",
+                        build_local=False,
+                        local_definition_dir=Path("/tmp/base"),
+                    )
+                },
+                agents={
+                    "codex": AgentMetadata(
+                        agent_path=str(agent_dir),
+                        agent_full_name="Codex CLI",
+                        agent_homepage="https://example.com",
+                        build_local=False,
+                        valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
+                        local_definition_dir=Path("/tmp/agent"),
+                    )
+                },
             )
             config = resolve_agent_config("codex", metadata)
             self.assertEqual(str(agent_dir), config.agent_path)
             self.assertTrue(config.agent_config_host.exists())
 
     def test_resolve_agent_config_missing_agent_raises(self) -> None:
-        metadata = ImagesMetadata.from_mapping(
-            {
-                _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                _BASES_KEY: {},
-                _AGENT_KEY: {},
-            }
-        )
+        metadata = ImagesMetadata(bases={}, agents={})
         with self.assertRaises(RuntimeExecutionError):
             resolve_agent_config("codex", metadata)

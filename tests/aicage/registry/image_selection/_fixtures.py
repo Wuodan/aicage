@@ -4,19 +4,8 @@ from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
+    AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.config.project_config import AgentConfig
@@ -28,10 +17,13 @@ def build_context(
     bases: list[str],
     agents: dict[str, AgentConfig] | None = None,
 ) -> ConfigContext:
+    images_metadata = metadata_with_bases(bases)
     return ConfigContext(
         store=store,
         project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
-        images_metadata=metadata_with_bases(bases),
+        images_metadata=images_metadata,
+        agents=images_metadata.agents,
+        bases=images_metadata.bases,
         extensions={},
     )
 
@@ -41,29 +33,26 @@ def metadata_with_bases(
     agent_name: str = "codex",
     build_local: bool = False,
 ) -> ImagesMetadata:
-    return ImagesMetadata.from_mapping(
-        {
-            _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-            _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-            _BASES_KEY: {
-                name: {
-                    _FROM_IMAGE_KEY: "ubuntu:latest",
-                    _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                    _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                }
-                for name in bases
+    base_entries = {
+        name: BaseMetadata(
+            from_image="ubuntu:latest",
+            base_image_distro="Ubuntu",
+            base_image_description="Default",
+            build_local=False,
+            local_definition_dir=Path(f"/tmp/{name}"),
+        )
+        for name in bases
+    }
+    agents = {
+        agent_name: AgentMetadata(
+            agent_path="~/.codex",
+            agent_full_name="Codex CLI",
+            agent_homepage="https://example.com",
+            build_local=build_local,
+            valid_bases={
+                name: f"ghcr.io/aicage/aicage:{agent_name}-{name}" for name in bases
             },
-            _AGENT_KEY: {
-                agent_name: {
-                    AGENT_PATH_KEY: "~/.codex",
-                    AGENT_FULL_NAME_KEY: "Codex CLI",
-                    AGENT_HOMEPAGE_KEY: "https://example.com",
-                    BUILD_LOCAL_KEY: build_local,
-                    _VALID_BASES_KEY: {
-                        name: f"ghcr.io/aicage/aicage:{agent_name}-{name}"
-                        for name in bases
-                    },
-                }
-            },
-        }
-    )
+            local_definition_dir=Path(f"/tmp/{agent_name}"),
+        )
+    }
+    return ImagesMetadata(bases=base_entries, agents=agents)

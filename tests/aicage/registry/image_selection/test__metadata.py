@@ -1,19 +1,14 @@
 from pathlib import Path
 from unittest import TestCase
 
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection import _metadata
 
 
 class ImageSelectionMetadataTests(TestCase):
     def test_require_agent_metadata_raises_when_missing(self) -> None:
-        metadata = ImagesMetadata(
-            aicage_image=_ImageReleaseInfo(version="0.3.3"),
-            aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-            bases={},
-            agents={},
-        )
+        metadata = ImagesMetadata(bases={}, agents={})
         with self.assertRaises(RegistryError):
             _metadata.require_agent_metadata("missing", metadata)
 

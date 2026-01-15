@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config import ConfigError
-from aicage.config.custom_base.loader import _load_custom_base, load_custom_bases
+from aicage.config.base.custom_loader import _load_custom_base, load_custom_bases
 from aicage.paths import CUSTOM_BASE_DEFINITION_FILES
 
 
@@ -12,7 +12,7 @@ class CustomBaseLoaderTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-bases"
             with mock.patch(
-                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
+                "aicage.config.base.custom_loader.CUSTOM_BASES_DIR",
                 missing,
             ):
                 custom_bases = load_custom_bases()
@@ -22,7 +22,7 @@ class CustomBaseLoaderTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             custom_dir = Path(tmp_dir)
             with mock.patch(
-                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
+                "aicage.config.base.custom_loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 with self.assertRaises(ConfigError):
@@ -41,7 +41,7 @@ class CustomBaseLoaderTests(TestCase):
             )
             (base_dir / "Dockerfile").write_text("FROM ${FROM_IMAGE}\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
+                "aicage.config.base.custom_loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 custom_bases = load_custom_bases()
@@ -50,6 +50,8 @@ class CustomBaseLoaderTests(TestCase):
         self.assertEqual("debian:latest", base.from_image)
         self.assertEqual("Debian", base.base_image_distro)
         self.assertEqual("Custom Debian", base.base_image_description)
+        self.assertTrue(base.build_local)
+        self.assertEqual(base_dir, base.local_definition_dir)
 
     def test_load_custom_bases_requires_dockerfile(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -63,7 +65,7 @@ class CustomBaseLoaderTests(TestCase):
                 base_image_description="Custom Debian",
             )
             with mock.patch(
-                "aicage.config.custom_base.loader.CUSTOM_BASES_DIR",
+                "aicage.config.base.custom_loader.CUSTOM_BASES_DIR",
                 custom_dir,
             ):
                 with self.assertRaises(ConfigError):

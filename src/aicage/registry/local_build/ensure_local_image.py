@@ -8,7 +8,6 @@ from aicage.docker.build import run_build
 from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry._time import now_iso
 from aicage.registry.agent_version import AgentVersionChecker
-from aicage.registry.errors import RegistryError
 
 from ._custom_base import ensure_custom_base_image
 from ._digest import refresh_base_digest
@@ -21,15 +20,17 @@ from ._store import BuildRecord, BuildStore
 def ensure_local_image(run_config: RunConfig) -> None:
     agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
-    if definition_dir is None:
-        raise RegistryError(f"Missing local definition for '{run_config.agent}'.")
 
-    custom_base = run_config.context.custom_bases.get(run_config.selection.base)
+    base_metadata = run_config.context.bases[run_config.selection.base]
+    custom_base = base_metadata.local_definition_dir.is_relative_to(CUSTOM_BASES_DIR)
     base_image = get_base_image_ref(run_config)
     image_ref = run_config.selection.base_image_ref
-    if custom_base is not None:
-        base_dir = CUSTOM_BASES_DIR / run_config.selection.base
-        ensure_custom_base_image(run_config.selection.base, custom_base, base_dir)
+    if custom_base:
+        ensure_custom_base_image(
+            run_config.selection.base,
+            base_metadata,
+            base_metadata.local_definition_dir,
+        )
     else:
         base_repo = base_repository(run_config)
         refresh_base_digest(

@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from aicage.config.custom_base.loader import load_custom_bases
+from aicage.config.agent.loader import load_agents
+from aicage.config.base.loader import load_bases
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY
 from aicage.docker.query import get_local_repo_digest_for_repo
@@ -28,7 +29,9 @@ def test_builtin_agent_pulls_newer_digest(monkeypatch: pytest.MonkeyPatch, tmp_p
     require_integration()
     docker_args = "--entrypoint=/bin/bash"
     workspace, env = setup_workspace(monkeypatch, tmp_path, "copilot", docker_args=docker_args)
-    images_metadata = load_images_metadata(load_custom_bases())
+    bases = load_bases()
+    agents = load_agents(bases)
+    images_metadata = load_images_metadata(bases, agents)
     image_ref = images_metadata.agents["copilot"].valid_bases["ubuntu"]
     local_id_before = build_dummy_image(image_ref, tmp_path)
     try:

@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, BaseMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.runtime.errors import RuntimeExecutionError
@@ -136,21 +136,24 @@ class PromptImageChoiceTests(TestCase):
 
     @staticmethod
     def _context() -> ConfigContext:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/ubuntu"),
+            )
+        }
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=ImagesMetadata(
-                aicage_image=_ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-                bases={
-                    "ubuntu": BaseMetadata(
-                        from_image="ubuntu:latest",
-                        base_image_distro="Ubuntu",
-                        base_image_description="Default",
-                    )
-                },
+                bases=bases,
                 agents={},
             ),
+            agents={},
+            bases=bases,
             extensions={},
         )
 

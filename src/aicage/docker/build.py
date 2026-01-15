@@ -144,8 +144,6 @@ def run_custom_base_build(
 def _build_context_dir(run_config: RunConfig, dockerfile_path: Path) -> Path:
     agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
     local_definition_dir = agent_metadata.local_definition_dir
-    if local_definition_dir is None:
-        return dockerfile_path.parent
     if local_definition_dir.is_relative_to(dockerfile_path.parent):
         return dockerfile_path.parent
     return local_definition_dir.parent.parent

@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 from aicage.config.context import ConfigContext
 from aicage.config.extended_images import ExtendedImageConfig
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
@@ -110,19 +110,28 @@ class ExtendedImageSelectionTests(TestCase):
             agent_homepage="https://example.com",
             build_local=False,
             valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-            local_definition_dir=None,
+            local_definition_dir=Path("/tmp/def"),
         )
 
     @staticmethod
     def _context() -> ConfigContext:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/ubuntu"),
+            )
+        }
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=ImagesMetadata(
-                aicage_image=_ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-                bases={},
+                bases=bases,
                 agents={},
             ),
+            agents={},
+            bases=bases,
             extensions={},
         )

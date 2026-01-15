@@ -3,19 +3,8 @@ from unittest import mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
+    AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
@@ -26,13 +15,16 @@ from aicage.registry.image_selection import ImageSelection
 def build_run_config(
     build_local: bool = True,
 ) -> RunConfig:
+    images_metadata = build_images_metadata(build_local=build_local)
     return RunConfig(
         project_path=Path("/tmp/project"),
         agent="claude",
         context=ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            images_metadata=build_images_metadata(build_local=build_local),
+            images_metadata=images_metadata,
+            agents=images_metadata.agents,
+            bases=images_metadata.bases,
             extensions={},
         ),
         selection=ImageSelection(
@@ -47,25 +39,23 @@ def build_run_config(
 
 
 def build_images_metadata(build_local: bool = True) -> ImagesMetadata:
-    return ImagesMetadata.from_mapping(
-        {
-            _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-            _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-            _BASES_KEY: {
-                "ubuntu": {
-                    _FROM_IMAGE_KEY: "ubuntu:latest",
-                    _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                    _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                }
-            },
-            _AGENT_KEY: {
-                "claude": {
-                    AGENT_PATH_KEY: "~/.claude",
-                    AGENT_FULL_NAME_KEY: "Claude Code",
-                    AGENT_HOMEPAGE_KEY: "https://example.com",
-                    BUILD_LOCAL_KEY: build_local,
-                    _VALID_BASES_KEY: {"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
-                }
-            },
-        }
-    )
+    bases = {
+        "ubuntu": BaseMetadata(
+            from_image="ubuntu:latest",
+            base_image_distro="Ubuntu",
+            base_image_description="Default",
+            build_local=False,
+            local_definition_dir=Path("/tmp/base"),
+        )
+    }
+    agents = {
+        "claude": AgentMetadata(
+            agent_path="~/.claude",
+            agent_full_name="Claude Code",
+            agent_homepage="https://example.com",
+            build_local=build_local,
+            valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
+            local_definition_dir=Path("/tmp/agent"),
+        )
+    }
+    return ImagesMetadata(bases=bases, agents=agents)

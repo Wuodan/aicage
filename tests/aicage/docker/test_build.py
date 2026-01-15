@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
@@ -18,11 +18,7 @@ from ._fixtures import build_run_config
 
 class LocalBuildRunnerTests(TestCase):
     def test_run_build_invokes_docker(self) -> None:
-        with mock.patch(
-            "aicage.config.images_metadata.models.find_packaged_path",
-            return_value=Path("/tmp/build/Dockerfile"),
-        ):
-            run_config = build_run_config()
+        run_config = build_run_config()
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "logs" / "build.log"
             with (
@@ -63,11 +59,7 @@ class LocalBuildRunnerTests(TestCase):
         )
 
     def test_run_build_raises_on_failure(self) -> None:
-        with mock.patch(
-            "aicage.config.images_metadata.models.find_packaged_path",
-            return_value=Path("/tmp/build/Dockerfile"),
-        ):
-            run_config = build_run_config()
+        run_config = build_run_config()
         with tempfile.TemporaryDirectory() as tmp_dir:
             log_path = Path(tmp_dir) / "logs" / "build.log"
             with (
@@ -213,12 +205,7 @@ def _extension(extension_id: str) -> ExtensionMetadata:
 
 
 def _run_config() -> RunConfig:
-    images_metadata = ImagesMetadata(
-        aicage_image=_ImageReleaseInfo(version="0.3.3"),
-        aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-        bases={},
-        agents={},
-    )
+    images_metadata = ImagesMetadata(bases={}, agents={})
     return RunConfig(
         project_path=Path("/tmp/project"),
         agent="codex",
@@ -226,6 +213,8 @@ def _run_config() -> RunConfig:
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=images_metadata,
+            agents={},
+            bases={},
             extensions={},
         ),
         selection=ImageSelection(

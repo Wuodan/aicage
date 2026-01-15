@@ -6,7 +6,7 @@ from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import ImagesMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry import image_selection
 from aicage.registry.errors import RegistryError
@@ -73,14 +73,17 @@ class ImageSelectionTests(TestCase):
             project_path = Path(tmp_dir) / "project"
             project_path.mkdir()
             store = mock.Mock(spec=SettingsStore)
+            metadata = metadata_with_bases(
+                ["ubuntu"],
+                agent_name="claude",
+                build_local=True,
+            )
             context = ConfigContext(
                 store=store,
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
-                images_metadata=metadata_with_bases(
-                    ["ubuntu"],
-                    agent_name="claude",
-                    build_local=True,
-                ),
+                images_metadata=metadata,
+                agents=metadata.agents,
+                bases=metadata.bases,
                 extensions=self._extensions,
             )
             context.project_cfg.agents["claude"] = AgentConfig(base="ubuntu")
@@ -141,11 +144,11 @@ class ImageSelectionTests(TestCase):
             store=mock.Mock(spec=SettingsStore),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=ImagesMetadata(
-                aicage_image=_ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
                 bases={},
                 agents={},
             ),
+            agents={},
+            bases={},
             extensions=self._extensions,
         )
         with self.assertRaises(RegistryError):

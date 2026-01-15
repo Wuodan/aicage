@@ -9,16 +9,15 @@ from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import BUILD_LOCAL_KEY
 
 _AGENT_SCHEMA_PATH = "validation/agent.schema.json"
-_CUSTOM_AGENT_CONTEXT = "custom agent metadata"
+_AGENT_CONTEXT = "agent metadata"
 
 
 def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
-    context = _CUSTOM_AGENT_CONTEXT
     schema = load_schema(_AGENT_SCHEMA_PATH)
     return validate_schema_mapping(
         mapping,
         schema,
-        context,
+        _AGENT_CONTEXT,
         normalizer=_apply_defaults,
         value_validator=_validate_value,
     )
@@ -27,7 +26,7 @@ def validate_agent_mapping(mapping: dict[str, Any]) -> dict[str, Any]:
 def ensure_required_files(agent_name: str, agent_dir: Path) -> None:
     missing = [name for name in ("install.sh", "version.sh") if not (agent_dir / name).is_file()]
     if missing:
-        raise ConfigError(f"Custom agent '{agent_name}' is missing {', '.join(missing)}.")
+        raise ConfigError(f"Agent '{agent_name}' is missing {', '.join(missing)}.")
 
 
 def _apply_defaults(mapping: dict[str, Any]) -> dict[str, Any]:

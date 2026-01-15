@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata, BaseMetadata, _ImageReleaseInfo
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.image_selection.extensions.context import ExtensionSelectionContext
@@ -87,25 +87,28 @@ class ExtensionHandlerTests(TestCase):
             agent_homepage="https://example.com",
             build_local=local,
             valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-            local_definition_dir=Path("/tmp/def") if local else None,
+            local_definition_dir=Path("/tmp/def"),
         )
 
     @staticmethod
     def _context(tmp_dir: str) -> ConfigContext:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/ubuntu"),
+            )
+        }
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path=str(Path(tmp_dir) / "project"), agents={}),
             images_metadata=ImagesMetadata(
-                aicage_image=_ImageReleaseInfo(version="0.3.3"),
-                aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-                bases={
-                    "ubuntu": BaseMetadata(
-                        from_image="ubuntu:latest",
-                        base_image_distro="Ubuntu",
-                        base_image_description="Default",
-                    )
-                },
+                bases=bases,
                 agents={},
             ),
+            agents={},
+            bases=bases,
             extensions={},
         )

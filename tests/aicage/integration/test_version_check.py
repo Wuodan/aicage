@@ -67,6 +67,7 @@ def test_version_check_falls_back_to_builder(
                 agent_homepage="https://example.com",
                 build_local=True,
                 valid_bases={},
+                local_definition_dir=agent_dir,
             ),
             agent_dir,
         )

@@ -6,19 +6,8 @@ from aicage import cli
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
+    AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
@@ -50,6 +39,8 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
             store=mock.Mock(),
             project_cfg=ProjectConfig(path=str(project_path), agents={}),
             images_metadata=images_metadata,
+            agents=images_metadata.agents,
+            bases=images_metadata.bases,
             extensions={},
         ),
         selection=ImageSelection(
@@ -64,42 +55,44 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
 
 
 def _build_images_metadata() -> ImagesMetadata:
-    return ImagesMetadata.from_mapping(
-        {
-            _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-            _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-            _BASES_KEY: {
-                "alpine": {
-                    _FROM_IMAGE_KEY: "alpine:latest",
-                    _BASE_IMAGE_DISTRO_KEY: "Alpine",
-                    _BASE_IMAGE_DESCRIPTION_KEY: "Minimal",
-                },
-                "debian": {
-                    _FROM_IMAGE_KEY: "debian:latest",
-                    _BASE_IMAGE_DISTRO_KEY: "Debian",
-                    _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                },
-                "ubuntu": {
-                    _FROM_IMAGE_KEY: "ubuntu:latest",
-                    _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                    _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                },
+    bases = {
+        "alpine": BaseMetadata(
+            from_image="alpine:latest",
+            base_image_distro="Alpine",
+            base_image_description="Minimal",
+            build_local=False,
+            local_definition_dir=Path("/tmp/alpine"),
+        ),
+        "debian": BaseMetadata(
+            from_image="debian:latest",
+            base_image_distro="Debian",
+            base_image_description="Default",
+            build_local=False,
+            local_definition_dir=Path("/tmp/debian"),
+        ),
+        "ubuntu": BaseMetadata(
+            from_image="ubuntu:latest",
+            base_image_distro="Ubuntu",
+            base_image_description="Default",
+            build_local=False,
+            local_definition_dir=Path("/tmp/ubuntu"),
+        ),
+    }
+    agents = {
+        "codex": AgentMetadata(
+            agent_path="~/.codex",
+            agent_full_name="Codex CLI",
+            agent_homepage="https://example.com",
+            build_local=False,
+            valid_bases={
+                "alpine": "ghcr.io/aicage/aicage:codex-alpine",
+                "debian": "ghcr.io/aicage/aicage:codex-debian",
+                "ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu",
             },
-            _AGENT_KEY: {
-                "codex": {
-                    AGENT_PATH_KEY: "~/.codex",
-                    AGENT_FULL_NAME_KEY: "Codex CLI",
-                    AGENT_HOMEPAGE_KEY: "https://example.com",
-                    BUILD_LOCAL_KEY: False,
-                    _VALID_BASES_KEY: {
-                        "alpine": "ghcr.io/aicage/aicage:codex-alpine",
-                        "debian": "ghcr.io/aicage/aicage:codex-debian",
-                        "ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu",
-                    },
-                }
-            },
-        }
-    )
+            local_definition_dir=Path("/tmp/codex"),
+        )
+    }
+    return ImagesMetadata(bases=bases, agents=agents)
 
 
 class EntrypointTests(TestCase):

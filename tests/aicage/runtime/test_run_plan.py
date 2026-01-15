@@ -4,19 +4,8 @@ from unittest import TestCase, mock
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
+    AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
@@ -36,6 +25,8 @@ class RunPlanTests(TestCase):
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
                 images_metadata=self._get_images_metadata(),
+                agents=self._get_agents(),
+                bases=self._get_bases(),
                 extensions={},
             ),
             selection=ImageSelection(
@@ -66,6 +57,8 @@ class RunPlanTests(TestCase):
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
                 images_metadata=self._get_images_metadata(),
+                agents=self._get_agents(),
+                bases=self._get_bases(),
                 extensions={},
             ),
             selection=ImageSelection(
@@ -87,25 +80,32 @@ class RunPlanTests(TestCase):
 
     @staticmethod
     def _get_images_metadata() -> ImagesMetadata:
-        return ImagesMetadata.from_mapping(
-            {
-                _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                _BASES_KEY: {
-                    "ubuntu": {
-                        _FROM_IMAGE_KEY: "ubuntu:latest",
-                        _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                        _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                    }
-                },
-                _AGENT_KEY: {
-                    "codex": {
-                        AGENT_PATH_KEY: "~/.codex",
-                        AGENT_FULL_NAME_KEY: "Codex CLI",
-                        AGENT_HOMEPAGE_KEY: "https://example.com",
-                        BUILD_LOCAL_KEY: False,
-                        _VALID_BASES_KEY: {"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-                    }
-                },
-            }
+        return ImagesMetadata(
+            bases=RunPlanTests._get_bases(),
+            agents=RunPlanTests._get_agents(),
         )
+
+    @staticmethod
+    def _get_bases() -> dict[str, BaseMetadata]:
+        return {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/base"),
+            )
+        }
+
+    @staticmethod
+    def _get_agents() -> dict[str, AgentMetadata]:
+        return {
+            "codex": AgentMetadata(
+                agent_path="~/.codex",
+                agent_full_name="Codex CLI",
+                agent_homepage="https://example.com",
+                build_local=False,
+                valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
+                local_definition_dir=Path("/tmp/agent"),
+            )
+        }

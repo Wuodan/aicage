@@ -16,6 +16,10 @@
     },
     "base_image_description": {
       "type": "string"
+    },
+    "build_local": {
+      "type": "boolean",
+      "default": false
     }
   },
   "additionalProperties": false

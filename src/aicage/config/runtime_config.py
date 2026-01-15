@@ -5,9 +5,10 @@ from pathlib import Path
 
 from aicage.cli_types import ParsedArgs
 from aicage.config._file_locking import lock_project_config
+from aicage.config.agent.loader import load_agents
+from aicage.config.base.loader import load_bases
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.custom_base.loader import load_custom_bases
 from aicage.config.extensions.loader import load_extensions
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.config.project_config import AgentConfig
@@ -33,15 +34,17 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
     project_config_path = store.project_config_path(project_path)
 
     with lock_project_config(project_config_path):
-        custom_bases = load_custom_bases()
-        images_metadata = load_images_metadata(custom_bases)
+        bases = load_bases()
+        agents = load_agents(bases)
+        images_metadata = load_images_metadata(bases, agents)
         project_cfg = store.load_project(project_path)
         context = ConfigContext(
             store=store,
             project_cfg=project_cfg,
             images_metadata=images_metadata,
+            agents=agents,
+            bases=bases,
             extensions=load_extensions(),
-            custom_bases=custom_bases,
         )
         selection = select_agent_image(agent, context)
         agent_cfg = project_cfg.agents.setdefault(agent, AgentConfig())

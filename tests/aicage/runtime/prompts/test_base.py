@@ -1,21 +1,10 @@
+from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
-    _AGENT_KEY,
-    _AICAGE_IMAGE_BASE_KEY,
-    _AICAGE_IMAGE_KEY,
-    _BASE_IMAGE_DESCRIPTION_KEY,
-    _BASE_IMAGE_DISTRO_KEY,
-    _BASES_KEY,
-    _FROM_IMAGE_KEY,
-    _VALID_BASES_KEY,
-    _VERSION_KEY,
-    AGENT_FULL_NAME_KEY,
-    AGENT_HOMEPAGE_KEY,
-    AGENT_PATH_KEY,
-    BUILD_LOCAL_KEY,
     AgentMetadata,
+    BaseMetadata,
     ImagesMetadata,
 )
 from aicage.config.project_config import ProjectConfig
@@ -94,6 +83,8 @@ class PromptTests(TestCase):
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=metadata,
+            agents=metadata.agents,
+            bases=metadata.bases,
             extensions={},
         )
 
@@ -104,26 +95,24 @@ class PromptTests(TestCase):
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:
-        return ImagesMetadata.from_mapping(
-            {
-                _AICAGE_IMAGE_KEY: {_VERSION_KEY: "0.3.3"},
-                _AICAGE_IMAGE_BASE_KEY: {_VERSION_KEY: "0.3.3"},
-                _BASES_KEY: {
-                    name: {
-                        _FROM_IMAGE_KEY: "ubuntu:latest",
-                        _BASE_IMAGE_DISTRO_KEY: "Ubuntu",
-                        _BASE_IMAGE_DESCRIPTION_KEY: "Default",
-                    }
-                    for name in bases
-                },
-                _AGENT_KEY: {
-                    "codex": {
-                        AGENT_PATH_KEY: "~/.codex",
-                        AGENT_FULL_NAME_KEY: "Codex CLI",
-                        AGENT_HOMEPAGE_KEY: "https://example.com",
-                        BUILD_LOCAL_KEY: False,
-                        _VALID_BASES_KEY: {name: f"repo:{name}" for name in bases},
-                    }
-                },
-            }
-        )
+        base_entries = {
+            name: BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path(f"/tmp/{name}"),
+            )
+            for name in bases
+        }
+        agents = {
+            "codex": AgentMetadata(
+                agent_path="~/.codex",
+                agent_full_name="Codex CLI",
+                agent_homepage="https://example.com",
+                build_local=False,
+                valid_bases={name: f"repo:{name}" for name in bases},
+                local_definition_dir=Path("/tmp/codex"),
+            )
+        }
+        return ImagesMetadata(bases=base_entries, agents=agents)

@@ -3,7 +3,6 @@ from __future__ import annotations
 from os.path import expanduser
 from pathlib import Path
 
-IMAGES_METADATA_FILENAME: str = "images-metadata.yaml"
 _AGENT_DEFINITION_FILENAME: str = "agent.yaml"
 EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yaml"
 

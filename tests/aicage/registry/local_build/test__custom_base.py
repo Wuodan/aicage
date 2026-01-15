@@ -120,4 +120,6 @@ class CustomBaseBuildTests(TestCase):
             from_image="ubuntu:latest",
             base_image_distro="Ubuntu",
             base_image_description="Custom",
+            build_local=True,
+            local_definition_dir=Path("/tmp/base"),
         )

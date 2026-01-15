@@ -31,10 +31,10 @@ are in `images_metadata`.
 As first step I want you to:
 - Add new fields to dataclass `BaseMetadata` (similar to fields in `AgentMetadata`):
   - `build_local: bool`: needed for later decision if we need to build or pull the base-image
-     - true for custom-bases
-     - false for built-in bases unless explicitly set to true in the `base.yml` - I might want to add that to builtin
-       base-images (submodule `aicage-image-base` in the future).
-     - Also add that field to `config/validation/base.schema.json` with a default
+    - true for custom-bases
+    - false for built-in bases unless explicitly set to true in the `base.yml` - I might want to add that to builtin
+      base-images (submodule `aicage-image-base` in the future).
+    - Also add that field to `config/validation/base.schema.json` with a default
   - `local_definition_dir: Path | None = None`: When `build_local` is true, the later process looks here.
     Important: Decisions are made based on `build_local`, not on `local_definition_dir` being None or not (you did that
     with custom-agents, and it took a while until I noticed and refactoring took time)

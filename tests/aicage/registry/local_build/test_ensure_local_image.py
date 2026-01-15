@@ -5,14 +5,10 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    ImagesMetadata,
-    BaseMetadata,
-    _ImageReleaseInfo,
-)
+from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection import ImageSelection
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
@@ -29,26 +25,6 @@ from ._fixtures import build_run_config
 
 
 class EnsureLocalImageTests(TestCase):
-    def test_ensure_local_image_raises_without_definition(self) -> None:
-        run_config = build_run_config(build_local=True)
-        agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
-        run_config.context.images_metadata.agents[run_config.agent] = AgentMetadata(
-            agent_path=agent_metadata.agent_path,
-            agent_full_name=agent_metadata.agent_full_name,
-            agent_homepage=agent_metadata.agent_homepage,
-            build_local=agent_metadata.build_local,
-            valid_bases=agent_metadata.valid_bases,
-            base_exclude=agent_metadata.base_exclude,
-            base_distro_exclude=agent_metadata.base_distro_exclude,
-            local_definition_dir=None,
-        )
-        with mock.patch(
-            "aicage.registry.local_build.ensure_local_image.refresh_base_digest"
-        ) as refresh_mock:
-            with self.assertRaises(RegistryError):
-                ensure_local_image_module.ensure_local_image(run_config)
-        refresh_mock.assert_not_called()
-
     def test_ensure_local_image_runs_for_custom_agent(self) -> None:
         run_config = self._build_custom_run_config()
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -109,8 +85,11 @@ class EnsureLocalImageTests(TestCase):
             from_image="ubuntu:latest",
             base_image_distro="Ubuntu",
             base_image_description="Custom",
+            build_local=True,
+            local_definition_dir=CUSTOM_BASES_DIR / "custom",
         )
-        run_config.context.custom_bases = {"custom": custom_base}
+        run_config.context.bases["custom"] = custom_base
+        run_config.context.images_metadata.bases["custom"] = custom_base
         with (
             mock.patch(
                 "aicage.registry.local_build.ensure_local_image.ensure_custom_base_image"
@@ -222,16 +201,17 @@ class EnsureLocalImageTests(TestCase):
 
     @staticmethod
     def _build_custom_run_config() -> RunConfig:
+        bases = {
+            "ubuntu": BaseMetadata(
+                from_image="ubuntu:latest",
+                base_image_distro="Ubuntu",
+                base_image_description="Default",
+                build_local=False,
+                local_definition_dir=Path("/tmp/base"),
+            )
+        }
         images_metadata = ImagesMetadata(
-            aicage_image=_ImageReleaseInfo(version="0.3.3"),
-            aicage_image_base=_ImageReleaseInfo(version="0.3.3"),
-            bases={
-                "ubuntu": BaseMetadata(
-                    from_image="ubuntu:latest",
-                    base_image_distro="Ubuntu",
-                    base_image_description="Default",
-                )
-            },
+            bases=bases,
             agents={
                 "claude": AgentMetadata(
                     agent_path="~/.claude",
@@ -250,6 +230,8 @@ class EnsureLocalImageTests(TestCase):
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
                 images_metadata=images_metadata,
+                agents=images_metadata.agents,
+                bases=images_metadata.bases,
                 extensions={},
             ),
             selection=ImageSelection(
