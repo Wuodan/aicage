@@ -4,7 +4,6 @@ from unittest import TestCase
 
 from aicage.config.agent.models import AgentMetadata
 from aicage.runtime._agent_config import resolve_agent_config
-from aicage.runtime._errors import RuntimeExecutionError
 
 
 class AgentConfigTests(TestCase):
@@ -21,10 +20,6 @@ class AgentConfigTests(TestCase):
                     local_definition_dir=Path("/tmp/agent"),
                 )
             }
-            config = resolve_agent_config("codex", agents)
+            config = resolve_agent_config(agents["codex"])
             self.assertEqual(str(agent_dir), config.agent_path)
             self.assertTrue(config.agent_config_host.exists())
-
-    def test_resolve_agent_config_missing_agent_raises(self) -> None:
-        with self.assertRaises(RuntimeExecutionError):
-            resolve_agent_config("codex", {})

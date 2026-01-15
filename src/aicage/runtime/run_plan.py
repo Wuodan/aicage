@@ -8,8 +8,7 @@ from aicage.runtime.run_args import DockerRunArgs, merge_docker_args
 
 def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
     agent_config: AgentConfig = resolve_agent_config(
-        config.agent,
-        config.context.agents,
+        config.context.agents[config.agent],
     )
 
     merged_docker_args: str = merge_docker_args(
