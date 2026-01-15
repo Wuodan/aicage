@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import Mapping
 
 from ._auth import fetch_bearer_token, parse_auth_header

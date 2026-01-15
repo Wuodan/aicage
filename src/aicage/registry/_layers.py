@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage.docker.query import get_local_rootfs_layers
 
 

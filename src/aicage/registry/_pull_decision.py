@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY
 from aicage.docker.query import get_local_repo_digest
 from aicage.docker.types import ImageRefRepository

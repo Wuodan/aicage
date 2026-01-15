@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage._logging import get_logger
 from aicage.docker.pull import run_pull
 from aicage.registry._logs import pull_log_path

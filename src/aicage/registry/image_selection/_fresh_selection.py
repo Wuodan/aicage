@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata

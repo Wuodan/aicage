@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from docker.errors import DockerException, ImageNotFound
 
 from ._client import get_docker_client

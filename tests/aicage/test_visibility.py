@@ -163,13 +163,9 @@ def _iter_imported_modules(tree: ast.AST, current_package: list[str]) -> list[st
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name == "__future__":
-                    continue
                 imported_modules.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
             if node.level == 0 and node.module:
-                if node.module == "__future__":
-                    continue
                 imported_modules.append(node.module)
                 continue
             resolved_base = _resolve_relative_module(node.module, node.level, current_package)
@@ -358,28 +354,16 @@ def _collect_module_usage(modules: dict[str, _ModuleInfo]) -> dict[str, set[str]
         tree = _parse_tree(info.path)
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if alias.name == "__future__":
-                        continue
-                    if alias.name in module_names:
-                        usage[alias.name].add(module_name)
+                _record_import_usage(node, module_name, module_names, usage)
                 continue
-            if not isinstance(node, ast.ImportFrom):
-                continue
-            if node.module == "__future__":
-                continue
-            module_parts = _resolve_relative_module(node.module, node.level, current_package)
-            if not module_parts:
-                continue
-            imported_module = ".".join(module_parts)
-            if imported_module in module_names:
-                usage[imported_module].add(module_name)
-            for alias in node.names:
-                if alias.name == "*":
-                    continue
-                full_name = f"{imported_module}.{alias.name}"
-                if full_name in module_names:
-                    usage[full_name].add(module_name)
+            if isinstance(node, ast.ImportFrom):
+                _record_import_from_usage(
+                    node,
+                    module_name,
+                    current_package,
+                    module_names,
+                    usage,
+                )
     return usage
 
 
@@ -398,6 +382,49 @@ def _has_outside_package_usage(
     return False
 
 
+def _record_import_usage(
+    node: ast.Import,
+    module_name: str,
+    module_names: set[str],
+    usage: dict[str, set[str]],
+) -> None:
+    for alias in node.names:
+        _register_module_usage(alias.name, module_name, module_names, usage)
+
+
+def _record_import_from_usage(
+    node: ast.ImportFrom,
+    module_name: str,
+    current_package: list[str],
+    module_names: set[str],
+    usage: dict[str, set[str]],
+) -> None:
+    module_parts = _resolve_relative_module(node.module, node.level, current_package)
+    if not module_parts:
+        return
+    imported_module = ".".join(module_parts)
+    _register_module_usage(imported_module, module_name, module_names, usage)
+    for alias in node.names:
+        if alias.name == "*":
+            continue
+        _register_module_usage(
+            f"{imported_module}.{alias.name}",
+            module_name,
+            module_names,
+            usage,
+        )
+
+
+def _register_module_usage(
+    imported_module: str,
+    module_name: str,
+    module_names: set[str],
+    usage: dict[str, set[str]],
+) -> None:
+    if imported_module in module_names:
+        usage[imported_module].add(module_name)
+
+
 
 
 def _collect_import_aliases(
@@ -410,13 +437,9 @@ def _collect_import_aliases(
         if not isinstance(node, ast.Import):
             continue
         for alias in node.names:
-            if alias.name == "__future__":
-                continue
             aliases[alias.asname or alias.name] = alias.name
     for node in ast.walk(tree):
         if not isinstance(node, ast.ImportFrom):
-            continue
-        if node.module == "__future__":
             continue
         module_parts = _resolve_relative_module(node.module, node.level, current_package)
         if not module_parts:
@@ -438,8 +461,6 @@ def _collect_from_imports(
     imports: list[tuple[str, str]] = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.ImportFrom):
-            continue
-        if node.module == "__future__":
             continue
         module_parts = _resolve_relative_module(node.module, node.level, current_package)
         if not module_parts:

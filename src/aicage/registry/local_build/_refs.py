@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import IMAGE_BASE_REPOSITORY, IMAGE_REGISTRY
 from aicage.paths import CUSTOM_BASES_DIR

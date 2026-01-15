@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from ._docker_io import get_docker_io_digest
 from ._ghcr import get_ghcr_digest
 from ._parser import parse_image_ref

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 from aicage.config.agent._custom_loader import load_custom_agents

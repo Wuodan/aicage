@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from logging import Logger
 
 from aicage.constants import IMAGE_REGISTRY

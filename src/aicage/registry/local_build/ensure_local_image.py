@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 from aicage.config.images_metadata.models import AgentMetadata

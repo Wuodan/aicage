@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 from ..paths import IMAGE_PULL_LOG_DIR

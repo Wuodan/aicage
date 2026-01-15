@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import hashlib
 
 from aicage.config.extensions.loader import ExtensionMetadata, extension_hash

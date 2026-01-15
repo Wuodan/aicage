@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists

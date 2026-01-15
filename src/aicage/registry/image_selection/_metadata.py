@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
 from aicage.registry._errors import RegistryError
 

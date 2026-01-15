@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 from aicage.paths import BASE_IMAGE_BUILD_LOG_DIR, IMAGE_BUILD_LOG_DIR

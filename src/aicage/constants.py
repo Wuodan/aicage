@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 IMAGE_REGISTRY: str = "ghcr.io"
 _IMAGE_REGISTRY_API_URL: str = "https://ghcr.io/v2"
 _IMAGE_REGISTRY_API_TOKEN_URL: str = (

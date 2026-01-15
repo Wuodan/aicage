@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 _DEFAULT_DOCKER_REGISTRY: str = "registry-1.docker.io"

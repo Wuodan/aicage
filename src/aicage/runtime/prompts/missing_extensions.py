@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 from ._tty import ensure_tty_for_prompt

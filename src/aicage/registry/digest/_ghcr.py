@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from ._parser import ParsedImageRef
 from ._registry import get_manifest_digest
 
