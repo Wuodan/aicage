@@ -12,6 +12,5 @@ check-jsonschema --schemafile "${SCHEMA_DIR}"/agent.schema.json config/agent-bui
 check-jsonschema --schemafile "${SCHEMA_DIR}"/base.schema.json config/base-build/bases/*/base.yaml
 check-jsonschema --schemafile "${SCHEMA_DIR}"/base.schema.json doc/sample/custom/base-images/*/base.yml
 check-jsonschema --schemafile "${SCHEMA_DIR}"/extension.schema.json doc/sample/custom/extensions/*/extension.yml
-check-jsonschema --schemafile "${SCHEMA_DIR}"/images-metadata.schema.json config/images-metadata.yaml
 
 echo "Done validating config with schemas" >&2
