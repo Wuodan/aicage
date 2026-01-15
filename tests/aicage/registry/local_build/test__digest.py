@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.local_build import _digest
 
 

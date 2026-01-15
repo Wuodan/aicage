@@ -5,11 +5,11 @@ from pathlib import Path
 from aicage._logging import get_logger
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.constants import VERSION_CHECK_IMAGE
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 
 from ._command import run_host, run_version_check_image
 from ._images import ensure_version_check_image
-from .store import VersionCheckStore
+from ._store import VersionCheckStore
 
 
 class AgentVersionChecker:

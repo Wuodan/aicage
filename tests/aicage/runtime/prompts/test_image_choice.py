@@ -5,7 +5,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 from aicage.runtime.prompts.base import base_options
 from aicage.runtime.prompts.image_choice import (
     ExtendedImageOption,

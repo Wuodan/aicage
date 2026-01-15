@@ -1,6 +1,6 @@
 import sys
 
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 
 
 def ensure_tty_for_prompt() -> None:

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from aicage.config.runtime_config import RunConfig
 from aicage.paths import CUSTOM_BASES_DIR
+from aicage.registry._image_pull import pull_image
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
-from aicage.registry.image_pull import pull_image
 from aicage.registry.local_build.ensure_local_image import ensure_local_image
 
 

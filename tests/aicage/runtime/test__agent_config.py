@@ -8,7 +8,7 @@ from aicage.config.images_metadata.models import (
     ImagesMetadata,
 )
 from aicage.runtime._agent_config import resolve_agent_config
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 
 
 class AgentConfigTests(TestCase):

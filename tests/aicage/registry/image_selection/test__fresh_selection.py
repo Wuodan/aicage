@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 
 from aicage.config.config_store import SettingsStore
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection import _fresh_selection
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.prompts.image_choice import ExtendedImageOption, ImageChoice

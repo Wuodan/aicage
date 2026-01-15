@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 
 
 def require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:

@@ -2,8 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.errors import ConfigError
 from aicage.config import extended_images as extended_images_module
+from aicage.config.errors import ConfigError
 from aicage.config.extended_images import ExtendedImageConfig
 from aicage.config.yaml_loader import load_yaml
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME

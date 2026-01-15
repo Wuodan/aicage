@@ -6,7 +6,7 @@ from unittest import TestCase, mock
 
 from docker.errors import DockerException
 
-from aicage.registry import image_pull
+from aicage.registry import _image_pull as image_pull
 
 
 class FakeDockerApi:
@@ -51,7 +51,7 @@ class DockerInvocationTests(TestCase):
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
@@ -87,7 +87,7 @@ class DockerInvocationTests(TestCase):
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
                 with self.assertRaises(DockerException):
@@ -108,7 +108,7 @@ class DockerInvocationTests(TestCase):
                     return_value="same",
                 ),
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
@@ -129,7 +129,7 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
-                mock.patch("aicage.registry.image_pull.pull_log_path", return_value=log_path),
+                mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)

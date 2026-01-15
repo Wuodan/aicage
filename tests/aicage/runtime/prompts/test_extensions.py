@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 from aicage.runtime.prompts.extensions import ExtensionOption, prompt_for_extensions
 
 

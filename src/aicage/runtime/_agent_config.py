@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 
 
 @dataclass

@@ -5,8 +5,8 @@ import hashlib
 from aicage.config.extensions.loader import ExtensionMetadata, extension_hash
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_extended_build
+from aicage.registry._errors import RegistryError
 from aicage.registry._time import now_iso
-from aicage.registry.errors import RegistryError
 
 from ._extended_plan import should_build_extended
 from ._extended_store import ExtendedBuildRecord, ExtendedBuildStore

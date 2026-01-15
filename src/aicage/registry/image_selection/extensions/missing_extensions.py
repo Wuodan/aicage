@@ -5,7 +5,7 @@ from aicage.config.errors import ConfigError
 from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.config.yaml_loader import load_yaml
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.runtime.prompts.missing_extensions import prompt_for_missing_extensions
 
 

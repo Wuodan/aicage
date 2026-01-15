@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 from aicage.runtime.mounts._entrypoint import (
     _resolve_entrypoint_path,
     _validate_entrypoint_path,

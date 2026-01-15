@@ -7,7 +7,7 @@ from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.registry.image_selection.selection import select_agent_image
 

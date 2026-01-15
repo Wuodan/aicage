@@ -3,7 +3,7 @@ import sys
 from collections.abc import Sequence
 
 from aicage._logging import get_logger
-from aicage.cli.errors import CliError
+from aicage.cli._errors import CliError
 from aicage.cli_types import ParsedArgs
 
 _MIN_REMAINING_WITH_AGENT = 2

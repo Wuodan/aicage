@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from aicage.runtime.errors import RuntimeExecutionError
+from aicage.runtime._errors import RuntimeExecutionError
 
 from ._tty import ensure_tty_for_prompt
 

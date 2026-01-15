@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.registry.agent_version.store import (
+from aicage.registry.agent_version._store import (
     _AGENT_KEY,
     _CHECKED_AT_KEY,
     _VERSION_KEY,
@@ -17,7 +17,7 @@ class VersionCheckStoreTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             base_dir = Path(tmp_dir)
             with mock.patch(
-                "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                "aicage.registry.agent_version._store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
                 base_dir,
             ):
                 store = VersionCheckStore()

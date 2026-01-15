@@ -2,8 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.errors import ConfigError
 from aicage.config.agent._custom_loader import load_custom_agents
+from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,

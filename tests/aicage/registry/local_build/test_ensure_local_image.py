@@ -9,7 +9,7 @@ from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, Im
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.paths import CUSTOM_BASES_DIR
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.registry.local_build import ensure_local_image as ensure_local_image_module
 from aicage.registry.local_build._store import (

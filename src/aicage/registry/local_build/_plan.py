@@ -3,7 +3,7 @@ from __future__ import annotations
 from aicage._logging import get_logger
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
-from aicage.registry.layers import base_layer_missing
+from aicage.registry._layers import base_layer_missing
 
 from ._refs import get_base_image_ref
 from ._store import BuildRecord
@@ -33,4 +33,3 @@ def should_build(
     if is_missing:
         return True
     return False
-

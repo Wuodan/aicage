@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from aicage.config._yaml import expect_bool, expect_string
-from aicage.config.base._validation import validate_base_mapping
 from aicage.config.base._custom_loader import load_custom_bases
+from aicage.config.base._validation import validate_base_mapping
 from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import BUILD_LOCAL_KEY, BaseMetadata
 from aicage.config.resources import find_packaged_path

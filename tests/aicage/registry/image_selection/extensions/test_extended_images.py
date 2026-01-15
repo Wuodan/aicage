@@ -7,7 +7,7 @@ from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection.extensions.extended_images import (
     apply_extended_selection,
     load_extended_image_options,

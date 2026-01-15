@@ -5,10 +5,10 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config.images_metadata.models import AgentMetadata
+from aicage.registry._errors import RegistryError
 from aicage.registry.agent_version import _command as command
+from aicage.registry.agent_version._store import _VERSION_KEY
 from aicage.registry.agent_version.checker import AgentVersionChecker
-from aicage.registry.agent_version.store import _VERSION_KEY
-from aicage.registry.errors import RegistryError
 
 
 class AgentVersionCheckTests(TestCase):
@@ -21,7 +21,7 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    "aicage.registry.agent_version._store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
                     store_dir,
                 ),
                 mock.patch(
@@ -51,7 +51,7 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    "aicage.registry.agent_version._store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
                     store_dir,
                 ),
                 mock.patch(
@@ -86,7 +86,7 @@ class AgentVersionCheckTests(TestCase):
 
             with (
                 mock.patch(
-                    "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                    "aicage.registry.agent_version._store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
                     store_dir,
                 ),
                 mock.patch(
@@ -118,7 +118,7 @@ class AgentVersionCheckTests(TestCase):
             agent_dir.mkdir()
             store_dir = Path(tmp_dir) / "state"
             with mock.patch(
-                "aicage.registry.agent_version.store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
+                "aicage.registry.agent_version._store.paths_module.AGENT_VERSION_CHECK_STATE_DIR",
                 store_dir,
             ):
                 checker = AgentVersionChecker()

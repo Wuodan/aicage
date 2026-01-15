@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
-from aicage.registry.errors import RegistryError
+from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection import _metadata
 
 
