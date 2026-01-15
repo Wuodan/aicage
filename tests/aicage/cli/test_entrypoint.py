@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage import cli
+from aicage.cli.entrypoint import main
 from aicage.cli_types import ParsedArgs
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
@@ -12,7 +12,7 @@ from aicage.config.images_metadata.models import (
 )
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.run_args import DockerRunArgs
 
 
@@ -105,7 +105,7 @@ class EntrypointTests(TestCase):
             mock.patch("aicage.cli.entrypoint.print_project_config") as print_mock,
             mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
         ):
-            exit_code = cli.main([])
+            exit_code = main([])
 
         self.assertEqual(0, exit_code)
         print_mock.assert_called_once()
@@ -134,7 +134,7 @@ class EntrypointTests(TestCase):
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch("aicage.cli.entrypoint.run_container") as run_mock,
             ):
-                exit_code = cli.main([])
+                exit_code = main([])
 
             self.assertEqual(0, exit_code)
             run_mock.assert_called_once_with(run_args)
@@ -162,6 +162,6 @@ class EntrypointTests(TestCase):
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
                 mock.patch("aicage.cli.entrypoint.run_container"),
             ):
-                exit_code = cli.main([])
+                exit_code = main([])
 
             self.assertEqual(0, exit_code)

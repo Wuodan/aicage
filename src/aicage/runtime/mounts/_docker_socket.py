@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_persist_docker_socket
+from aicage.runtime.prompts.confirm import prompt_persist_docker_socket
 from aicage.runtime.run_args import MountSpec
 
 _DOCKER_SOCKET_PATH = Path("/run/docker.sock")

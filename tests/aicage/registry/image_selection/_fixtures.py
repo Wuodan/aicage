@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import (
@@ -8,7 +7,7 @@ from aicage.config.images_metadata.models import (
     BaseMetadata,
     ImagesMetadata,
 )
-from aicage.config.project_config import AgentConfig
+from aicage.config.project_config import AgentConfig, ProjectConfig
 
 
 def build_context(

@@ -12,9 +12,10 @@ from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import load_extensions
 from aicage.config.images_metadata.loader import load_images_metadata
 from aicage.config.project_config import AgentConfig
-from aicage.registry.image_selection import ImageSelection, select_agent_image
-from aicage.runtime.mounts import resolve_mounts
-from aicage.runtime.prompts import prompt_persist_docker_args
+from aicage.registry.image_selection.models import ImageSelection
+from aicage.registry.image_selection.selection import select_agent_image
+from aicage.runtime.mounts.resolver import resolve_mounts
+from aicage.runtime.prompts.confirm import prompt_persist_docker_args
 from aicage.runtime.run_args import MountSpec
 
 

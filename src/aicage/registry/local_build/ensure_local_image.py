@@ -7,7 +7,6 @@ from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
 from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry._time import now_iso
-from aicage.registry.agent_version import AgentVersionChecker
 
 from ._custom_base import ensure_custom_base_image
 from ._digest import refresh_base_digest
@@ -15,6 +14,7 @@ from ._logs import build_log_path
 from ._plan import should_build
 from ._refs import base_repository, get_base_image_ref
 from ._store import BuildRecord, BuildStore
+from ..agent_version.checker import AgentVersionChecker
 
 
 def ensure_local_image(run_config: RunConfig) -> None:

@@ -1,11 +1,11 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_mount_gpg_keys
 from aicage.runtime.run_args import MountSpec
 
 from ._exec import capture_stdout
 from ._signing import is_commit_signing_enabled, resolve_signing_format
+from ..prompts.confirm import prompt_mount_gpg_keys
 
 _GPG_HOME_MOUNT = Path("/aicage/host/gnupg")
 

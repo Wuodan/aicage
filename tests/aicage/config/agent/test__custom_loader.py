@@ -2,8 +2,8 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config import ConfigError
-from aicage.config.agent.custom_loader import load_custom_agents
+from aicage.config.errors import ConfigError
+from aicage.config.agent._custom_loader import load_custom_agents
 from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
@@ -21,7 +21,7 @@ class CustomAgentLoaderTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             missing = Path(tmp_dir) / "missing-custom-agents"
             with mock.patch(
-                "aicage.config.agent.custom_loader.CUSTOM_AGENTS_DIR",
+                "aicage.config.agent._custom_loader.CUSTOM_AGENTS_DIR",
                 missing,
             ):
                 custom_agents = load_custom_agents(bases)
@@ -50,7 +50,7 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
             (agent_dir / "version.sh").write_text("echo 1.0.0\n", encoding="utf-8")
             with mock.patch(
-                "aicage.config.agent.custom_loader.CUSTOM_AGENTS_DIR",
+                "aicage.config.agent._custom_loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 custom_agents = load_custom_agents(bases)
@@ -76,7 +76,7 @@ class CustomAgentLoaderTests(TestCase):
                 encoding="utf-8",
             )
             with mock.patch(
-                "aicage.config.agent.custom_loader.CUSTOM_AGENTS_DIR",
+                "aicage.config.agent._custom_loader.CUSTOM_AGENTS_DIR",
                 custom_dir,
             ):
                 with self.assertRaises(ConfigError):

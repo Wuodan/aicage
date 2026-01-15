@@ -6,7 +6,7 @@ from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection import _fresh_selection
 from aicage.registry.image_selection.models import ImageSelection
-from aicage.runtime.prompts import ExtendedImageOption, ImageChoice
+from aicage.runtime.prompts.image_choice import ExtendedImageOption, ImageChoice
 
 from ._fixtures import build_context
 

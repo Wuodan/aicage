@@ -11,7 +11,7 @@ from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.docker import build
 from aicage.docker.errors import DockerError
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 
 from ._fixtures import build_run_config
 

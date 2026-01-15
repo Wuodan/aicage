@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
-from aicage.config import SettingsStore
+from aicage.config.config_store import SettingsStore
 from aicage.config.images_metadata.models import (
     AgentMetadata,
     BaseMetadata,
@@ -11,7 +11,7 @@ from aicage.config.images_metadata.models import (
 )
 from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.config.runtime_config import RunConfig, load_run_config
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.run_args import MountSpec
 
 

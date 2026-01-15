@@ -9,8 +9,7 @@ from aicage.config.images_metadata.models import (
 )
 from aicage.config.project_config import ProjectConfig
 from aicage.runtime.errors import RuntimeExecutionError
-from aicage.runtime.prompts import BaseSelectionRequest, prompt_for_base
-from aicage.runtime.prompts.base import available_bases, base_options
+from aicage.runtime.prompts.base import available_bases, base_options, prompt_for_base, BaseSelectionRequest
 
 
 class PromptTests(TestCase):

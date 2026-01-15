@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from aicage.config import ConfigError
+from aicage.config.errors import ConfigError
 from aicage.config.base._validation import validate_base_mapping
 
 

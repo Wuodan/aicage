@@ -6,7 +6,7 @@ from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry.errors import RegistryError
-from aicage.runtime.prompts import ExtendedImageOption
+from aicage.runtime.prompts.image_choice import ExtendedImageOption
 
 from ..models import ImageSelection
 from .refs import base_image_ref

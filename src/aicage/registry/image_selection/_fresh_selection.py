@@ -5,13 +5,6 @@ from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry.errors import RegistryError
-from aicage.runtime.prompts import (
-    BaseSelectionRequest,
-    ImageChoice,
-    ImageChoiceRequest,
-    prompt_for_base,
-    prompt_for_image_choice,
-)
 
 from ._metadata import available_bases
 from .extensions.context import ExtensionSelectionContext
@@ -22,6 +15,8 @@ from .extensions.extended_images import (
 )
 from .extensions.handler import handle_extension_selection
 from .models import ImageSelection
+from ...runtime.prompts.base import prompt_for_base, BaseSelectionRequest
+from ...runtime.prompts.image_choice import ImageChoiceRequest, prompt_for_image_choice, ImageChoice
 
 
 def fresh_selection(

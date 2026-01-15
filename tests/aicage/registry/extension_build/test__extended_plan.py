@@ -8,7 +8,7 @@ from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.extension_build._extended_plan import should_build_extended
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 
 
 class ExtendedPlanTests(TestCase):

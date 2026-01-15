@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage._logging import get_logger
-from aicage.config import SettingsStore
+from aicage.config.config_store import SettingsStore
 
 
 def print_project_config() -> None:

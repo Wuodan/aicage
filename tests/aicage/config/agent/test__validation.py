@@ -2,7 +2,7 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase
 
-from aicage.config import ConfigError
+from aicage.config.errors import ConfigError
 from aicage.config.agent._validation import ensure_required_files, validate_agent_mapping
 from aicage.config.images_metadata.models import (
     AGENT_FULL_NAME_KEY,

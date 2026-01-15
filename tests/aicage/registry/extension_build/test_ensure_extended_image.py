@@ -10,7 +10,7 @@ from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.registry.errors import RegistryError
 from aicage.registry.extension_build._extended_store import ExtendedBuildRecord
 from aicage.registry.extension_build.ensure_extended_image import ensure_extended_image
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 
 
 class EnsureExtendedImageTests(TestCase):

@@ -13,7 +13,7 @@ from aicage.registry.image_selection.extensions.extended_images import (
     load_extended_image_options,
     resolve_extended_image,
 )
-from aicage.runtime.prompts import ExtendedImageOption
+from aicage.runtime.prompts.image_choice import ExtendedImageOption
 
 
 class ExtendedImageSelectionTests(TestCase):

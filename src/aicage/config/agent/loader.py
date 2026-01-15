@@ -4,7 +4,7 @@ from pathlib import Path
 
 from aicage.config.agent._metadata import build_agent_metadata
 from aicage.config.agent._validation import ensure_required_files
-from aicage.config.agent.custom_loader import load_custom_agents
+from aicage.config.agent._custom_loader import load_custom_agents
 from aicage.config.errors import ConfigError
 from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
 from aicage.config.resources import find_packaged_path

@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.config import ProjectConfig, SettingsStore
-from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.config.config_store import SettingsStore
+from aicage.config.project_config import AgentConfig, _AgentMounts, ProjectConfig
 
 
 class ConfigStoreTests(TestCase):

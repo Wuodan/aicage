@@ -1,10 +1,10 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.runtime.prompts import prompt_mount_git_config
 from aicage.runtime.run_args import MountSpec
 
 from ._exec import capture_stdout
+from ..prompts.confirm import prompt_mount_git_config
 
 _GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
 

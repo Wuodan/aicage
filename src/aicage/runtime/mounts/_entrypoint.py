@@ -3,7 +3,7 @@ from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
 from aicage.runtime.errors import RuntimeExecutionError
-from aicage.runtime.prompts import prompt_persist_entrypoint
+from aicage.runtime.prompts.confirm import prompt_persist_entrypoint
 from aicage.runtime.run_args import MountSpec
 
 _ENTRYPOINT_CONTAINER_PATH = Path("/usr/local/bin/entrypoint.sh")

@@ -9,7 +9,7 @@ from aicage.config.images_metadata.models import (
 )
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
-from aicage.registry.image_selection import ImageSelection
+from aicage.registry.image_selection.models import ImageSelection
 
 
 def build_run_config(

@@ -1,7 +1,7 @@
 from typing import Any, cast
 from unittest import TestCase
 
-from aicage.config import ConfigError
+from aicage.config.errors import ConfigError
 from aicage.config.extensions import _validation
 
 

@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from aicage.config import ConfigError, _yaml
+from aicage.config import  _yaml
+from aicage.config.errors import ConfigError
 
 
 class YamlHelpersTests(TestCase):

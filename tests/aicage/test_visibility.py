@@ -98,6 +98,30 @@ class VisibilityRulesTests(TestCase):
             f"Found public symbols without external usage: {violations}",
         )
 
+    def test_public_modules_are_used_outside_package(self) -> None:
+        repo_root = _repo_root()
+        src_dir = repo_root / "src"
+        modules = _collect_module_info(src_dir)
+        usage = _collect_module_usage(modules)
+        violations: list[str] = []
+        for module_name, info in modules.items():
+            if info.path.name in {"__init__.py", "__main__.py"}:
+                continue
+            if info.path.name.startswith("_"):
+                continue
+            module_package = _current_package(module_name, info.path)
+            if len(module_package) <= 1:
+                continue
+            importers = usage.get(module_name, set())
+            if not _has_outside_package_usage(importers, modules, module_package):
+                violations.append(f"{info.path.relative_to(repo_root)}:{module_name}")
+
+        self.assertEqual(
+            [],
+            violations,
+            f"Found public modules without external usage: {violations}",
+        )
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -324,6 +348,56 @@ def _collect_symbol_usage(modules: dict[str, _ModuleInfo]) -> dict[str, set[str]
                 if target_module and target_module in usage:
                     usage[target_module].add(node.attr)
     return usage
+
+
+def _collect_module_usage(modules: dict[str, _ModuleInfo]) -> dict[str, set[str]]:
+    usage: dict[str, set[str]] = {name: set() for name in modules}
+    module_names = set(modules)
+    for module_name, info in modules.items():
+        current_package = _current_package(module_name, info.path)
+        tree = _parse_tree(info.path)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "__future__":
+                        continue
+                    if alias.name in module_names:
+                        usage[alias.name].add(module_name)
+                continue
+            if not isinstance(node, ast.ImportFrom):
+                continue
+            if node.module == "__future__":
+                continue
+            module_parts = _resolve_relative_module(node.module, node.level, current_package)
+            if not module_parts:
+                continue
+            imported_module = ".".join(module_parts)
+            if imported_module in module_names:
+                usage[imported_module].add(module_name)
+            for alias in node.names:
+                if alias.name == "*":
+                    continue
+                full_name = f"{imported_module}.{alias.name}"
+                if full_name in module_names:
+                    usage[full_name].add(module_name)
+    return usage
+
+
+def _has_outside_package_usage(
+    importers: set[str],
+    modules: dict[str, _ModuleInfo],
+    module_package: list[str],
+) -> bool:
+    for importer in importers:
+        importer_info = modules.get(importer)
+        if importer_info is None:
+            continue
+        importer_package = _current_package(importer, importer_info.path)
+        if not _package_starts_with(importer_package, module_package):
+            return True
+    return False
+
+
 
 
 def _collect_import_aliases(

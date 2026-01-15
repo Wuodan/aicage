@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 import yaml
 
 from aicage.config.images_metadata.models import AgentMetadata
-from aicage.registry.agent_version import AgentVersionChecker
 from aicage.registry.agent_version import _command as command
+from aicage.registry.agent_version.checker import AgentVersionChecker
 from aicage.registry.agent_version.store import _VERSION_KEY
 from aicage.registry.errors import RegistryError
 

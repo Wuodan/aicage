@@ -2,15 +2,14 @@ import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config import ProjectConfig
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import ImagesMetadata
-from aicage.config.project_config import AgentConfig
-from aicage.registry import image_selection
+from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry.errors import RegistryError
 from aicage.registry.image_selection.models import ImageSelection
+from aicage.registry.image_selection.selection import select_agent_image
 
 from ._fixtures import build_context, metadata_with_bases
 
@@ -27,7 +26,7 @@ class ImageSelectionTests(TestCase):
             store = mock.Mock(spec=SettingsStore)
             context = build_context(store, project_path, bases=["debian", "ubuntu"])
             context.project_cfg.agents["codex"] = AgentConfig(base="debian")
-            selection = image_selection.select_agent_image("codex", context)
+            selection = select_agent_image("codex", context)
 
             self.assertEqual("ghcr.io/aicage/aicage:codex-debian", selection.image_ref)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
@@ -48,7 +47,7 @@ class ImageSelectionTests(TestCase):
                     return_value="alpine",
                 ),
             ):
-                image_selection.select_agent_image("codex", context)
+                select_agent_image("codex", context)
 
             self.assertEqual("alpine", context.project_cfg.agents["codex"].base)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
@@ -56,7 +55,7 @@ class ImageSelectionTests(TestCase):
     def test_select_agent_image_raises_without_bases(self) -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=[])
         with self.assertRaises(RegistryError):
-            image_selection.select_agent_image("codex", context)
+            select_agent_image("codex", context)
 
     def test_select_agent_image_raises_on_invalid_base(self) -> None:
         context = build_context(
@@ -66,7 +65,7 @@ class ImageSelectionTests(TestCase):
             agents={"codex": AgentConfig(base="alpine")},
         )
         with self.assertRaises(RegistryError):
-            image_selection.select_agent_image("codex", context)
+            select_agent_image("codex", context)
 
     def test_select_agent_image_build_local_uses_local_tag(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -87,7 +86,7 @@ class ImageSelectionTests(TestCase):
                 extensions=self._extensions,
             )
             context.project_cfg.agents["claude"] = AgentConfig(base="ubuntu")
-            selection = image_selection.select_agent_image("claude", context)
+            selection = select_agent_image("claude", context)
 
             self.assertEqual("aicage:claude-ubuntu", selection.image_ref)
             store.save_project.assert_called_once_with(project_path, context.project_cfg)
@@ -106,7 +105,7 @@ class ImageSelectionTests(TestCase):
                 base_image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
             ),
         ) as fresh_mock:
-            image_selection.select_agent_image("codex", context)
+            select_agent_image("codex", context)
         fresh_mock.assert_called_once()
 
     @staticmethod
@@ -129,14 +128,14 @@ class ImageSelectionTests(TestCase):
                 ),
             ) as fresh_mock,
         ):
-            image_selection.select_agent_image("codex", context)
+            select_agent_image("codex", context)
         fresh_mock.assert_called_once()
 
     def test_select_agent_image_uses_stored_image_ref(self) -> None:
         context = build_context(mock.Mock(spec=SettingsStore), Path("/tmp/project"), bases=["ubuntu"])
         agent_cfg = AgentConfig(base="ubuntu", image_ref="aicage:codex-ubuntu", extensions=[])
         context.project_cfg.agents["codex"] = agent_cfg
-        selection = image_selection.select_agent_image("codex", context)
+        selection = select_agent_image("codex", context)
         self.assertEqual("aicage:codex-ubuntu", selection.image_ref)
 
     def test_select_agent_image_raises_when_agent_missing(self) -> None:
@@ -152,4 +151,4 @@ class ImageSelectionTests(TestCase):
             extensions=self._extensions,
         )
         with self.assertRaises(RegistryError):
-            image_selection.select_agent_image("codex", context)
+            select_agent_image("codex", context)
