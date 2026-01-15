@@ -57,3 +57,10 @@ The `version.sh` scripts for agents are run on the users system or as fallback i
 ## Tune locking of ~/.aicage
 
 The implementation is from an earlier state where we had less files. New files are not locked.
+
+## Agent claude needs more than 1 mount
+
+2 files and 1 folder:
+- /home/stefan/.claude.json
+- /home/stefan/.claude.json.backup
+- /home/stefan/.claude/
