@@ -2,7 +2,6 @@ from pathlib import Path
 
 from aicage.config.context import ConfigContext
 from aicage.config.extended_images import load_extended_images
-from aicage.config.extensions.loader import ExtensionMetadata
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry._errors import RegistryError
@@ -14,15 +13,13 @@ from .refs import base_image_ref
 
 def load_extended_image_options(
     agent: str,
-    agent_metadata: AgentMetadata,
-    extensions: dict[str, ExtensionMetadata],
+    context: ConfigContext,
 ) -> list[ExtendedImageOption]:
+    extensions = context.extensions
     configs = load_extended_images(set(extensions))
     options: list[ExtendedImageOption] = []
     for config in configs.values():
         if config.agent != agent:
-            continue
-        if config.base not in agent_metadata.valid_bases:
             continue
         options.append(
             ExtendedImageOption(

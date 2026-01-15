@@ -70,6 +70,14 @@ class PromptTests(TestCase):
         options = base_options(context, self._agent_metadata(["ubuntu"]))
         self.assertEqual([("ubuntu", "Default")], [(option.base, option.description) for option in options])
 
+    def test_base_options_filters_excluded_bases(self) -> None:
+        context = self._build_context(["alpine", "ubuntu"])
+        options = base_options(
+            context,
+            self._agent_metadata(["alpine", "ubuntu"], base_exclude=["alpine"]),
+        )
+        self.assertEqual([("ubuntu", "Default")], [(option.base, option.description) for option in options])
+
     def test_available_bases_returns_list(self) -> None:
         context = self._build_context(["ubuntu", "alpine"])
         options = base_options(context, self._agent_metadata(["ubuntu", "alpine"]))
@@ -88,9 +96,23 @@ class PromptTests(TestCase):
         )
 
     @staticmethod
-    def _agent_metadata(bases: list[str]) -> AgentMetadata:
+    def _agent_metadata(
+        bases: list[str],
+        base_exclude: list[str] | None = None,
+        base_distro_exclude: list[str] | None = None,
+    ) -> AgentMetadata:
         metadata = PromptTests._metadata_with_bases(bases)
-        return metadata.agents["codex"]
+        agent_metadata = metadata.agents["codex"]
+        return AgentMetadata(
+            agent_path=agent_metadata.agent_path,
+            agent_full_name=agent_metadata.agent_full_name,
+            agent_homepage=agent_metadata.agent_homepage,
+            build_local=agent_metadata.build_local,
+            valid_bases=agent_metadata.valid_bases,
+            local_definition_dir=agent_metadata.local_definition_dir,
+            base_exclude=base_exclude or [],
+            base_distro_exclude=base_distro_exclude or [],
+        )
 
     @staticmethod
     def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:

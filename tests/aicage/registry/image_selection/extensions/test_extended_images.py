@@ -17,7 +17,7 @@ from aicage.runtime.prompts.image_choice import ExtendedImageOption
 
 
 class ExtendedImageSelectionTests(TestCase):
-    def test_load_extended_image_options_filters_agent_and_base(self) -> None:
+    def test_load_extended_image_options_filters_agent(self) -> None:
         config = ExtendedImageConfig(
             name="custom",
             agent="codex",
@@ -48,10 +48,9 @@ class ExtendedImageSelectionTests(TestCase):
         ):
             options = load_extended_image_options(
                 agent="codex",
-                agent_metadata=self._agent_metadata(),
-                extensions={"ext": self._extension()},
+                context=self._context(),
             )
-        self.assertEqual(["custom"], [option.name for option in options])
+        self.assertEqual(["custom", "wrong-base"], [option.name for option in options])
 
     def test_resolve_extended_image(self) -> None:
         option = ExtendedImageOption(
@@ -124,14 +123,16 @@ class ExtendedImageSelectionTests(TestCase):
                 local_definition_dir=Path("/tmp/ubuntu"),
             )
         }
+        extensions = {"ext": ExtendedImageSelectionTests._extension()}
+        agents = {"codex": ExtendedImageSelectionTests._agent_metadata()}
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
             images_metadata=ImagesMetadata(
                 bases=bases,
-                agents={},
+                agents=agents,
             ),
-            agents={},
+            agents=agents,
             bases=bases,
-            extensions={},
+            extensions=extensions,
         )

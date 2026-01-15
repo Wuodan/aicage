@@ -1,27 +1,32 @@
-from aicage.config.images_metadata.models import AgentMetadata, ImagesMetadata
+from aicage.config.base_filter import filter_bases
+from aicage.config.context import ConfigContext
+from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry._errors import RegistryError
 
 
-def require_agent_metadata(agent: str, images_metadata: ImagesMetadata) -> AgentMetadata:
-    agent_metadata = images_metadata.agents.get(agent)
+def require_agent_metadata(agent: str, context: ConfigContext) -> AgentMetadata:
+    agent_metadata = context.agents.get(agent)
     if not agent_metadata:
-        raise RegistryError(f"Agent '{agent}' is missing from images metadata.")
+        raise RegistryError(f"Agent '{agent}' is missing from config context.")
     return agent_metadata
 
 
 def available_bases(
     agent: str,
-    agent_metadata: AgentMetadata,
+    context: ConfigContext,
 ) -> list[str]:
-    if not agent_metadata.valid_bases:
+    agent_metadata = require_agent_metadata(agent, context)
+    filtered = filter_bases(context, agent_metadata)
+    if not filtered:
         raise RegistryError(f"Agent '{agent}' does not define any valid bases.")
-    return sorted(agent_metadata.valid_bases)
+    return sorted(filtered)
 
 
 def validate_base(
     agent: str,
     base: str,
-    agent_metadata: AgentMetadata,
+    context: ConfigContext,
 ) -> None:
-    if base not in agent_metadata.valid_bases:
+    agent_metadata = require_agent_metadata(agent, context)
+    if base not in filter_bases(context, agent_metadata):
         raise RegistryError(f"Base '{base}' is not valid for agent '{agent}'.")

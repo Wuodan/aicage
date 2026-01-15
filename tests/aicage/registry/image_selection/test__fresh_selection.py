@@ -49,7 +49,6 @@ class ImageSelectionFreshTests(TestCase):
             selection = _fresh_selection.fresh_selection(
                 agent="codex",
                 context=context,
-                agent_metadata=context.images_metadata.agents["codex"],
                 extensions={},
             )
         self.assertEqual(f"{DEFAULT_EXTENDED_IMAGE_NAME}:codex-ubuntu-extra", selection.image_ref)
@@ -65,6 +64,5 @@ class ImageSelectionFreshTests(TestCase):
                 _fresh_selection.fresh_selection(
                     agent="codex",
                     context=context,
-                    agent_metadata=context.images_metadata.agents["codex"],
                     extensions={},
                 )

@@ -26,16 +26,13 @@ class MissingExtensionsTests(TestCase):
                 dockerfile_path=None,
             )
             agent_cfg = AgentConfig(extensions=["extra"], image_ref="aicage:codex-ubuntu")
-            context = self._context(tmp_dir, agent_cfg)
+            context = self._context(tmp_dir, agent_cfg, extensions={"extra": extension})
 
             with mock.patch(
                 "aicage.registry.image_selection.extensions.missing_extensions.prompt_for_missing_extensions"
             ) as prompt_mock:
                 result = ensure_extensions_exist(
                     agent="codex",
-                    project_config_path=Path(tmp_dir) / "project.yaml",
-                    agent_cfg=agent_cfg,
-                    extensions={"extra": extension},
                     context=context,
                 )
 
@@ -53,9 +50,6 @@ class MissingExtensionsTests(TestCase):
             ):
                 result = ensure_extensions_exist(
                     agent="codex",
-                    project_config_path=Path(tmp_dir) / "project.yaml",
-                    agent_cfg=agent_cfg,
-                    extensions={},
                     context=context,
                 )
 
@@ -78,9 +72,6 @@ class MissingExtensionsTests(TestCase):
                 with self.assertRaises(RegistryError):
                     ensure_extensions_exist(
                         agent="codex",
-                        project_config_path=Path(tmp_dir) / "project.yaml",
-                        agent_cfg=agent_cfg,
-                        extensions={},
                         context=context,
                     )
 
@@ -96,9 +87,6 @@ class MissingExtensionsTests(TestCase):
                 with self.assertRaises(RegistryError):
                     ensure_extensions_exist(
                         agent="codex",
-                        project_config_path=Path(tmp_dir) / "project.yaml",
-                        agent_cfg=agent_cfg,
-                        extensions={},
                         context=context,
                     )
 
@@ -179,7 +167,11 @@ class MissingExtensionsTests(TestCase):
             self.assertEqual({}, data)
 
     @staticmethod
-    def _context(tmp_dir: str, agent_cfg: AgentConfig) -> ConfigContext:
+    def _context(
+        tmp_dir: str,
+        agent_cfg: AgentConfig,
+        extensions: dict[str, ExtensionMetadata] | None = None,
+    ) -> ConfigContext:
         store = mock.Mock()
         store.projects_dir = Path(tmp_dir)
         project_cfg = ProjectConfig(path=str(Path(tmp_dir) / "project"), agents={"codex": agent_cfg})
@@ -192,5 +184,5 @@ class MissingExtensionsTests(TestCase):
             ),
             agents={},
             bases={},
-            extensions={},
+            extensions=extensions or {},
         )

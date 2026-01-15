@@ -2,8 +2,6 @@ from pathlib import Path
 
 from aicage.config.context import ConfigContext
 from aicage.config.errors import ConfigError
-from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.project_config import AgentConfig
 from aicage.config.yaml_loader import load_yaml
 from aicage.registry._errors import RegistryError
 from aicage.runtime.prompts.missing_extensions import prompt_for_missing_extensions
@@ -11,12 +9,12 @@ from aicage.runtime.prompts.missing_extensions import prompt_for_missing_extensi
 
 def ensure_extensions_exist(
     agent: str,
-    project_config_path: Path,
-    agent_cfg: AgentConfig,
-    extensions: dict[str, ExtensionMetadata],
     context: ConfigContext,
 ) -> bool:
-    missing = [ext for ext in agent_cfg.extensions if ext not in extensions]
+    agent_cfg = context.project_cfg.agents.get(agent)
+    if not agent_cfg:
+        return False
+    missing = [ext for ext in agent_cfg.extensions if ext not in context.extensions]
     if not missing:
         return False
     other_projects = _find_projects_using_image(context, agent_cfg.image_ref or "")
@@ -24,7 +22,7 @@ def ensure_extensions_exist(
         agent=agent,
         missing=missing,
         stored_image_ref=agent_cfg.image_ref or "",
-        project_config_path=project_config_path,
+        project_config_path=context.store.project_config_path(Path(context.project_cfg.path)),
         other_projects=other_projects,
     )
     if choice == "fresh":

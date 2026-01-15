@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from aicage._logging import get_logger
+from aicage.config.base_filter import filter_bases
 from aicage.config.context import ConfigContext
 from aicage.config.images_metadata.models import AgentMetadata
 from aicage.constants import DEFAULT_IMAGE_BASE
@@ -58,12 +59,13 @@ def prompt_for_base(request: BaseSelectionRequest) -> str:
 
 
 def base_options(context: ConfigContext, agent_metadata: AgentMetadata) -> list[BaseOption]:
+    bases = filter_bases(context, agent_metadata)
     return [
         BaseOption(
             base=base,
-            description=context.images_metadata.bases[base].base_image_description,
+            description=context.bases[base].base_image_description,
         )
-        for base in sorted(agent_metadata.valid_bases)
+        for base in sorted(bases)
     ]
 
 

@@ -1,12 +1,11 @@
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import AgentMetadata
 from aicage.config.project_config import AgentConfig
 from aicage.registry._errors import RegistryError
 
 from ...runtime.prompts.base import BaseSelectionRequest, prompt_for_base
 from ...runtime.prompts.image_choice import ImageChoice, ImageChoiceRequest, prompt_for_image_choice
-from ._metadata import available_bases
+from ._metadata import available_bases, require_agent_metadata
 from .extensions.context import ExtensionSelectionContext
 from .extensions.extended_images import (
     apply_extended_selection,
@@ -20,14 +19,14 @@ from .models import ImageSelection
 def fresh_selection(
     agent: str,
     context: ConfigContext,
-    agent_metadata: AgentMetadata,
     extensions: dict[str, ExtensionMetadata],
 ) -> ImageSelection:
-    bases = available_bases(agent, agent_metadata)
+    agent_metadata = require_agent_metadata(agent, context)
+    bases = available_bases(agent, context)
     if not bases:
-        raise RegistryError(f"No base images found for agent '{agent}' in metadata.")
+        raise RegistryError(f"No base images found for agent '{agent}' in config context.")
 
-    extended_images = load_extended_image_options(agent, agent_metadata, extensions)
+    extended_images = load_extended_image_options(agent, context)
     request = ImageChoiceRequest(
         agent=agent,
         context=context,
