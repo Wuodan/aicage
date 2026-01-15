@@ -3,12 +3,9 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.config_store import SettingsStore
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import AgentConfig, _AgentMounts
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.registry.image_selection.models import ImageSelection
@@ -48,10 +45,6 @@ class RuntimeConfigTests(TestCase):
                 mock.patch(
                     "aicage.config.runtime_config.load_agents",
                     return_value=self._get_agents(),
-                ),
-                mock.patch(
-                    "aicage.config.runtime_config.load_images_metadata",
-                    return_value=self._get_images_metadata(),
                 ),
                 mock.patch(
                     "aicage.config.runtime_config.select_agent_image",
@@ -108,10 +101,6 @@ class RuntimeConfigTests(TestCase):
                     return_value=self._get_agents(),
                 ),
                 mock.patch(
-                    "aicage.config.runtime_config.load_images_metadata",
-                    return_value=self._get_images_metadata(),
-                ),
-                mock.patch(
                     "aicage.config.runtime_config.select_agent_image",
                     return_value=ImageSelection(
                         image_ref="ref",
@@ -153,10 +142,6 @@ class RuntimeConfigTests(TestCase):
                     return_value=self._get_agents(),
                 ),
                 mock.patch(
-                    "aicage.config.runtime_config.load_images_metadata",
-                    return_value=self._get_images_metadata(),
-                ),
-                mock.patch(
                     "aicage.config.runtime_config.select_agent_image",
                     return_value=ImageSelection(
                         image_ref="ref",
@@ -169,13 +154,6 @@ class RuntimeConfigTests(TestCase):
                 run_config = load_run_config("codex")
 
         self.assertEqual("ubuntu", run_config.selection.base)
-
-    @staticmethod
-    def _get_images_metadata() -> ImagesMetadata:
-        return ImagesMetadata(
-            bases=RuntimeConfigTests._get_bases(),
-            agents=RuntimeConfigTests._get_agents(),
-        )
 
     @staticmethod
     def _get_bases() -> dict[str, BaseMetadata]:

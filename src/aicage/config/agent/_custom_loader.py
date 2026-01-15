@@ -2,8 +2,9 @@ from pathlib import Path
 
 from aicage.config.agent._metadata import build_agent_metadata
 from aicage.config.agent._validation import ensure_required_files
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.errors import ConfigError
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
 from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES, CUSTOM_AGENTS_DIR
 

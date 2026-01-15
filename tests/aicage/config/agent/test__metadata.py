@@ -2,14 +2,14 @@ from pathlib import Path
 from unittest import TestCase
 
 from aicage.config.agent._metadata import build_agent_metadata
-from aicage.config.images_metadata.models import (
+from aicage.config.agent.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
     AGENT_PATH_KEY,
     BASE_EXCLUDE_KEY,
     BUILD_LOCAL_KEY,
-    BaseMetadata,
 )
+from aicage.config.base.models import BaseMetadata
 
 
 class AgentMetadataBuilderTests(TestCase):

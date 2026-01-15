@@ -10,15 +10,6 @@ BASE_DISTRO_EXCLUDE_KEY: str = "base_distro_exclude"
 
 
 @dataclass(frozen=True)
-class BaseMetadata:
-    from_image: str
-    base_image_distro: str
-    base_image_description: str
-    build_local: bool
-    local_definition_dir: Path
-
-
-@dataclass(frozen=True)
 class AgentMetadata:
     agent_path: str
     agent_full_name: str
@@ -28,9 +19,3 @@ class AgentMetadata:
     local_definition_dir: Path
     base_exclude: list[str] = field(default_factory=list)
     base_distro_exclude: list[str] = field(default_factory=list)
-
-
-@dataclass(frozen=True)
-class ImagesMetadata:
-    bases: dict[str, BaseMetadata]
-    agents: dict[str, AgentMetadata]

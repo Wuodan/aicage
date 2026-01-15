@@ -9,7 +9,7 @@ from aicage.runtime.run_args import DockerRunArgs, merge_docker_args
 def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
     agent_config: AgentConfig = resolve_agent_config(
         config.agent,
-        config.context.images_metadata,
+        config.context.agents,
     )
 
     merged_docker_args: str = merge_docker_args(

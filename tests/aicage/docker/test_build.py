@@ -5,7 +5,6 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
@@ -205,14 +204,12 @@ def _extension(extension_id: str) -> ExtensionMetadata:
 
 
 def _run_config() -> RunConfig:
-    images_metadata = ImagesMetadata(bases={}, agents={})
     return RunConfig(
         project_path=Path("/tmp/project"),
         agent="codex",
         context=ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            images_metadata=images_metadata,
             agents={},
             bases={},
             extensions={},

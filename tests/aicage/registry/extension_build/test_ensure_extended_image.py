@@ -1,9 +1,10 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
@@ -122,28 +123,24 @@ class EnsureExtendedImageTests(TestCase):
                 local_definition_dir=Path("/tmp/base"),
             )
         }
-        images_metadata = ImagesMetadata(
-            bases=bases,
-            agents={
-                "codex": AgentMetadata(
-                    agent_path="~/.codex",
-                    agent_full_name="Codex",
-                    agent_homepage="https://example.com",
-                    build_local=build_local,
-                    valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
-                    local_definition_dir=local_definition_dir,
-                )
-            },
-        )
+        agents = {
+            "codex": AgentMetadata(
+                agent_path="~/.codex",
+                agent_full_name="Codex",
+                agent_homepage="https://example.com",
+                build_local=build_local,
+                valid_bases={"ubuntu": "ghcr.io/aicage/aicage:codex-ubuntu"},
+                local_definition_dir=local_definition_dir,
+            )
+        }
         return RunConfig(
             project_path=Path("/tmp/project"),
             agent="codex",
             context=ConfigContext(
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-                images_metadata=images_metadata,
-                agents=images_metadata.agents,
-                bases=images_metadata.bases,
+                agents=agents,
+                bases=bases,
                 extensions=available_extensions or {},
             ),
             selection=ImageSelection(

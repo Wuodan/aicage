@@ -1,7 +1,8 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry.ensure_image import ensure_image
@@ -67,7 +68,6 @@ def _run_config(
     run_config.selection.base_image_ref = "ghcr.io/aicage/aicage:codex-ubuntu"
     run_config.selection.extensions = extensions
     run_config.context = mock.Mock()
-    run_config.context.images_metadata = mock.Mock()
     run_config.context.bases = {
         base: BaseMetadata(
             from_image="ubuntu:latest",
@@ -77,7 +77,7 @@ def _run_config(
             local_definition_dir=base_dir,
         )
     }
-    run_config.context.images_metadata.agents = {
+    run_config.context.agents = {
         "codex": AgentMetadata(
             agent_path="~/.custom",
             agent_full_name="Custom",

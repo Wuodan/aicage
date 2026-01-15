@@ -3,7 +3,8 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.agent.loader import load_agents
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 
 
 class AgentLoaderTests(TestCase):

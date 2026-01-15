@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.config.images_metadata.models import BaseMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.docker.errors import DockerError
 from aicage.registry.local_build import _custom_base
 from aicage.registry.local_build._custom_base_store import (

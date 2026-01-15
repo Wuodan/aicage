@@ -3,15 +3,15 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.agent._custom_loader import load_custom_agents
-from aicage.config.errors import ConfigError
-from aicage.config.images_metadata.models import (
+from aicage.config.agent.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
     AGENT_PATH_KEY,
     BASE_DISTRO_EXCLUDE_KEY,
     BASE_EXCLUDE_KEY,
-    BaseMetadata,
 )
+from aicage.config.base.models import BaseMetadata
+from aicage.config.errors import ConfigError
 from aicage.paths import CUSTOM_AGENT_DEFINITION_FILES
 
 

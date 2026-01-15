@@ -2,8 +2,8 @@ from pathlib import Path
 
 from aicage.config._yaml import expect_string
 from aicage.config.base._validation import validate_base_mapping
+from aicage.config.base.models import BaseMetadata
 from aicage.config.errors import ConfigError
-from aicage.config.images_metadata.models import BaseMetadata
 from aicage.config.yaml_loader import load_yaml
 from aicage.paths import CUSTOM_BASE_DEFINITION_FILES, CUSTOM_BASES_DIR
 
@@ -58,4 +58,3 @@ def _ensure_required_files(base_name: str, base_dir: Path) -> None:
     dockerfile = base_dir / _DOCKERFILE_NAME
     if not dockerfile.is_file():
         raise ConfigError(f"Custom base '{base_name}' is missing {_DOCKERFILE_NAME}.")
-

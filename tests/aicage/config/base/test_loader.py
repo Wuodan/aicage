@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.base.loader import load_bases
-from aicage.config.images_metadata.models import BaseMetadata
+from aicage.config.base.models import BaseMetadata
 
 
 class BaseLoaderTests(TestCase):

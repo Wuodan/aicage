@@ -3,8 +3,8 @@ from typing import Any
 
 from aicage.config._schema_validation import load_schema, validate_schema_mapping
 from aicage.config._yaml import expect_bool, expect_string
+from aicage.config.agent.models import BUILD_LOCAL_KEY
 from aicage.config.errors import ConfigError
-from aicage.config.images_metadata.models import BUILD_LOCAL_KEY
 
 _AGENT_SCHEMA_PATH = "validation/agent.schema.json"
 _AGENT_CONTEXT = "agent metadata"

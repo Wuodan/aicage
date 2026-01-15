@@ -1,12 +1,9 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import ProjectConfig
 from aicage.runtime._errors import RuntimeExecutionError
 from aicage.runtime.prompts.base import BaseSelectionRequest, available_bases, base_options, prompt_for_base
@@ -85,13 +82,13 @@ class PromptTests(TestCase):
 
     @staticmethod
     def _build_context(bases: list[str]) -> ConfigContext:
-        metadata = PromptTests._metadata_with_bases(bases)
+        base_entries = PromptTests._bases_with_names(bases)
+        agents = PromptTests._agents_with_bases(bases)
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            images_metadata=metadata,
-            agents=metadata.agents,
-            bases=metadata.bases,
+            agents=agents,
+            bases=base_entries,
             extensions={},
         )
 
@@ -101,22 +98,20 @@ class PromptTests(TestCase):
         base_exclude: list[str] | None = None,
         base_distro_exclude: list[str] | None = None,
     ) -> AgentMetadata:
-        metadata = PromptTests._metadata_with_bases(bases)
-        agent_metadata = metadata.agents["codex"]
         return AgentMetadata(
-            agent_path=agent_metadata.agent_path,
-            agent_full_name=agent_metadata.agent_full_name,
-            agent_homepage=agent_metadata.agent_homepage,
-            build_local=agent_metadata.build_local,
-            valid_bases=agent_metadata.valid_bases,
-            local_definition_dir=agent_metadata.local_definition_dir,
+            agent_path="~/.codex",
+            agent_full_name="Codex CLI",
+            agent_homepage="https://example.com",
+            build_local=False,
+            valid_bases={name: f"repo:{name}" for name in bases},
+            local_definition_dir=Path("/tmp/codex"),
             base_exclude=base_exclude or [],
             base_distro_exclude=base_distro_exclude or [],
         )
 
     @staticmethod
-    def _metadata_with_bases(bases: list[str]) -> ImagesMetadata:
-        base_entries = {
+    def _bases_with_names(bases: list[str]) -> dict[str, BaseMetadata]:
+        return {
             name: BaseMetadata(
                 from_image="ubuntu:latest",
                 base_image_distro="Ubuntu",
@@ -126,7 +121,10 @@ class PromptTests(TestCase):
             )
             for name in bases
         }
-        agents = {
+
+    @staticmethod
+    def _agents_with_bases(bases: list[str]) -> dict[str, AgentMetadata]:
+        return {
             "codex": AgentMetadata(
                 agent_path="~/.codex",
                 agent_full_name="Codex CLI",
@@ -136,4 +134,3 @@ class PromptTests(TestCase):
                 local_definition_dir=Path("/tmp/codex"),
             )
         }
-        return ImagesMetadata(bases=base_entries, agents=agents)

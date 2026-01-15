@@ -1,12 +1,9 @@
 from pathlib import Path
 from unittest import mock
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.image_selection.models import ImageSelection
@@ -15,16 +12,15 @@ from aicage.registry.image_selection.models import ImageSelection
 def build_run_config(
     build_local: bool = True,
 ) -> RunConfig:
-    images_metadata = build_images_metadata(build_local=build_local)
+    bases, agents = build_agents_and_bases(build_local=build_local)
     return RunConfig(
         project_path=Path("/tmp/project"),
         agent="claude",
         context=ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            images_metadata=images_metadata,
-            agents=images_metadata.agents,
-            bases=images_metadata.bases,
+            agents=agents,
+            bases=bases,
             extensions={},
         ),
         selection=ImageSelection(
@@ -38,7 +34,9 @@ def build_run_config(
     )
 
 
-def build_images_metadata(build_local: bool = True) -> ImagesMetadata:
+def build_agents_and_bases(
+    build_local: bool = True,
+) -> tuple[dict[str, BaseMetadata], dict[str, AgentMetadata]]:
     bases = {
         "ubuntu": BaseMetadata(
             from_image="ubuntu:latest",
@@ -58,4 +56,4 @@ def build_images_metadata(build_local: bool = True) -> ImagesMetadata:
             local_definition_dir=Path("/tmp/agent"),
         )
     }
-    return ImagesMetadata(bases=bases, agents=agents)
+    return bases, agents

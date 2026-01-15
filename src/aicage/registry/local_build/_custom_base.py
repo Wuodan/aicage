@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage._logging import get_logger
-from aicage.config.images_metadata.models import BaseMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.docker.build import run_custom_base_build
 from aicage.docker.errors import DockerError
 from aicage.docker.query import local_image_exists

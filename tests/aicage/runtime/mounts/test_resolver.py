@@ -2,12 +2,9 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.runtime.mounts import resolver
 from aicage.runtime.run_args import MountSpec
@@ -19,7 +16,6 @@ class ResolverTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
-            images_metadata=self._get_images_metadata(),
             agents=self._get_agents(),
             bases=self._get_bases(),
             extensions={},
@@ -56,7 +52,6 @@ class ResolverTests(TestCase):
         context = ConfigContext(
             store=mock.Mock(),
             project_cfg=project_cfg,
-            images_metadata=self._get_images_metadata(),
             agents=self._get_agents(),
             bases=self._get_bases(),
             extensions={},
@@ -72,13 +67,6 @@ class ResolverTests(TestCase):
             resolver.resolve_mounts(context, "codex", None)
 
         self.assertIsInstance(project_cfg.agents["codex"], AgentConfig)
-
-    @staticmethod
-    def _get_images_metadata() -> ImagesMetadata:
-        return ImagesMetadata(
-            bases=ResolverTests._get_bases(),
-            agents=ResolverTests._get_agents(),
-        )
 
     @staticmethod
     def _get_bases() -> dict[str, BaseMetadata]:

@@ -3,8 +3,7 @@ from typing import Any
 
 from aicage.config._yaml import expect_bool, expect_string, maybe_str_list
 from aicage.config.agent._validation import validate_agent_mapping
-from aicage.config.image_refs import local_image_ref
-from aicage.config.images_metadata.models import (
+from aicage.config.agent.models import (
     AGENT_FULL_NAME_KEY,
     AGENT_HOMEPAGE_KEY,
     AGENT_PATH_KEY,
@@ -12,8 +11,9 @@ from aicage.config.images_metadata.models import (
     BASE_EXCLUDE_KEY,
     BUILD_LOCAL_KEY,
     AgentMetadata,
-    BaseMetadata,
 )
+from aicage.config.base.models import BaseMetadata
+from aicage.config.image_refs import local_image_ref
 from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY, LOCAL_IMAGE_REPOSITORY
 
 

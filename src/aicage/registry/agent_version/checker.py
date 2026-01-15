@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage._logging import get_logger
-from aicage.config.images_metadata.models import AgentMetadata
+from aicage.config.agent.models import AgentMetadata
 from aicage.constants import VERSION_CHECK_IMAGE
 from aicage.registry._errors import RegistryError
 

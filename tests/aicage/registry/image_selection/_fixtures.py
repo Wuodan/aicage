@@ -1,12 +1,9 @@
 from pathlib import Path
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.config_store import SettingsStore
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import AgentConfig, ProjectConfig
 
 
@@ -16,23 +13,22 @@ def build_context(
     bases: list[str],
     agents: dict[str, AgentConfig] | None = None,
 ) -> ConfigContext:
-    images_metadata = metadata_with_bases(bases)
+    base_entries, agent_entries = build_agents_and_bases(bases)
     return ConfigContext(
         store=store,
         project_cfg=ProjectConfig(path=str(project_path), agents=agents or {}),
-        images_metadata=images_metadata,
-        agents=images_metadata.agents,
-        bases=images_metadata.bases,
+        agents=agent_entries,
+        bases=base_entries,
         extensions={},
     )
 
 
-def metadata_with_bases(
+def build_agents_and_bases(
     bases: list[str],
     agent_name: str = "codex",
     build_local: bool = False,
-) -> ImagesMetadata:
-    base_entries = {
+) -> tuple[dict[str, BaseMetadata], dict[str, AgentMetadata]]:
+    base_entries: dict[str, BaseMetadata] = {
         name: BaseMetadata(
             from_image="ubuntu:latest",
             base_image_distro="Ubuntu",
@@ -54,4 +50,4 @@ def metadata_with_bases(
             local_definition_dir=Path(f"/tmp/{agent_name}"),
         )
     }
-    return ImagesMetadata(bases=base_entries, agents=agents)
+    return base_entries, agents

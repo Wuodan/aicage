@@ -4,7 +4,7 @@ from unittest import TestCase, mock
 
 import yaml
 
-from aicage.config.images_metadata.models import AgentMetadata
+from aicage.config.agent.models import AgentMetadata
 from aicage.registry._errors import RegistryError
 from aicage.registry.agent_version import _command as command
 from aicage.registry.agent_version._store import _VERSION_KEY

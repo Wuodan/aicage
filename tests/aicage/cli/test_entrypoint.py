@@ -4,12 +4,9 @@ from unittest import TestCase, mock
 
 from aicage.cli.entrypoint import main
 from aicage.cli_types import ParsedArgs
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.image_selection.models import ImageSelection
@@ -31,16 +28,15 @@ def _build_run_args(
 
 
 def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
-    images_metadata = _build_images_metadata()
+    bases, agents = _build_agents_and_bases()
     return RunConfig(
         project_path=project_path,
         agent="codex",
         context=ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path=str(project_path), agents={}),
-            images_metadata=images_metadata,
-            agents=images_metadata.agents,
-            bases=images_metadata.bases,
+            agents=agents,
+            bases=bases,
             extensions={},
         ),
         selection=ImageSelection(
@@ -54,7 +50,8 @@ def _build_run_config(project_path: Path, image_ref: str) -> RunConfig:
     )
 
 
-def _build_images_metadata() -> ImagesMetadata:
+def _build_agents_and_bases(
+) -> tuple[dict[str, BaseMetadata], dict[str, AgentMetadata]]:
     bases = {
         "alpine": BaseMetadata(
             from_image="alpine:latest",
@@ -92,7 +89,7 @@ def _build_images_metadata() -> ImagesMetadata:
             local_definition_dir=Path("/tmp/codex"),
         )
     }
-    return ImagesMetadata(bases=bases, agents=agents)
+    return bases, agents
 
 
 class EntrypointTests(TestCase):

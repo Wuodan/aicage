@@ -4,7 +4,6 @@ from unittest import TestCase, mock
 
 from aicage.config.context import ConfigContext
 from aicage.config.extensions.loader import ExtensionMetadata
-from aicage.config.images_metadata.models import ImagesMetadata
 from aicage.config.project_config import AgentConfig, ProjectConfig
 from aicage.registry._errors import RegistryError
 from aicage.registry.image_selection.extensions.missing_extensions import (
@@ -178,10 +177,6 @@ class MissingExtensionsTests(TestCase):
         return ConfigContext(
             store=store,
             project_cfg=project_cfg,
-            images_metadata=ImagesMetadata(
-                bases={},
-                agents={},
-            ),
             agents={},
             bases={},
             extensions=extensions or {},

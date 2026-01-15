@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from aicage._logging import get_logger
+from aicage.config.agent.models import AgentMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata
 from aicage.constants import DEFAULT_IMAGE_BASE
 from aicage.runtime._errors import RuntimeExecutionError
 

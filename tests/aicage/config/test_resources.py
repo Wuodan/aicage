@@ -5,7 +5,7 @@ from aicage.config.resources import find_packaged_path
 
 class ResourcesTests(TestCase):
     def test_find_packaged_path_finds_repo_config(self) -> None:
-        path = find_packaged_path("images-metadata.yaml")
+        path = find_packaged_path("validation/agent.schema.json")
 
         self.assertTrue(path.is_file())
-        self.assertEqual("images-metadata.yaml", path.name)
+        self.assertEqual("agent.schema.json", path.name)

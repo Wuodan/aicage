@@ -1,6 +1,6 @@
-from aicage.config.base_filter import filter_bases
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.filter import filter_bases
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata
 from aicage.registry._errors import RegistryError
 
 

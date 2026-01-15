@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
-from aicage.config.images_metadata.models import BaseMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.paths import CUSTOM_BASES_DIR
 from aicage.registry.local_build import _refs
 

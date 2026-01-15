@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from aicage.config.images_metadata.models import AgentMetadata
+from aicage.config.agent.models import AgentMetadata
 from aicage.config.runtime_config import RunConfig
 from aicage.docker.build import run_build
 from aicage.paths import CUSTOM_BASES_DIR
@@ -16,7 +16,7 @@ from ._store import BuildRecord, BuildStore
 
 
 def ensure_local_image(run_config: RunConfig) -> None:
-    agent_metadata = run_config.context.images_metadata.agents[run_config.agent]
+    agent_metadata = run_config.context.agents[run_config.agent]
     definition_dir = agent_metadata.local_definition_dir
 
     base_metadata = run_config.context.bases[run_config.selection.base]

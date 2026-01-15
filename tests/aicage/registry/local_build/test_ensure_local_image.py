@@ -4,8 +4,9 @@ from unittest import TestCase, mock
 
 import yaml
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.paths import CUSTOM_BASES_DIR
@@ -89,7 +90,6 @@ class EnsureLocalImageTests(TestCase):
             local_definition_dir=CUSTOM_BASES_DIR / "custom",
         )
         run_config.context.bases["custom"] = custom_base
-        run_config.context.images_metadata.bases["custom"] = custom_base
         with (
             mock.patch(
                 "aicage.registry.local_build.ensure_local_image.ensure_custom_base_image"
@@ -210,28 +210,24 @@ class EnsureLocalImageTests(TestCase):
                 local_definition_dir=Path("/tmp/base"),
             )
         }
-        images_metadata = ImagesMetadata(
-            bases=bases,
-            agents={
-                "claude": AgentMetadata(
-                    agent_path="~/.claude",
-                    agent_full_name="Claude Code",
-                    agent_homepage="https://example.com",
-                    build_local=True,
-                    valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
-                    local_definition_dir=Path("/tmp/definition"),
-                )
-            },
-        )
+        agents = {
+            "claude": AgentMetadata(
+                agent_path="~/.claude",
+                agent_full_name="Claude Code",
+                agent_homepage="https://example.com",
+                build_local=True,
+                valid_bases={"ubuntu": "ghcr.io/aicage/aicage:claude-ubuntu"},
+                local_definition_dir=Path("/tmp/definition"),
+            )
+        }
         return RunConfig(
             project_path=Path("/tmp/project"),
             agent="claude",
             context=ConfigContext(
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-                images_metadata=images_metadata,
-                agents=images_metadata.agents,
-                bases=images_metadata.bases,
+                agents=agents,
+                bases=bases,
                 extensions={},
             ),
             selection=ImageSelection(

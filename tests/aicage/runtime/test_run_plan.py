@@ -2,12 +2,9 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import (
-    AgentMetadata,
-    BaseMetadata,
-    ImagesMetadata,
-)
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.registry.image_selection.models import ImageSelection
@@ -24,7 +21,6 @@ class RunPlanTests(TestCase):
             context=ConfigContext(
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
-                images_metadata=self._get_images_metadata(),
                 agents=self._get_agents(),
                 bases=self._get_bases(),
                 extensions={},
@@ -56,7 +52,6 @@ class RunPlanTests(TestCase):
             context=ConfigContext(
                 store=mock.Mock(),
                 project_cfg=ProjectConfig(path=str(project_path), agents={}),
-                images_metadata=self._get_images_metadata(),
                 agents=self._get_agents(),
                 bases=self._get_bases(),
                 extensions={},
@@ -77,13 +72,6 @@ class RunPlanTests(TestCase):
             run_args = build_run_args(config, parsed)
 
         self.assertEqual([mount], run_args.mounts)
-
-    @staticmethod
-    def _get_images_metadata() -> ImagesMetadata:
-        return ImagesMetadata(
-            bases=RunPlanTests._get_bases(),
-            agents=RunPlanTests._get_agents(),
-        )
 
     @staticmethod
     def _get_bases() -> dict[str, BaseMetadata]:

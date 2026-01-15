@@ -1,5 +1,5 @@
+from aicage.config.agent.models import AgentMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata
 
 
 def filter_bases(context: ConfigContext, agent_metadata: AgentMetadata) -> set[str]:

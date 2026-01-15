@@ -1,8 +1,9 @@
 from pathlib import Path
 from unittest import TestCase, mock
 
+from aicage.config.agent.models import AgentMetadata
+from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
-from aicage.config.images_metadata.models import AgentMetadata, BaseMetadata, ImagesMetadata
 from aicage.config.project_config import ProjectConfig
 from aicage.constants import DEFAULT_EXTENDED_IMAGE_NAME
 from aicage.runtime._errors import RuntimeExecutionError
@@ -148,10 +149,6 @@ class PromptImageChoiceTests(TestCase):
         return ConfigContext(
             store=mock.Mock(),
             project_cfg=ProjectConfig(path="/tmp/project", agents={}),
-            images_metadata=ImagesMetadata(
-                bases=bases,
-                agents={},
-            ),
             agents={},
             bases=bases,
             extensions={},

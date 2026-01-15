@@ -1,6 +1,6 @@
+from aicage.config.agent.models import AgentMetadata
 from aicage.config.context import ConfigContext
 from aicage.config.image_refs import local_image_ref
-from aicage.config.images_metadata.models import AgentMetadata
 from aicage.constants import IMAGE_REGISTRY, IMAGE_REPOSITORY, LOCAL_IMAGE_REPOSITORY
 from aicage.paths import CUSTOM_BASES_DIR
 
