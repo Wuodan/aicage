@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.17] - 2026-01-15
+
+### Fixed
+
+- Restored the console script import target for the CLI `main` entrypoint.
+
 ## [0.8.16] - 2026-01-15
 
 ### Added
