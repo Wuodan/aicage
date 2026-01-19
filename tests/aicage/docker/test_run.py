@@ -93,15 +93,15 @@ class RunCommandTests(TestCase):
         self.assertEqual("boom", result.stderr)
 
     def test_resolve_user_ids_handles_missing(self) -> None:
-        with mock.patch("aicage.docker.run.os.getuid", side_effect=AttributeError), mock.patch(
-            "aicage.docker.run.os.getgid", side_effect=AttributeError
+        with mock.patch("aicage.docker.run.os.getuid", side_effect=AttributeError, create=True), mock.patch(
+            "aicage.docker.run.os.getgid", side_effect=AttributeError, create=True
         ), mock.patch.dict(os.environ, {"USER": "tester"}, clear=True):
             env_flags = run._resolve_user_ids()
         self.assertEqual(["-e", "AICAGE_USER=tester"], env_flags)
 
     def test_resolve_user_ids_includes_uid_gid(self) -> None:
-        with mock.patch("aicage.docker.run.os.getuid", return_value=1000), mock.patch(
-            "aicage.docker.run.os.getgid", return_value=1001
+        with mock.patch("aicage.docker.run.os.getuid", return_value=1000, create=True), mock.patch(
+            "aicage.docker.run.os.getgid", return_value=1001, create=True
         ), mock.patch.dict(os.environ, {"USER": "tester"}, clear=True):
             env_flags = run._resolve_user_ids()
         self.assertEqual(
@@ -128,15 +128,15 @@ class RunCommandTests(TestCase):
                 "--rm",
                 "-it",
                 "-e",
-                "AICAGE_WORKSPACE=/work/project",
+                f"AICAGE_WORKSPACE={Path('/work/project')}",
                 "-e",
                 "AICAGE_AGENT_CONFIG_PATH=~/.codex",
                 "-v",
-                "/work/project:/workspace",
+                f"{Path('/work/project')}:/workspace",
                 "-v",
-                "/work/project:/work/project",
+                f"{Path('/work/project')}:{Path('/work/project')}",
                 "-v",
-                "/host/.codex:/aicage/agent-config",
+                f"{Path('/host/.codex')}:{Path('/aicage/agent-config')}",
                 "--network=host",
                 "ghcr.io/aicage/aicage:codex-ubuntu",
                 "--flag",
@@ -161,5 +161,5 @@ class RunCommandTests(TestCase):
         self.assertIn("-e", cmd)
         self.assertIn("EXTRA=1", cmd)
         self.assertIn("-v", cmd)
-        self.assertIn("/tmp/one:/opt/one:ro", cmd)
+        self.assertIn(f"{Path('/tmp/one')}:{Path('/opt/one')}:ro", cmd)
         self.assertNotIn("AICAGE_AGENT_CONFIG_PATH", " ".join(cmd))

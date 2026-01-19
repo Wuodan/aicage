@@ -24,7 +24,7 @@ class PromptConfirmTests(TestCase):
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_persist_entrypoint(Path("/tmp/entrypoint")))
         prompt_mock.assert_called_once_with(
-            "Persist entrypoint '/tmp/entrypoint' for this project?",
+            f"Persist entrypoint '{Path('/tmp/entrypoint')}' for this project?",
             default=True,
         )
 
@@ -40,7 +40,7 @@ class PromptConfirmTests(TestCase):
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_git_config(Path("/tmp/gitconfig")))
         prompt_mock.assert_called_once_with(
-            "Mount Git config from '/tmp/gitconfig' so Git uses your usual name/email?",
+            f"Mount Git config from '{Path('/tmp/gitconfig')}' so Git uses your usual name/email?",
             default=True,
         )
 
@@ -48,7 +48,7 @@ class PromptConfirmTests(TestCase):
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_gpg_keys(Path("/tmp/gpg")))
         prompt_mock.assert_called_once_with(
-            "Mount GnuPG keys from '/tmp/gpg' so Git signing works like on your host?",
+            f"Mount GnuPG keys from '{Path('/tmp/gpg')}' so Git signing works like on your host?",
             default=True,
         )
 
@@ -56,7 +56,7 @@ class PromptConfirmTests(TestCase):
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_ssh_keys(Path("/tmp/ssh")))
         prompt_mock.assert_called_once_with(
-            "Mount SSH keys from '/tmp/ssh' so Git signing works like on your host?",
+            f"Mount SSH keys from '{Path('/tmp/ssh')}' so Git signing works like on your host?",
             default=True,
         )
 
