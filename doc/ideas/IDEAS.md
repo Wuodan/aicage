@@ -64,3 +64,8 @@ The implementation is from an earlier state where we had less files. New files a
 - /home/stefan/.claude.json
 - /home/stefan/.claude.json.backup
 - /home/stefan/.claude/
+
+## Fix config file locking
+
+It was disabled due to problems on Windows, see commit with message:  
+"Disable locking of config files - needs to use the lock-connection to files on Windows"
