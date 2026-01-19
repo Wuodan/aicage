@@ -1,3 +1,4 @@
+import os
 import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
@@ -24,9 +25,10 @@ class EntrypointMountTests(TestCase):
 
             entrypoint = Path(tmp_dir) / "entrypoint.sh"
             entrypoint.write_text("#!/usr/bin/env bash\necho ok\n", encoding="utf-8")
-            with mock.patch("os.access", return_value=False):
-                with self.assertRaises(RuntimeExecutionError):
-                    _validate_entrypoint_path(entrypoint)
+            if os.name != "nt":
+                with mock.patch("os.access", return_value=False):
+                    with self.assertRaises(RuntimeExecutionError):
+                        _validate_entrypoint_path(entrypoint)
 
     def test_resolve_entrypoint_mount_persists_entrypoint(self) -> None:
         agent_cfg = AgentConfig()
