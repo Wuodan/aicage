@@ -20,7 +20,10 @@ class LoggingTests(TestCase):
                 self.assertIs(first_logger, second_logger)
                 self.assertTrue(first_logger.handlers)
                 self.assertTrue(log_path.exists())
+                for handler in list(first_logger.handlers):
+                    handler.close()
+                first_logger.handlers.clear()
         finally:
             logger.handlers.clear()
             logger.handlers.extend(handlers)
-            _logging._LOG_PATH = original_log_path
+            _logging.GLOBAL_LOG_PATH = original_log_path
