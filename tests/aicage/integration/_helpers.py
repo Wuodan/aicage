@@ -1,5 +1,4 @@
 import os
-import pty
 import select
 import stat
 import subprocess
@@ -16,8 +15,29 @@ from aicage.config.project_config import AgentConfig, ProjectConfig, _AgentMount
 from aicage.docker.query import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
+if sys.platform == "win32":
+    from winpty import PtyProcess
+else:
+    PtyProcess = None
+
+if sys.platform != "win32":
+    import pty
+
 
 def run_cli_pty(args: list[str], env: dict[str, str], cwd: Path) -> tuple[int, str]:
+    if sys.platform == "win32":
+        process = PtyProcess.spawn(
+            [sys.executable, "-m", "aicage", *args],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=cwd,
+            env=env,
+            text=True,
+        )
+        output, _ = process.communicate()
+        return process.returncode, output
+
     master_fd, slave_fd = pty.openpty()
     process = subprocess.Popen(
         [sys.executable, "-m", "aicage", *args],
