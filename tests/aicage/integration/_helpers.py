@@ -1,5 +1,4 @@
 import os
-import pty
 import select
 import stat
 import subprocess
@@ -18,6 +17,21 @@ from aicage.registry.local_build._store import BuildRecord, BuildStore
 
 
 def run_cli_pty(args: list[str], env: dict[str, str], cwd: Path) -> tuple[int, str]:
+    if sys.platform == "win32":
+        process = subprocess.Popen(
+            [sys.executable, "-m", "aicage", *args],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=cwd,
+            env=env,
+            text=True,
+        )
+        output, _ = process.communicate()
+        return process.returncode, output
+
+    import pty
+
     master_fd, slave_fd = pty.openpty()
     process = subprocess.Popen(
         [sys.executable, "-m", "aicage", *args],
