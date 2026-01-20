@@ -1,7 +1,7 @@
-from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.paths import CONTAINER_DOCKER_SOCKET_PATH
 from aicage.runtime.mounts._docker_socket import resolve_docker_socket_mount
 
 
@@ -13,7 +13,7 @@ class DockerSocketMountTests(TestCase):
 
         self.assertTrue(agent_cfg.mounts.docker)
         self.assertEqual(1, len(mounts))
-        self.assertEqual(Path("/run/docker.sock"), mounts[0].container_path)
+        self.assertEqual(CONTAINER_DOCKER_SOCKET_PATH, mounts[0].container_path)
 
     def test_resolve_docker_socket_mount_uses_persisted_socket(self) -> None:
         agent_cfg = AgentConfig(mounts=_AgentMounts(docker=True))

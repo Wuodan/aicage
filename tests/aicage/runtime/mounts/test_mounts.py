@@ -31,7 +31,7 @@ class MountResolutionTests(TestCase):
             with (
                 mock.patch("aicage.runtime.mounts._ssh_keys.is_commit_signing_enabled", return_value=True),
                 mock.patch("aicage.runtime.mounts._ssh_keys.resolve_signing_format", return_value="ssh"),
-                mock.patch("aicage.runtime.mounts._ssh_keys._default_ssh_dir", return_value=ssh_dir),
+                mock.patch("aicage.runtime.mounts._ssh_keys.HOST_SSH_DIR", ssh_dir),
                 mock.patch("aicage.runtime.mounts._ssh_keys.prompt_mount_ssh_keys") as prompt_mock,
             ):
                 mounts = _ssh_keys.resolve_ssh_mount(Path("/repo"), agent_cfg)

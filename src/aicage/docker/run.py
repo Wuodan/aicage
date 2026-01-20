@@ -6,6 +6,7 @@ from pathlib import Path
 from docker.errors import ContainerError, DockerException, ImageNotFound
 
 from aicage.docker._client import get_docker_client
+from aicage.paths import CONTAINER_WORKSPACE_DIR, container_project_path
 from aicage.runtime.env_vars import (
     AICAGE_AGENT_CONFIG_PATH,
     AICAGE_GID,
@@ -77,17 +78,18 @@ def _resolve_user_ids() -> list[str]:
 def _assemble_docker_run(args: DockerRunArgs) -> list[str]:
     cmd: list[str] = ["docker", "run", "--rm", "-it"]
     cmd.extend(_resolve_user_ids())
-    cmd.extend(["-e", f"{AICAGE_WORKSPACE}={args.project_path}"])
+    project_container_path = container_project_path(args.project_path)
+    cmd.extend(["-e", f"{AICAGE_WORKSPACE}={project_container_path.as_posix()}"])
     if args.agent_path:
         cmd.extend(["-e", f"{AICAGE_AGENT_CONFIG_PATH}={args.agent_path}"])
     for env in args.env:
         cmd.extend(["-e", env])
-    cmd.extend(["-v", f"{args.project_path}:/workspace"])
-    cmd.extend(["-v", f"{args.project_path}:{args.project_path}"])
-    cmd.extend(["-v", f"{args.agent_config_host}:{args.agent_config_mount_container}"])
+    cmd.extend(["-v", f"{args.project_path}:{CONTAINER_WORKSPACE_DIR.as_posix()}"])
+    cmd.extend(["-v", f"{args.project_path}:{project_container_path.as_posix()}"])
+    cmd.extend(["-v", f"{args.agent_config_host}:{args.agent_config_mount_container.as_posix()}"])
     for mount in args.mounts:
         suffix = ":ro" if mount.read_only else ""
-        cmd.extend(["-v", f"{mount.host_path}:{mount.container_path}{suffix}"])
+        cmd.extend(["-v", f"{mount.host_path}:{mount.container_path.as_posix()}{suffix}"])
 
     if args.merged_docker_args:
         cmd.extend(shlex.split(args.merged_docker_args))

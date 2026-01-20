@@ -1,10 +1,7 @@
-from pathlib import Path
-
 from aicage.config.project_config import AgentConfig
+from aicage.paths import CONTAINER_DOCKER_SOCKET_PATH, HOST_DOCKER_SOCKET_PATH
 from aicage.runtime.prompts.confirm import prompt_persist_docker_socket
 from aicage.runtime.run_args import MountSpec
-
-_DOCKER_SOCKET_PATH = Path("/run/docker.sock")
 
 
 def resolve_docker_socket_mount(
@@ -18,8 +15,8 @@ def resolve_docker_socket_mount(
 
     mounts = [
         MountSpec(
-            host_path=_DOCKER_SOCKET_PATH,
-            container_path=_DOCKER_SOCKET_PATH,
+            host_path=HOST_DOCKER_SOCKET_PATH,
+            container_path=CONTAINER_DOCKER_SOCKET_PATH,
         )
     ]
 

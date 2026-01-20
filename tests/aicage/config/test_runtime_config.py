@@ -1,5 +1,5 @@
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
@@ -32,7 +32,7 @@ class RuntimeConfigTests(TestCase):
             def store_factory(*args: object, **kwargs: object) -> SettingsStore:
                 return SettingsStore()
 
-            mounts = [MountSpec(host_path=Path("/tmp/host"), container_path=Path("/tmp/container"))]
+            mounts = [MountSpec(host_path=Path("/tmp/host"), container_path=PurePosixPath("/tmp/container"))]
             with (
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),

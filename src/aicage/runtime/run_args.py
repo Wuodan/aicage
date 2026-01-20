@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 @dataclass
 class MountSpec:
     host_path: Path
-    container_path: Path
+    container_path: PurePosixPath
     read_only: bool = False
 
 
@@ -14,7 +14,7 @@ class DockerRunArgs:
     image_ref: str
     project_path: Path
     agent_config_host: Path
-    agent_config_mount_container: Path
+    agent_config_mount_container: PurePosixPath
     merged_docker_args: str
     agent_args: list[str]
     agent_path: str | None = None

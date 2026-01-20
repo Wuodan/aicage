@@ -1,5 +1,8 @@
+import os
 from os.path import expanduser
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
+
+# AICAGE PATHS (for Python program on host)
 
 _AGENT_DEFINITION_FILENAME: str = "agent.yaml"
 EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yaml"
@@ -40,3 +43,33 @@ CUSTOM_EXTENSION_DEFINITION_FILES: tuple[str, str] = (
     "extension.yaml",
     "extension.yml",
 )
+
+# OTHER HOST PATHS (for mounts to container)
+
+HOST_SSH_DIR: Path = Path.home() / ".ssh"
+HOST_DOCKER_SOCKET_PATH: Path = Path("/run/docker.sock")
+
+# CONTAINER PATHS (for mounts to container)
+
+CONTAINER_WORKSPACE_DIR: PurePosixPath = PurePosixPath("/workspace")
+_WSL_MOUNT_ROOT: PurePosixPath = PurePosixPath("/mnt")
+CONTAINER_AGENT_CONFIG_DIR: PurePosixPath = PurePosixPath("/aicage/agent-config")
+CONTAINER_GITCONFIG_PATH: PurePosixPath = PurePosixPath("/aicage/host/gitconfig")
+CONTAINER_SSH_DIR: PurePosixPath = PurePosixPath("/aicage/host/ssh")
+CONTAINER_GNUPG_DIR: PurePosixPath = PurePosixPath("/aicage/host/gnupg")
+CONTAINER_ENTRYPOINT_PATH: PurePosixPath = PurePosixPath("/usr/local/bin/entrypoint.sh")
+CONTAINER_DOCKER_SOCKET_PATH: PurePosixPath = PurePosixPath("/run/docker.sock")
+
+
+def container_project_path(host_path: Path) -> PurePosixPath:
+    if os.name != "nt":
+        return PurePosixPath(host_path.as_posix())
+    win_path = PureWindowsPath(host_path)
+    drive = win_path.drive
+    if drive.startswith("\\\\?\\"):
+        drive = drive[4:]
+    drive_letter = drive.rstrip(":").lower()
+    if not drive_letter:
+        return PurePosixPath(host_path.as_posix())
+    parts = [part for part in win_path.parts if part != win_path.anchor]
+    return _WSL_MOUNT_ROOT / drive_letter / PurePosixPath(*parts)
