@@ -11,10 +11,14 @@ from ._signing import is_commit_signing_enabled, resolve_signing_format
 
 def _resolve_gpg_home() -> Path | None:
     stdout = capture_stdout(["gpgconf", "--list-dirs", "homedir"])
-    if not stdout:
-        return None
-    path = stdout.strip()
-    return Path(path).expanduser() if path else None
+    if stdout:
+        path = stdout.strip()
+        if path:
+            gpg_home = Path(path).expanduser()
+            if gpg_home.exists():
+                return gpg_home
+    fallback = Path("~/.gnupg").expanduser()
+    return fallback if fallback.exists() else None
 
 
 def resolve_gpg_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountSpec]:

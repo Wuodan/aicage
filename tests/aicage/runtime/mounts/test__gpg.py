@@ -1,3 +1,4 @@
+import os
 import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
@@ -8,13 +9,45 @@ from aicage.runtime.mounts import _gpg
 
 class GpgHomeTests(TestCase):
     def test_resolve_gpg_home_parses_output(self) -> None:
-        with mock.patch("aicage.runtime.mounts._gpg.capture_stdout", return_value="/home/user/.gnupg\n"):
-            path = _gpg._resolve_gpg_home()
-        self.assertEqual(Path("/home/user/.gnupg"), path)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home.mkdir()
+            with mock.patch(
+                "aicage.runtime.mounts._gpg.capture_stdout",
+                return_value=f"{gpg_home}\n",
+            ):
+                path = _gpg._resolve_gpg_home()
+        self.assertEqual(gpg_home, path)
 
-    def test_resolve_gpg_home_handles_empty(self) -> None:
-        with mock.patch("aicage.runtime.mounts._gpg.capture_stdout", return_value=""):
-            path = _gpg._resolve_gpg_home()
+    def test_resolve_gpg_home_falls_back_to_home_gnupg(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home.mkdir()
+            with (
+                mock.patch.dict(
+                    os.environ,
+                    {"HOME": tmp_dir, "USERPROFILE": tmp_dir},
+                    clear=False,
+                ),
+                mock.patch("aicage.runtime.mounts._gpg.capture_stdout", return_value=""),
+            ):
+                path = _gpg._resolve_gpg_home()
+        self.assertEqual(gpg_home, path)
+
+    def test_resolve_gpg_home_handles_missing_dirs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            with (
+                mock.patch.dict(
+                    os.environ,
+                    {"HOME": tmp_dir, "USERPROFILE": tmp_dir},
+                    clear=False,
+                ),
+                mock.patch(
+                    "aicage.runtime.mounts._gpg.capture_stdout",
+                    return_value="",
+                ),
+            ):
+                path = _gpg._resolve_gpg_home()
         self.assertIsNone(path)
 
     def test_resolve_gpg_mount_prompts_when_unset(self) -> None:
