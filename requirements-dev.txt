@@ -5,6 +5,7 @@ pyright
 pymarkdownlnt
 pytest
 pytest-cov
+pywinpty; platform_system == "Windows"
 ruff
 yamllint
 yq
