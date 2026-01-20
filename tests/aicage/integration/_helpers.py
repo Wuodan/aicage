@@ -116,6 +116,13 @@ def setup_workspace(
     workspace.mkdir()
     workspace = workspace.resolve()
     monkeypatch.setenv("HOME", str(home_dir))
+    if sys.platform == "win32":
+        home_str = str(home_dir)
+        drive, tail = os.path.splitdrive(home_str)
+        monkeypatch.setenv("USERPROFILE", home_str)
+        if drive:
+            monkeypatch.setenv("HOMEDRIVE", drive)
+            monkeypatch.setenv("HOMEPATH", tail or "\\")
     monkeypatch.chdir(workspace)
     projects_dir = home_dir / ".aicage/projects"
     custom_root_dir = home_dir / ".aicage-custom"
