@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from unittest import TestCase, mock
 
 from aicage.cli_types import ParsedArgs
@@ -21,11 +21,18 @@ class ResolverTests(TestCase):
             extensions={},
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
-        git_mount = MountSpec(host_path=Path("/tmp/git"), container_path=Path("/git"))
-        ssh_mount = MountSpec(host_path=Path("/tmp/ssh"), container_path=Path("/ssh"))
-        gpg_mount = MountSpec(host_path=Path("/tmp/gpg"), container_path=Path("/gpg"))
-        entry_mount = MountSpec(host_path=Path("/tmp/entry"), container_path=Path("/entry"), read_only=True)
-        docker_mount = MountSpec(host_path=Path("/tmp/docker"), container_path=Path("/run/docker.sock"))
+        git_mount = MountSpec(host_path=Path("/tmp/git"), container_path=PurePosixPath("/git"))
+        ssh_mount = MountSpec(host_path=Path("/tmp/ssh"), container_path=PurePosixPath("/ssh"))
+        gpg_mount = MountSpec(host_path=Path("/tmp/gpg"), container_path=PurePosixPath("/gpg"))
+        entry_mount = MountSpec(
+            host_path=Path("/tmp/entry"),
+            container_path=PurePosixPath("/entry"),
+            read_only=True,
+        )
+        docker_mount = MountSpec(
+            host_path=Path("/tmp/docker"),
+            container_path=PurePosixPath("/run/docker.sock"),
+        )
 
         with (
             mock.patch("aicage.runtime.mounts.resolver.resolve_git_config_mount", return_value=[git_mount]) as git_mock,

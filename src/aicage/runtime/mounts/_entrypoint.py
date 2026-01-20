@@ -2,11 +2,10 @@ import os
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
+from aicage.paths import CONTAINER_ENTRYPOINT_PATH
 from aicage.runtime._errors import RuntimeExecutionError
 from aicage.runtime.prompts.confirm import prompt_persist_entrypoint
 from aicage.runtime.run_args import MountSpec
-
-_ENTRYPOINT_CONTAINER_PATH = Path("/usr/local/bin/entrypoint.sh")
 
 
 def resolve_entrypoint_mount(
@@ -22,7 +21,7 @@ def resolve_entrypoint_mount(
     mounts = [
         MountSpec(
             host_path=entrypoint_path,
-            container_path=_ENTRYPOINT_CONTAINER_PATH,
+            container_path=CONTAINER_ENTRYPOINT_PATH,
             read_only=True,
         )
     ]

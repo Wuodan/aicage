@@ -9,6 +9,7 @@ from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
 from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
+from aicage.paths import CONTAINER_AGENT_CONFIG_DIR
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.runtime.run_args import DockerRunArgs
 
@@ -20,7 +21,7 @@ def _build_run_args(
         image_ref=image_ref,
         project_path=project_path,
         agent_config_host=project_path / ".codex",
-        agent_config_mount_container=Path("/aicage/agent-config"),
+        agent_config_mount_container=CONTAINER_AGENT_CONFIG_DIR,
         merged_docker_args=merged_docker_args,
         agent_args=agent_args,
         agent_path=str(project_path / ".codex"),

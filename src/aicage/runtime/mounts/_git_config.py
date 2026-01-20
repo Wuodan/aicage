@@ -1,12 +1,11 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
+from aicage.paths import CONTAINER_GITCONFIG_PATH
 from aicage.runtime.run_args import MountSpec
 
 from ..prompts.confirm import prompt_mount_git_config
 from ._exec import capture_stdout
-
-_GITCONFIG_MOUNT = Path("/aicage/host/gitconfig")
 
 
 def _resolve_git_config_path() -> Path | None:
@@ -35,5 +34,10 @@ def resolve_git_config_mount(agent_cfg: AgentConfig) -> list[MountSpec]:
         mounts_cfg.gitconfig = pref
 
     if pref:
-        return [MountSpec(host_path=git_config, container_path=_GITCONFIG_MOUNT)]
+        return [
+            MountSpec(
+                host_path=git_config,
+                container_path=CONTAINER_GITCONFIG_PATH,
+            )
+        ]
     return []

@@ -1,13 +1,12 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
+from aicage.paths import CONTAINER_GNUPG_DIR
 from aicage.runtime.run_args import MountSpec
 
 from ..prompts.confirm import prompt_mount_gpg_keys
 from ._exec import capture_stdout
 from ._signing import is_commit_signing_enabled, resolve_signing_format
-
-_GPG_HOME_MOUNT = Path("/aicage/host/gnupg")
 
 
 def _resolve_gpg_home() -> Path | None:
@@ -35,5 +34,10 @@ def resolve_gpg_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountS
         mounts_cfg.gnupg = pref
 
     if pref:
-        return [MountSpec(host_path=gpg_home, container_path=_GPG_HOME_MOUNT)]
+        return [
+            MountSpec(
+                host_path=gpg_home,
+                container_path=CONTAINER_GNUPG_DIR,
+            )
+        ]
     return []
