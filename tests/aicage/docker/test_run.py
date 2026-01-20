@@ -94,21 +94,34 @@ class RunCommandTests(TestCase):
         self.assertEqual("boom", result.stderr)
 
     def test_resolve_user_ids_handles_missing(self) -> None:
-        with mock.patch("aicage.docker.run.os.getuid", side_effect=AttributeError, create=True), mock.patch(
-            "aicage.docker.run.os.getgid", side_effect=AttributeError, create=True
-        ), mock.patch.dict(os.environ, {"USER": "tester"}, clear=True):
+        with (
+            mock.patch("aicage.docker.run.os.getuid", None, create=True),
+            mock.patch("aicage.docker.run.os.getgid", None, create=True),
+            mock.patch.dict(os.environ, {"USER": "tester"}, clear=True),
+            mock.patch("aicage.docker.run.os.name", "posix"),
+        ):
             env_flags = run._resolve_user_ids()
         self.assertEqual(["-e", "AICAGE_USER=tester"], env_flags)
 
     def test_resolve_user_ids_includes_uid_gid(self) -> None:
-        with mock.patch("aicage.docker.run.os.getuid", return_value=1000, create=True), mock.patch(
-            "aicage.docker.run.os.getgid", return_value=1001, create=True
-        ), mock.patch.dict(os.environ, {"USER": "tester"}, clear=True):
+        with (
+            mock.patch("aicage.docker.run.os.getuid", return_value=1000, create=True),
+            mock.patch("aicage.docker.run.os.getgid", return_value=1001, create=True),
+            mock.patch.dict(os.environ, {"USER": "tester"}, clear=True),
+            mock.patch("aicage.docker.run.os.name", "posix"),
+        ):
             env_flags = run._resolve_user_ids()
         self.assertEqual(
             ["-e", "AICAGE_UID=1000", "-e", "AICAGE_GID=1001", "-e", "AICAGE_USER=tester"],
             env_flags,
         )
+
+    def test_resolve_user_ids_sets_root_on_windows(self) -> None:
+        with mock.patch("aicage.docker.run.os.getuid", side_effect=AttributeError, create=True), mock.patch(
+            "aicage.docker.run.os.getgid", side_effect=AttributeError, create=True
+        ), mock.patch.dict(os.environ, {"USER": "tester"}, clear=True), mock.patch("aicage.docker.run.os.name", "nt"):
+            env_flags = run._resolve_user_ids()
+        self.assertEqual(["-e", "AICAGE_USER=root"], env_flags)
 
     def test_assemble_includes_workspace_mount(self) -> None:
         with (

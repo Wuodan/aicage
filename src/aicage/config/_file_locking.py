@@ -10,7 +10,7 @@ _LOCK_TIMEOUT_SECONDS = 30
 
 
 @contextmanager
-def lock_project_config(project_config_path: Path) -> Iterator[None]:
+def _lock_project_config(project_config_path: Path) -> Iterator[None]:
     try:
         with _lock_file(project_config_path):
             yield

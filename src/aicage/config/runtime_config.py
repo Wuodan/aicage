@@ -30,7 +30,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
     project_path = Path.cwd().resolve()
     # project_config_path = store.project_config_path(project_path)
 
-    # with lock_project_config(project_config_path):
+    # with _lock_project_config(project_config_path):
     bases = load_bases()
     agents = load_agents(bases)
     project_cfg = store.load_project(project_path)

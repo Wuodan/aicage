@@ -16,7 +16,7 @@ class FileLockingTests(TestCase):
 
         with mock.patch("aicage.config._file_locking.portalocker.Lock", return_value=FakeLock()) as lock_mock:
             project_path = Path("/tmp/aicage/test/project/lockfile")
-            with file_locking.lock_project_config(project_path):
+            with file_locking._lock_project_config(project_path):
                 pass
 
         self.assertTrue(project_path.parent.exists())
@@ -32,6 +32,6 @@ class FileLockingTests(TestCase):
             "aicage.config._file_locking._lock_file",
             side_effect=[fake_lock(Path("/tmp/project"))],
         ) as lock_mock:
-            with file_locking.lock_project_config(Path("/tmp/project")):
+            with file_locking._lock_project_config(Path("/tmp/project")):
                 pass
         self.assertEqual(1, lock_mock.call_count)
