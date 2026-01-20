@@ -16,8 +16,19 @@ in a sandboxed HOME during test execution to avoid touching a developer's real `
 
 ## Running integration tests locally
 
+For Linux or MacOS:
+
 ```bash
 AICAGE_RUN_INTEGRATION=1 pytest -m integration
+```
+
+For Windows:
+
+```shell
+$old = $env:AICAGE_RUN_INTEGRATION
+$env:AICAGE_RUN_INTEGRATION="1"
+pytest -m integration
+$env:AICAGE_RUN_INTEGRATION = $old
 ```
 
 ## CI workflow
