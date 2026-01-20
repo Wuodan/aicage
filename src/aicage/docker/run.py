@@ -69,11 +69,10 @@ def _decode_container_output(output: object) -> str:
 
 def _resolve_user_ids() -> list[str]:
     env_flags: list[str] = []
-    try:
-        uid = os.getuid()
-        gid = os.getgid()
-    except AttributeError:
-        uid = gid = None
+    getuid = getattr(os, "getuid", None)
+    getgid = getattr(os, "getgid", None)
+    uid = getuid() if getuid else None
+    gid = getgid() if getgid else None
 
     user = os.environ.get("USER") or os.environ.get("USERNAME") or "aicage"
     if uid is not None:
