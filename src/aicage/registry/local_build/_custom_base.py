@@ -2,6 +2,7 @@ from pathlib import Path
 
 from aicage._logging import get_logger
 from aicage.config.base.models import BaseMetadata
+from aicage.constants import LOCAL_IMAGE_BASE_REPOSITORY
 from aicage.docker.build import run_custom_base_build
 from aicage.docker.errors import DockerError
 from aicage.docker.query import local_image_exists
@@ -13,7 +14,7 @@ from ._logs import custom_base_log_path
 
 
 def custom_base_image_ref(base: str) -> str:
-    return f"aicage-image-base:{base}"
+    return f"{LOCAL_IMAGE_BASE_REPOSITORY}:{base}"
 
 
 def ensure_custom_base_image(base: str, base_metadata: BaseMetadata, base_dir: Path) -> None:
