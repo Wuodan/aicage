@@ -28,7 +28,14 @@ def print_run_command(args: DockerRunArgs) -> None:
 
 
 def run_builder_version_check(image_ref: str, definition_dir: Path) -> subprocess.CompletedProcess[str]:
-    command = ["/bin/bash", "/agent/version.sh"]
+    command = [
+        "/bin/bash",
+        "-c",
+        "cp /agent/version.sh /tmp/version.sh "
+        "&& sed -i 's/\\r$//' /tmp/version.sh "
+        "&& chmod +x /tmp/version.sh "
+        "&& /bin/bash /tmp/version.sh",
+    ]
     volume_src = str(definition_dir.resolve())
     client = get_docker_client()
     try:

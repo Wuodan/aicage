@@ -25,11 +25,15 @@ def run_host(script_path: Path) -> _CommandResult:
             "version.sh at %s is not executable; running with /bin/bash.",
             script_path,
         )
-    return _run_command(["/bin/bash", str(script_path)], "host")
+    return _run_command(["bash", str(script_path)], "host")
 
 
 def _run_command(command: list[str], context: str) -> _CommandResult:
-    process = subprocess.run(command, check=False, capture_output=True, text=True)
+    try:
+        process = subprocess.run(command, check=False, capture_output=True, text=True)
+    except Exception as exc:
+        get_logger().warning("Version check failed in %s: %s", context, exc)
+        return _CommandResult(success=False, output="", error=str(exc))
     return _from_process(process, context)
 
 
