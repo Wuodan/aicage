@@ -37,6 +37,12 @@ USER root
 ARG AICAGE_IMAGE_BASE_DIR=/tmp/aicage-image-base
 
 RUN --mount=type=bind,source=helpers,target=/tmp/aicage/helpers,readonly \
+    mkdir -p /tmp/aicage/helpers-run && \
+    cp /tmp/aicage/helpers/*.sh /tmp/aicage/helpers-run/ && \
+    for script in /tmp/aicage/helpers-run/*.sh; do \
+      sed -i 's/\r$//' "$script"; \
+      chmod +x "$script"; \
+    done && \
     echo "Setup: Install prerequisites ..." && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -44,8 +50,8 @@ RUN --mount=type=bind,source=helpers,target=/tmp/aicage/helpers,readonly \
       tar && \
     \
     echo "Setup: Downloading installation scripts from 'github.com/aicage/aicage-image-base' ..." && \
-    /tmp/aicage/helpers/install-cosign.sh && \
-    /tmp/aicage/helpers/get-aicage-release-artifact.sh aicage-image-base "${AICAGE_IMAGE_BASE_DIR}" && \
+    /tmp/aicage/helpers-run/install-cosign.sh && \
+    /tmp/aicage/helpers-run/get-aicage-release-artifact.sh aicage-image-base "${AICAGE_IMAGE_BASE_DIR}" && \
     \
     echo "Install: Running os-installer scripts for distro '${AICAGE_INSTALL_DISTRO}' ..." && \
     "${AICAGE_IMAGE_BASE_DIR}/os-installers/distro/${AICAGE_INSTALL_DISTRO}/install.sh" && \
@@ -54,7 +60,8 @@ RUN --mount=type=bind,source=helpers,target=/tmp/aicage/helpers,readonly \
     cp "${AICAGE_IMAGE_BASE_DIR}"/entrypoint.sh /usr/local/bin/entrypoint.sh && \
     \
     echo "Clean up: Remove downloaded files ..." && \
-    rm -rf "${AICAGE_IMAGE_BASE_DIR}"
+    rm -rf "${AICAGE_IMAGE_BASE_DIR}" && \
+    rm -rf /tmp/aicage/helpers-run
 
 ENV AICAGE_ENTRYPOINT_CMD=bash
 
