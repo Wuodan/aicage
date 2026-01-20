@@ -3,6 +3,7 @@ import select
 import stat
 import subprocess
 import sys
+import threading
 from pathlib import Path
 from shutil import copytree
 
@@ -16,19 +17,42 @@ from aicage.docker.query import get_local_rootfs_layers
 from aicage.registry.local_build._store import BuildRecord, BuildStore
 
 
-def run_cli_pty(args: list[str], env: dict[str, str], cwd: Path) -> tuple[int, str]:
+def run_cli_pty(
+    args: list[str],
+    env: dict[str, str],
+    cwd: Path,
+    *,
+    input_data: str | None = None,
+) -> tuple[int, str]:
     if sys.platform == "win32":
-        process = subprocess.Popen(
+        try:
+            from winpty import PtyProcess  # type: ignore[import-not-found]
+        except ImportError:
+            pytest.skip("pywinpty not installed. Install pywinpty to run Windows integration tests.")
+        process = PtyProcess.spawn(
             [sys.executable, "-m", "aicage", *args],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            cwd=cwd,
             env=env,
-            text=True,
+            cwd=str(cwd),
         )
-        output, _ = process.communicate()
-        return process.returncode, output
+        chunks: list[str] = []
+
+        def _read_output() -> None:
+            while True:
+                try:
+                    chunk = process.read()
+                except EOFError:
+                    break
+                if not chunk:
+                    break
+                chunks.append(chunk)
+
+        reader = threading.Thread(target=_read_output, daemon=True)
+        reader.start()
+        if input_data:
+            process.write(input_data)
+        process.wait()
+        reader.join(timeout=1.0)
+        return process.exitstatus, "".join(chunks)
 
     import pty
 
@@ -43,6 +67,9 @@ def run_cli_pty(args: list[str], env: dict[str, str], cwd: Path) -> tuple[int, s
         close_fds=True,
     )
     os.close(slave_fd)
+
+    if input_data:
+        os.write(master_fd, input_data.encode())
 
     chunks: list[bytes] = []
     while True:
@@ -81,6 +108,7 @@ def setup_workspace(
     workspace = tmp_path / "workspace"
     home_dir.mkdir()
     workspace.mkdir()
+    workspace = workspace.resolve()
     monkeypatch.setenv("HOME", str(home_dir))
     monkeypatch.chdir(workspace)
     projects_dir = home_dir / ".aicage/projects"
@@ -123,7 +151,12 @@ def setup_workspace(
 
 
 def run_agent_version(env: dict[str, str], workspace: Path, agent_name: str) -> None:
-    exit_code, output = run_cli_pty([agent_name, "--version"], env=env, cwd=workspace)
+    exit_code, output = run_cli_pty(
+        [agent_name, "--version"],
+        env=env,
+        cwd=workspace,
+        input_data="\n\n",
+    )
     assert exit_code == 0, output
     output_lines = [line.strip() for line in output.splitlines() if line.strip()]
     assert output_lines
@@ -205,10 +238,20 @@ def assert_base_layer_present(base_image_ref: str, final_image_ref: str) -> None
 def build_cli_env(home_dir: Path) -> dict[str, str]:
     env = dict(os.environ)
     env["HOME"] = str(home_dir)
+    if sys.platform == "win32":
+        home_str = str(home_dir)
+        drive, tail = os.path.splitdrive(home_str)
+        env["USERPROFILE"] = home_str
+        if drive:
+            env["HOMEDRIVE"] = drive
+            env["HOMEPATH"] = tail or "\\"
     repo_root = Path(__file__).resolve().parents[3]
     env["PYTHONPATH"] = str(repo_root / "src")
     for key in list(env):
-        if key == "AGENT" or key.startswith("AICAGE_"):
+        if key == "AGENT":
+            env.pop(key, None)
+            continue
+        if key.startswith("AICAGE_") and key != "AICAGE_RUN_INTEGRATION":
             env.pop(key, None)
     return env
 
