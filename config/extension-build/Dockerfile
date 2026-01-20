@@ -13,6 +13,7 @@ RUN --mount=type=bind,source=scripts,target=/tmp/aicage/scripts,readonly \
       cp "$script" /tmp/aicage/scripts-run/; \
     done; \
     for script in /tmp/aicage/scripts-run/*.sh; do  \
+      sed -i 's/\r$//' "$script"; \
       chmod +x "$script"; "$script";  \
     done; \
     rm -rf /tmp/aicage/scripts-run
