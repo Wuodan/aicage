@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.18] - 2026-01-20
+
+### Fixed
+
+- Hardened Windows support by normalizing script line endings and execution for extensions, agent version checks,
+  and custom base image samples.
+
 ## [0.8.17] - 2026-01-15
 
 ### Fixed
