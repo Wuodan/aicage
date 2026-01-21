@@ -25,7 +25,7 @@ def prompt_persist_entrypoint(entrypoint_path: Path) -> bool:
 def prompt_persist_docker_socket() -> bool:
     if os.name == "nt":
         print(
-            "Warning: You must enable 'Expose daemon on tcp://localhost:2375 without TLS' "
+            "Info: You must enable 'Expose daemon on tcp://localhost:2375 without TLS' "
             "in Docker Desktop settings to use --docker on Windows."
         )
     return _prompt_yes_no("Persist mounting the Docker socket for this project?", default=True)
