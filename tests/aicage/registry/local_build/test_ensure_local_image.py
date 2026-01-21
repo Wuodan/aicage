@@ -81,6 +81,7 @@ class EnsureLocalImageTests(TestCase):
             ),
             project_docker_args=run_config.project_docker_args,
             mounts=run_config.mounts,
+            env=run_config.env,
         )
         custom_base = BaseMetadata(
             from_image="ubuntu:latest",
@@ -238,4 +239,5 @@ class EnsureLocalImageTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
+            env=[],
         )

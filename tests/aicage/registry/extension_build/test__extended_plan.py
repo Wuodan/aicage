@@ -113,6 +113,7 @@ class ExtendedPlanTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
+            env=[],
         )
 
     @staticmethod

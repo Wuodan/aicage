@@ -222,4 +222,5 @@ def _run_config() -> RunConfig:
         ),
         project_docker_args="",
         mounts=[],
+        env=[],
     )

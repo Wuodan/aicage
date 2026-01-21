@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig
 from aicage.runtime._errors import RuntimeExecutionError
-from aicage.runtime.mounts._entrypoint import (
+from aicage.runtime.docker_args._entrypoint import (
     _resolve_entrypoint_path,
     _validate_entrypoint_path,
     resolve_entrypoint_mount,
@@ -34,9 +34,9 @@ class EntrypointMountTests(TestCase):
         agent_cfg = AgentConfig()
         entrypoint_path = Path("/tmp/entrypoint.sh")
         with (
-            mock.patch("aicage.runtime.mounts._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
-            mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
-            mock.patch("aicage.runtime.mounts._entrypoint.prompt_persist_entrypoint", return_value=True),
+            mock.patch("aicage.runtime.docker_args._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
+            mock.patch("aicage.runtime.docker_args._entrypoint._validate_entrypoint_path"),
+            mock.patch("aicage.runtime.docker_args._entrypoint.prompt_persist_entrypoint", return_value=True),
         ):
             mounts = resolve_entrypoint_mount(agent_cfg, "./entrypoint.sh")
 
@@ -48,9 +48,9 @@ class EntrypointMountTests(TestCase):
         agent_cfg = AgentConfig(entrypoint="/bin/bash")
         entrypoint_path = Path("/bin/bash")
         with (
-            mock.patch("aicage.runtime.mounts._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
-            mock.patch("aicage.runtime.mounts._entrypoint._validate_entrypoint_path"),
-            mock.patch("aicage.runtime.mounts._entrypoint.prompt_persist_entrypoint") as prompt_mock,
+            mock.patch("aicage.runtime.docker_args._entrypoint._resolve_entrypoint_path", return_value=entrypoint_path),
+            mock.patch("aicage.runtime.docker_args._entrypoint._validate_entrypoint_path"),
+            mock.patch("aicage.runtime.docker_args._entrypoint.prompt_persist_entrypoint") as prompt_mock,
         ):
             mounts = resolve_entrypoint_mount(agent_cfg, None)
 

@@ -9,6 +9,12 @@ class MountSpec:
     read_only: bool = False
 
 
+@dataclass(frozen=True)
+class EnvVar:
+    name: str
+    value: str
+
+
 @dataclass
 class DockerRunArgs:
     image_ref: str
@@ -18,7 +24,7 @@ class DockerRunArgs:
     merged_docker_args: str
     agent_args: list[str]
     agent_path: str | None = None
-    env: list[str] = field(default_factory=list)
+    env: list[EnvVar] = field(default_factory=list)
     mounts: list[MountSpec] = field(default_factory=list)
 
 

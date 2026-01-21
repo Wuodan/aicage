@@ -14,7 +14,6 @@ def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
         config.project_docker_args,
         parsed.docker_args,
     )
-
     return DockerRunArgs(
         image_ref=config.selection.image_ref,
         project_path=config.project_path,
@@ -23,5 +22,6 @@ def build_run_args(config: RunConfig, parsed: ParsedArgs) -> DockerRunArgs:
         merged_docker_args=merged_docker_args,
         agent_args=parsed.agent_args,
         agent_path=agent_config.agent_path,
+        env=config.env,
         mounts=config.mounts,
     )

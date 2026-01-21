@@ -33,10 +33,11 @@ class RuntimeConfigTests(TestCase):
                 return SettingsStore()
 
             mounts = [MountSpec(host_path=Path("/tmp/host"), container_path=PurePosixPath("/tmp/container"))]
+            env = []
             with (
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
-                mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=mounts),
+                mock.patch("aicage.config.runtime_config.resolve_docker_args", return_value=(mounts, env)),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_bases",
@@ -61,6 +62,7 @@ class RuntimeConfigTests(TestCase):
         self.assertIsInstance(run_config, RunConfig)
         self.assertEqual("--project", run_config.project_docker_args)
         self.assertEqual(mounts, run_config.mounts)
+        self.assertEqual(env, run_config.env)
 
     def test_load_run_config_persists_new_docker_args(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -90,7 +92,7 @@ class RuntimeConfigTests(TestCase):
             with (
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
-                mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
+                mock.patch("aicage.config.runtime_config.resolve_docker_args", return_value=([], [])),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_bases",
@@ -131,7 +133,7 @@ class RuntimeConfigTests(TestCase):
             with (
                 mock.patch("aicage.config.runtime_config.SettingsStore", new=store_factory),
                 mock.patch("aicage.config.runtime_config.Path.cwd", return_value=project_path),
-                mock.patch("aicage.config.runtime_config.resolve_mounts", return_value=[]),
+                mock.patch("aicage.config.runtime_config.resolve_docker_args", return_value=([], [])),
                 mock.patch("aicage.config.runtime_config.load_extensions", return_value={}),
                 mock.patch(
                     "aicage.config.runtime_config.load_bases",

@@ -151,4 +151,5 @@ class EnsureExtendedImageTests(TestCase):
             ),
             project_docker_args="",
             mounts=[],
+            env=[],
         )

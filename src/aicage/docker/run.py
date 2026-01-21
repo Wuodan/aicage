@@ -94,7 +94,7 @@ def _assemble_docker_run(args: DockerRunArgs) -> list[str]:
     if args.agent_path:
         cmd.extend(["-e", f"{AICAGE_AGENT_CONFIG_PATH}={args.agent_path}"])
     for env in args.env:
-        cmd.extend(["-e", env])
+        cmd.extend(["-e", f"{env.name}={env.value}"])
     cmd.extend(["-v", f"{args.project_path}:{CONTAINER_WORKSPACE_DIR.as_posix()}"])
     cmd.extend(["-v", f"{args.project_path}:{project_container_path.as_posix()}"])
     cmd.extend(["-v", f"{args.agent_config_host}:{args.agent_config_mount_container.as_posix()}"])

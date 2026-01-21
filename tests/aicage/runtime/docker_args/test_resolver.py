@@ -6,12 +6,12 @@ from aicage.config.agent.models import AgentMetadata
 from aicage.config.base.models import BaseMetadata
 from aicage.config.context import ConfigContext
 from aicage.config.project_config import AgentConfig, ProjectConfig
-from aicage.runtime.mounts import resolver
-from aicage.runtime.run_args import MountSpec
+from aicage.runtime.docker_args import resolver
+from aicage.runtime.run_args import EnvVar, MountSpec
 
 
 class ResolverTests(TestCase):
-    def test_resolve_mounts_aggregates_mounts(self) -> None:
+    def test_resolve_docker_args_aggregates_mounts(self) -> None:
         project_cfg = ProjectConfig(path="/tmp/project", agents={"codex": AgentConfig()})
         context = ConfigContext(
             store=mock.Mock(),
@@ -35,26 +35,29 @@ class ResolverTests(TestCase):
         )
 
         with (
-            mock.patch("aicage.runtime.mounts.resolver.resolve_git_config_mount", return_value=[git_mount]) as git_mock,
-            mock.patch("aicage.runtime.mounts.resolver.resolve_ssh_mount", return_value=[ssh_mount]) as ssh_mock,
-            mock.patch("aicage.runtime.mounts.resolver.resolve_gpg_mount", return_value=[gpg_mount]) as gpg_mock,
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_git_config_mount",
+                       return_value=[git_mount]) as git_mock,
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_ssh_mount", return_value=[ssh_mount]) as ssh_mock,
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_gpg_mount", return_value=[gpg_mount]) as gpg_mock,
             mock.patch(
-                "aicage.runtime.mounts.resolver.resolve_entrypoint_mount", return_value=[entry_mount]
+                "aicage.runtime.docker_args.resolver.resolve_entrypoint_mount", return_value=[entry_mount]
             ) as entry_mock,
             mock.patch(
-                "aicage.runtime.mounts.resolver.resolve_docker_socket_mount", return_value=[docker_mount]
+                "aicage.runtime.docker_args.resolver.resolve_docker_socket_mount",
+                return_value=([docker_mount], [EnvVar(name="DOCKER_HOST", value="tcp://host:2375")]),
             ) as docker_mock,
         ):
-            mounts = resolver.resolve_mounts(context, "codex", parsed)
+            mounts, env = resolver.resolve_docker_args(context, "codex", parsed)
 
         self.assertEqual([git_mount, ssh_mount, gpg_mount, entry_mount, docker_mount], mounts)
+        self.assertEqual([("DOCKER_HOST", "tcp://host:2375")], [(item.name, item.value) for item in env])
         git_mock.assert_called_once_with(project_cfg.agents["codex"])
         ssh_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         entry_mock.assert_called_once_with(project_cfg.agents["codex"], None)
         docker_mock.assert_called_once_with(project_cfg.agents["codex"], False)
 
-    def test_resolve_mounts_inserts_agent_config(self) -> None:
+    def test_resolve_docker_args_inserts_agent_config(self) -> None:
         project_cfg = ProjectConfig(path="/tmp/project", agents={})
         context = ConfigContext(
             store=mock.Mock(),
@@ -65,13 +68,13 @@ class ResolverTests(TestCase):
         )
 
         with (
-            mock.patch("aicage.runtime.mounts.resolver.resolve_git_config_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver.resolve_ssh_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver.resolve_gpg_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver.resolve_entrypoint_mount", return_value=[]),
-            mock.patch("aicage.runtime.mounts.resolver.resolve_docker_socket_mount", return_value=[]),
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_git_config_mount", return_value=[]),
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_ssh_mount", return_value=[]),
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_gpg_mount", return_value=[]),
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_entrypoint_mount", return_value=[]),
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_docker_socket_mount", return_value=([], [])),
         ):
-            resolver.resolve_mounts(context, "codex", None)
+            resolver.resolve_docker_args(context, "codex", None)
 
         self.assertIsInstance(project_cfg.agents["codex"], AgentConfig)
 

@@ -7,7 +7,7 @@ from docker.models.containers import Container
 
 from aicage.docker import run
 from aicage.paths import CONTAINER_AGENT_CONFIG_DIR, CONTAINER_WORKSPACE_DIR, container_project_path
-from aicage.runtime.run_args import DockerRunArgs, MountSpec
+from aicage.runtime.run_args import DockerRunArgs, EnvVar, MountSpec
 
 
 class RunCommandTests(TestCase):
@@ -124,6 +124,8 @@ class RunCommandTests(TestCase):
         self.assertEqual(["-e", "AICAGE_USER=root"], env_flags)
 
     def test_assemble_includes_workspace_mount(self) -> None:
+        if os.name == "nt":
+            self.skipTest("posix-only path expectations")
         with (
             mock.patch("aicage.docker.run._resolve_user_ids", return_value=[]),
             mock.patch("aicage.paths.os.name", "posix"),
@@ -197,7 +199,7 @@ class RunCommandTests(TestCase):
                 merged_docker_args="--net=host",
                 agent_args=["--flag"],
                 agent_path=None,
-                env=["EXTRA=1"],
+                env=[EnvVar(name="EXTRA", value="1")],
                 mounts=[
                     MountSpec(
                         host_path=Path("/tmp/one"),

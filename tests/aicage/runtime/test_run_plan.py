@@ -33,6 +33,7 @@ class RunPlanTests(TestCase):
             ),
             project_docker_args="--project",
             mounts=[],
+            env=[],
         )
         parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None)
         agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))
@@ -64,6 +65,7 @@ class RunPlanTests(TestCase):
             ),
             project_docker_args="",
             mounts=[mount],
+            env=[],
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
         agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))

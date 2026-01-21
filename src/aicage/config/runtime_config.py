@@ -10,9 +10,9 @@ from aicage.config.extensions.loader import load_extensions
 from aicage.config.project_config import AgentConfig
 from aicage.registry.image_selection.models import ImageSelection
 from aicage.registry.image_selection.selection import select_agent_image
-from aicage.runtime.mounts.resolver import resolve_mounts
+from aicage.runtime.docker_args.resolver import resolve_docker_args
 from aicage.runtime.prompts.confirm import prompt_persist_docker_args
-from aicage.runtime.run_args import MountSpec
+from aicage.runtime.run_args import EnvVar, MountSpec
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class RunConfig:
     selection: ImageSelection
     project_docker_args: str
     mounts: list[MountSpec]
+    env: list[EnvVar]
 
 
 def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
@@ -48,7 +49,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
     if agent_cfg.base is None:
         agent_cfg.base = selection.base
 
-    mounts = resolve_mounts(context, agent, parsed)
+    mounts, env = resolve_docker_args(context, agent, parsed)
 
     _persist_docker_args(agent_cfg, parsed)
     store.save_project(project_path, project_cfg)
@@ -60,6 +61,7 @@ def load_run_config(agent: str, parsed: ParsedArgs | None = None) -> RunConfig:
         selection=selection,
         project_docker_args=existing_project_docker_args,
         mounts=mounts,
+        env=env,
     )
 
 
