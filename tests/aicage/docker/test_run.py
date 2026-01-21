@@ -165,25 +165,27 @@ class RunCommandTests(TestCase):
         )
 
     def test_assemble_windows_uses_container_workspace(self) -> None:
+        project_path = Path("C:/work/project")
+        agent_config_host = Path("C:/host/.codex")
         with (
             mock.patch("aicage.docker.run._resolve_user_ids", return_value=[]),
             mock.patch("aicage.paths.os.name", "nt"),
         ):
             run_args = DockerRunArgs(
                 image_ref="ghcr.io/aicage/aicage:codex-ubuntu",
-                project_path=Path("C:/work/project"),
-                agent_config_host=Path("C:/host/.codex"),
+                project_path=project_path,
+                agent_config_host=agent_config_host,
                 agent_config_mount_container=CONTAINER_AGENT_CONFIG_DIR,
                 merged_docker_args="",
                 agent_args=[],
                 agent_path=None,
             )
             cmd = run._assemble_docker_run(run_args)
-        windows_workspace = container_project_path(Path("C:/work/project")).as_posix()
+            windows_workspace = container_project_path(project_path).as_posix()
         workspace_root = CONTAINER_WORKSPACE_DIR.as_posix()
         self.assertIn(f"AICAGE_WORKSPACE={windows_workspace}", cmd)
-        self.assertIn(f"{Path('C:/work/project')}:{workspace_root}", cmd)
-        self.assertIn(f"{Path('C:/work/project')}:{windows_workspace}", cmd)
+        self.assertIn(f"{project_path}:{workspace_root}", cmd)
+        self.assertIn(f"{project_path}:{windows_workspace}", cmd)
 
     def test_assemble_includes_env_and_mounts(self) -> None:
         with mock.patch("aicage.docker.run._resolve_user_ids", return_value=["-e", "AICAGE_USER=me"]):
