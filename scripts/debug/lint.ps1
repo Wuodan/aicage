@@ -3,15 +3,11 @@ $ErrorActionPreference = "Stop"
 $repoRoot = git rev-parse --show-toplevel
 Set-Location $repoRoot
 
-if (Test-Path ".venv\\Scripts\\Activate.ps1") {
-    . ".venv\\Scripts\\Activate.ps1"
-} else {
-    throw "Missing virtualenv: .venv\\Scripts\\Activate.ps1"
-}
-
 yamllint .
 pymarkdown --config .pymarkdown.json scan --recurse `
     --exclude "./.venv/" `
+    --exclude ".\.venv*\" `
+    --exclude ".\.venv*\**" `
     --exclude "./aicage-custom-samples/" `
     --exclude "./aicage-image/" `
     --exclude "./aicage-image-base/" `
