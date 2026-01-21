@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.21] - 2026-01-22
+
+### Added
+
+- Support multiple `agent_path` entries with `/aicage/agent-config` mounts and per-path symlinks in the container.
+
+### Changed
+
+- Agent schemas and definitions now require `agent_path` as a list.
+- Agent config resolution now handles existing file paths without suffixes.
+
 ## [0.8.20] - 2026-01-21
 
 ### Fixed
