@@ -39,7 +39,8 @@ class AgentConfigTests(TestCase):
             }
             config = resolve_agent_config(agents["claude"])
             self.assertEqual([str(agent_file)], config.agent_path)
-            self.assertTrue(config.agent_config_host[0].parent.exists())
+            self.assertTrue(config.agent_config_host[0].exists())
+            self.assertTrue(config.agent_config_host[0].is_file())
 
     def test_resolve_agent_config_respects_existing_file_without_suffix(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -19,14 +19,15 @@ def resolve_agent_config(agent_metadata: AgentMetadata) -> AgentConfig:
 
 def _ensure_agent_path(agent_path: str) -> Path:
     expanded = Path(os.path.expanduser(agent_path)).resolve()
+    if expanded.exists():
+        return expanded
     if _looks_like_file(agent_path, expanded):
         expanded.parent.mkdir(parents=True, exist_ok=True)
+        expanded.touch()
     else:
         expanded.mkdir(parents=True, exist_ok=True)
     return expanded
 
 
 def _looks_like_file(agent_path: str, expanded: Path) -> bool:
-    if expanded.exists():
-        return expanded.is_file()
     return bool(Path(agent_path).suffix)
