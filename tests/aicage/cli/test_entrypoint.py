@@ -11,7 +11,7 @@ from aicage.config.project_config import ProjectConfig
 from aicage.config.runtime_config import RunConfig
 from aicage.paths import CONTAINER_AGENT_CONFIG_DIR
 from aicage.registry.image_selection.models import ImageSelection
-from aicage.runtime.run_args import DockerRunArgs
+from aicage.runtime.run_args import DockerRunArgs, MountSpec
 
 
 def _build_run_args(
@@ -20,11 +20,14 @@ def _build_run_args(
     return DockerRunArgs(
         image_ref=image_ref,
         project_path=project_path,
-        agent_config_host=project_path / ".codex",
-        agent_config_mount_container=CONTAINER_AGENT_CONFIG_DIR,
+        agent_config_mounts=[
+            MountSpec(
+                host_path=project_path / ".codex",
+                container_path=CONTAINER_AGENT_CONFIG_DIR / ".codex",
+            )
+        ],
         merged_docker_args=merged_docker_args,
         agent_args=agent_args,
-        agent_path=str(project_path / ".codex"),
     )
 
 
@@ -79,7 +82,7 @@ def _build_agents_and_bases(
     }
     agents = {
         "codex": AgentMetadata(
-            agent_path="~/.codex",
+            agent_path=["~/.codex"],
             agent_full_name="Codex CLI",
             agent_homepage="https://example.com",
             build_local=False,

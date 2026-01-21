@@ -16,7 +16,7 @@ class AgentValidationTests(TestCase):
     def test_validate_agent_mapping_defaults_build_local(self) -> None:
         payload = validate_agent_mapping(
             {
-                AGENT_PATH_KEY: "~/.custom",
+                AGENT_PATH_KEY: ["~/.custom"],
                 AGENT_FULL_NAME_KEY: "Custom",
                 AGENT_HOMEPAGE_KEY: "https://example.com",
             }

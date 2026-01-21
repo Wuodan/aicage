@@ -213,7 +213,7 @@ class EnsureLocalImageTests(TestCase):
         }
         agents = {
             "claude": AgentMetadata(
-                agent_path="~/.claude",
+                agent_path=["~/.claude"],
                 agent_full_name="Claude Code",
                 agent_homepage="https://example.com",
                 build_local=True,

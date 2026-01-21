@@ -11,7 +11,7 @@ BASE_DISTRO_EXCLUDE_KEY: str = "base_distro_exclude"
 
 @dataclass(frozen=True)
 class AgentMetadata:
-    agent_path: str
+    agent_path: list[str]
     agent_full_name: str
     agent_homepage: str
     build_local: bool

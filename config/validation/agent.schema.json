@@ -9,7 +9,10 @@
   ],
   "properties": {
     "agent_path": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "agent_full_name": {
       "type": "string"

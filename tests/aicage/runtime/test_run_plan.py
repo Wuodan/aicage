@@ -36,7 +36,7 @@ class RunPlanTests(TestCase):
             env=[],
         )
         parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None)
-        agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))
+        agent_config = AgentConfig(agent_path=["~/.codex"], agent_config_host=[Path("/tmp/.codex")])
 
         with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):
             run_args = build_run_args(config, parsed)
@@ -68,7 +68,7 @@ class RunPlanTests(TestCase):
             env=[],
         )
         parsed = ParsedArgs(False, "", "codex", [], None, False, None)
-        agent_config = AgentConfig(agent_path="~/.codex", agent_config_host=Path("/tmp/.codex"))
+        agent_config = AgentConfig(agent_path=["~/.codex"], agent_config_host=[Path("/tmp/.codex")])
 
         with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):
             run_args = build_run_args(config, parsed)
@@ -91,7 +91,7 @@ class RunPlanTests(TestCase):
     def _get_agents() -> dict[str, AgentMetadata]:
         return {
             "codex": AgentMetadata(
-                agent_path="~/.codex",
+                agent_path=["~/.codex"],
                 agent_full_name="Codex CLI",
                 agent_homepage="https://example.com",
                 build_local=False,

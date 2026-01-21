@@ -23,7 +23,8 @@ The `<AGENT>` directory name is the agent id used on the CLI, for example: `aica
 `agent.yaml` (or `agent.yml`) defines metadata and must contain these keys:
 
 ```yaml
-agent_path: ~/.forge
+agent_path:
+  - ~/.forge
 agent_full_name: Forge Code
 agent_homepage: https://forgecode.dev/
 ```
@@ -39,7 +40,7 @@ base_distro_exclude:
 
 Notes:
 
-- `agent_path` is a host path used for agent config. Inside the container it is available at the same path.
+- `agent_path` is a list of host paths used for agent config. Inside the container they are available at the same paths.
 - `base_exclude` excludes named base images. `base_distro_exclude` excludes bases by their distro name.
 - No additional keys are supported.
 

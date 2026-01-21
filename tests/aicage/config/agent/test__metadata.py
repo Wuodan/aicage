@@ -31,7 +31,7 @@ class AgentMetadataBuilderTests(TestCase):
             ),
         }
         mapping = {
-            AGENT_PATH_KEY: "~/.codex",
+            AGENT_PATH_KEY: ["~/.codex"],
             AGENT_FULL_NAME_KEY: "Codex",
             AGENT_HOMEPAGE_KEY: "https://example.com",
             BUILD_LOCAL_KEY: False,

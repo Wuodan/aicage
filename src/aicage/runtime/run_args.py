@@ -19,11 +19,9 @@ class EnvVar:
 class DockerRunArgs:
     image_ref: str
     project_path: Path
-    agent_config_host: Path
-    agent_config_mount_container: PurePosixPath
+    agent_config_mounts: list[MountSpec]
     merged_docker_args: str
     agent_args: list[str]
-    agent_path: str | None = None
     env: list[EnvVar] = field(default_factory=list)
     mounts: list[MountSpec] = field(default_factory=list)
 

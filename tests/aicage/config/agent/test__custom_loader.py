@@ -36,7 +36,8 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
                 "\n".join(
                     [
-                        f"{AGENT_PATH_KEY}: ~/.custom",
+                        f"{AGENT_PATH_KEY}:",
+                        "  - ~/.custom",
                         f"{AGENT_FULL_NAME_KEY}: Custom",
                         f"{AGENT_HOMEPAGE_KEY}: https://example.com",
                         f"{BASE_EXCLUDE_KEY}:",
@@ -68,7 +69,8 @@ class CustomAgentLoaderTests(TestCase):
             (agent_dir / CUSTOM_AGENT_DEFINITION_FILES[0]).write_text(
                 "\n".join(
                     [
-                        f"{AGENT_PATH_KEY}: ~/.custom",
+                        f"{AGENT_PATH_KEY}:",
+                        "  - ~/.custom",
                         f"{AGENT_FULL_NAME_KEY}: Custom",
                         f"{AGENT_HOMEPAGE_KEY}: https://example.com",
                     ]

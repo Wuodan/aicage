@@ -1,4 +1,5 @@
-agent_path: ~/.gemini
+agent_path:
+  - ~/.gemini
 agent_full_name: Gemini CLI
 agent_homepage: https://geminicli.com
 build_local: false

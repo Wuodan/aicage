@@ -14,7 +14,7 @@ class ExtensionRefsTests(TestCase):
     def test_base_image_ref_uses_local_repo_for_custom_agent(self) -> None:
         context = self._context()
         agent_metadata = AgentMetadata(
-            agent_path="~/.codex",
+            agent_path=["~/.codex"],
             agent_full_name="Codex",
             agent_homepage="https://example.com",
             build_local=True,
@@ -29,7 +29,7 @@ class ExtensionRefsTests(TestCase):
     def test_base_image_ref_uses_remote_for_builtin_agent(self) -> None:
         context = self._context()
         agent_metadata = AgentMetadata(
-            agent_path="~/.codex",
+            agent_path=["~/.codex"],
             agent_full_name="Codex",
             agent_homepage="https://example.com",
             build_local=False,
@@ -44,7 +44,7 @@ class ExtensionRefsTests(TestCase):
     def test_base_image_ref_uses_local_for_custom_base(self) -> None:
         context = self._context()
         agent_metadata = AgentMetadata(
-            agent_path="~/.codex",
+            agent_path=["~/.codex"],
             agent_full_name="Codex",
             agent_homepage="https://example.com",
             build_local=False,

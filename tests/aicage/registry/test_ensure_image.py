@@ -79,7 +79,7 @@ def _run_config(
     }
     run_config.context.agents = {
         "codex": AgentMetadata(
-            agent_path="~/.custom",
+            agent_path=["~/.custom"],
             agent_full_name="Custom",
             agent_homepage="https://example.com",
             build_local=build_local,

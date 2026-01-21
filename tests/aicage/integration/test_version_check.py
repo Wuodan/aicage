@@ -62,7 +62,7 @@ def test_version_check_falls_back_to_builder(
         result = checker.get_version(
             "npm-agent",
             AgentMetadata(
-                agent_path="~/.npm-agent",
+                agent_path=["~/.npm-agent"],
                 agent_full_name="Npm Agent",
                 agent_homepage="https://example.com",
                 build_local=True,

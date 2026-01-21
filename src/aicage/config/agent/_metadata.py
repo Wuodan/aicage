@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from aicage.config._yaml import expect_bool, expect_string, maybe_str_list
+from aicage.config._yaml import expect_bool, expect_string, maybe_str_list, read_str_list
 from aicage.config.agent._validation import validate_agent_mapping
 from aicage.config.agent.models import (
     AGENT_FULL_NAME_KEY,
@@ -38,7 +38,7 @@ def build_agent_metadata(
         build_local=build_local,
     )
     return AgentMetadata(
-        agent_path=expect_string(normalized_mapping.get(AGENT_PATH_KEY), AGENT_PATH_KEY),
+        agent_path=read_str_list(normalized_mapping.get(AGENT_PATH_KEY), AGENT_PATH_KEY),
         agent_full_name=expect_string(normalized_mapping.get(AGENT_FULL_NAME_KEY), AGENT_FULL_NAME_KEY),
         agent_homepage=expect_string(normalized_mapping.get(AGENT_HOMEPAGE_KEY), AGENT_HOMEPAGE_KEY),
         build_local=build_local,

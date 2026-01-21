@@ -61,7 +61,7 @@ class ContextTests(TestCase):
     def _get_agents() -> dict[str, AgentMetadata]:
         return {
             "codex": AgentMetadata(
-                agent_path="~/.codex",
+                agent_path=["~/.codex"],
                 agent_full_name="Codex CLI",
                 agent_homepage="https://example.com",
                 build_local=False,

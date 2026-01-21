@@ -99,7 +99,7 @@ class PromptTests(TestCase):
         base_distro_exclude: list[str] | None = None,
     ) -> AgentMetadata:
         return AgentMetadata(
-            agent_path="~/.codex",
+            agent_path=["~/.codex"],
             agent_full_name="Codex CLI",
             agent_homepage="https://example.com",
             build_local=False,
@@ -126,7 +126,7 @@ class PromptTests(TestCase):
     def _agents_with_bases(bases: list[str]) -> dict[str, AgentMetadata]:
         return {
             "codex": AgentMetadata(
-                agent_path="~/.codex",
+                agent_path=["~/.codex"],
                 agent_full_name="Codex CLI",
                 agent_homepage="https://example.com",
                 build_local=False,

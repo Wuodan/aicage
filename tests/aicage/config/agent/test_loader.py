@@ -20,7 +20,8 @@ class AgentLoaderTests(TestCase):
             (agent_dir / "agent.yaml").write_text(
                 "\n".join(
                     [
-                        "agent_path: ~/.codex",
+                        "agent_path:",
+                        "  - ~/.codex",
                         "agent_full_name: Codex",
                         "agent_homepage: https://example.com",
                         "build_local: false",
@@ -41,7 +42,7 @@ class AgentLoaderTests(TestCase):
                 )
             }
             custom_agent = AgentMetadata(
-                agent_path="~/.custom",
+                agent_path=["~/.custom"],
                 agent_full_name="Custom",
                 agent_homepage="https://example.com",
                 build_local=True,

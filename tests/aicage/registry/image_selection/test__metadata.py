@@ -16,7 +16,7 @@ class ImageSelectionMetadataTests(TestCase):
 
     def test_available_bases_sorts_values(self) -> None:
         agent_metadata = AgentMetadata(
-            agent_path="~/.agent",
+            agent_path=["~/.agent"],
             agent_full_name="Agent",
             agent_homepage="https://example.com",
             build_local=True,
@@ -32,7 +32,7 @@ class ImageSelectionMetadataTests(TestCase):
 
     def test_validate_base_raises_on_invalid_base(self) -> None:
         agent_metadata = AgentMetadata(
-            agent_path="~/.agent",
+            agent_path=["~/.agent"],
             agent_full_name="Agent",
             agent_homepage="https://example.com",
             build_local=True,
