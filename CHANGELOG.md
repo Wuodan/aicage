@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.20] - 2026-01-21
+
+### Fixed
+
+- Restored `--docker` support for Docker-in-container on Windows.
+
+### Internal
+
+- Centralized host SSH and GnuPG path constants and aligned tests to use them.
+
 ## [0.8.18] - 2026-01-20
 
 ### Fixed
