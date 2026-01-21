@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.paths import CONTAINER_GNUPG_DIR
+from aicage.paths import CONTAINER_GNUPG_DIR, HOST_GNUPG_DIR
 from aicage.runtime.run_args import MountSpec
 
 from ..prompts.confirm import prompt_mount_gpg_keys
@@ -17,7 +17,7 @@ def _resolve_gpg_home() -> Path | None:
             gpg_home = Path(path).expanduser()
             if gpg_home.exists():
                 return gpg_home
-    fallback = Path("~/.gnupg").expanduser()
+    fallback = HOST_GNUPG_DIR
     return fallback if fallback.exists() else None
 
 

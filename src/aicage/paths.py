@@ -47,6 +47,7 @@ CUSTOM_EXTENSION_DEFINITION_FILES: tuple[str, str] = (
 # OTHER HOST PATHS (for mounts to container)
 
 HOST_SSH_DIR: Path = Path.home() / ".ssh"
+HOST_GNUPG_DIR: Path = Path.home() / ".gnupg"
 HOST_DOCKER_SOCKET_PATH: Path = Path("/run/docker.sock")
 
 # CONTAINER PATHS (for mounts to container)

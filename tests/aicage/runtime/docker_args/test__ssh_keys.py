@@ -3,19 +3,23 @@ from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.paths import HOST_SSH_DIR
 from aicage.runtime.docker_args import _ssh_keys
 
 
 class SshKeyTests(TestCase):
     def test_default_ssh_dir_uses_home(self) -> None:
-        with mock.patch("aicage.runtime.docker_args._ssh_keys.HOST_SSH_DIR", Path("/home/user/.ssh")):
+        with mock.patch(
+            "aicage.runtime.docker_args._ssh_keys.HOST_SSH_DIR",
+            Path("/home/user") / HOST_SSH_DIR.name,
+        ):
             path = _ssh_keys._default_ssh_dir()
-        self.assertEqual(Path("/home/user/.ssh"), path)
+        self.assertEqual(Path("/home/user") / HOST_SSH_DIR.name, path)
 
     def test_resolve_ssh_mount_prompts_when_preference_missing(self) -> None:
         agent_cfg = AgentConfig(mounts=_AgentMounts())
         with tempfile.TemporaryDirectory() as tmp_dir:
-            ssh_dir = Path(tmp_dir) / ".ssh"
+            ssh_dir = Path(tmp_dir) / HOST_SSH_DIR.name
             ssh_dir.mkdir()
 
             with (
@@ -35,7 +39,7 @@ class SshKeyTests(TestCase):
 
     def test_resolve_ssh_mount_uses_existing_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            ssh_dir = Path(tmp_dir) / ".ssh"
+            ssh_dir = Path(tmp_dir) / HOST_SSH_DIR.name
             ssh_dir.mkdir()
             agent_cfg = AgentConfig(mounts=_AgentMounts(ssh=True))
 

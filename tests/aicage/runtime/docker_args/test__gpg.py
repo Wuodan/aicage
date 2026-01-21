@@ -1,16 +1,16 @@
-import os
 import tempfile
 from pathlib import Path
 from unittest import TestCase, mock
 
 from aicage.config.project_config import AgentConfig, _AgentMounts
+from aicage.paths import HOST_GNUPG_DIR
 from aicage.runtime.docker_args import _gpg
 
 
 class GpgHomeTests(TestCase):
     def test_resolve_gpg_home_parses_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home = Path(tmp_dir) / HOST_GNUPG_DIR.name
             gpg_home.mkdir()
             with mock.patch(
                 "aicage.runtime.docker_args._gpg.capture_stdout",
@@ -21,14 +21,10 @@ class GpgHomeTests(TestCase):
 
     def test_resolve_gpg_home_falls_back_to_home_gnupg(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home = Path(tmp_dir) / HOST_GNUPG_DIR.name
             gpg_home.mkdir()
             with (
-                mock.patch.dict(
-                    os.environ,
-                    {"HOME": tmp_dir, "USERPROFILE": tmp_dir},
-                    clear=False,
-                ),
+                mock.patch("aicage.runtime.docker_args._gpg.HOST_GNUPG_DIR", gpg_home),
                 mock.patch("aicage.runtime.docker_args._gpg.capture_stdout", return_value=""),
             ):
                 path = _gpg._resolve_gpg_home()
@@ -37,10 +33,9 @@ class GpgHomeTests(TestCase):
     def test_resolve_gpg_home_handles_missing_dirs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             with (
-                mock.patch.dict(
-                    os.environ,
-                    {"HOME": tmp_dir, "USERPROFILE": tmp_dir},
-                    clear=False,
+                mock.patch(
+                    "aicage.runtime.docker_args._gpg.HOST_GNUPG_DIR",
+                    Path(tmp_dir) / HOST_GNUPG_DIR.name,
                 ),
                 mock.patch(
                     "aicage.runtime.docker_args._gpg.capture_stdout",
@@ -53,7 +48,7 @@ class GpgHomeTests(TestCase):
     def test_resolve_gpg_mount_prompts_when_unset(self) -> None:
         agent_cfg = AgentConfig()
         with tempfile.TemporaryDirectory() as tmp_dir:
-            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home = Path(tmp_dir) / HOST_GNUPG_DIR.name
             gpg_home.mkdir()
             with (
                 mock.patch(
@@ -81,7 +76,7 @@ class GpgHomeTests(TestCase):
 
     def test_resolve_gpg_mount_uses_existing_preference(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            gpg_home = Path(tmp_dir) / ".gnupg"
+            gpg_home = Path(tmp_dir) / HOST_GNUPG_DIR.name
             gpg_home.mkdir()
             agent_cfg = AgentConfig(mounts=_AgentMounts(gnupg=True))
 
