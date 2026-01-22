@@ -10,3 +10,6 @@
 [submodule "aicage-custom-samples"]
 	path = aicage-custom-samples
 	url = git@github.com:aicage/aicage-custom-samples.git
+[submodule "github-actions"]
+	path = github-actions
+	url = git@github.com:aicage/github-actions.git
