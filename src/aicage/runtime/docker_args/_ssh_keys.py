@@ -1,15 +1,11 @@
 from pathlib import Path
 
 from aicage.config.project_config import AgentConfig
-from aicage.paths import CONTAINER_SSH_DIR, HOST_SSH_DIR
+from aicage.paths import CONTAINER_SSH_DIR
 from aicage.runtime.run_args import MountSpec
 
-from ..prompts.confirm import prompt_mount_ssh_keys
+from ._git_support import resolve_ssh_dir
 from ._signing import is_commit_signing_enabled, resolve_signing_format
-
-
-def _default_ssh_dir() -> Path:
-    return HOST_SSH_DIR
 
 
 def resolve_ssh_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountSpec]:
@@ -18,17 +14,12 @@ def resolve_ssh_mount(project_path: Path, agent_cfg: AgentConfig) -> list[MountS
     if resolve_signing_format(project_path) != "ssh":
         return []
 
-    ssh_dir = _default_ssh_dir()
+    ssh_dir = resolve_ssh_dir()
     if not ssh_dir.exists():
         return []
 
     mounts_cfg = agent_cfg.mounts
-    pref = mounts_cfg.ssh
-    if pref is None:
-        pref = prompt_mount_ssh_keys(ssh_dir)
-        mounts_cfg.ssh = pref
-
-    if pref:
+    if mounts_cfg.ssh:
         return [
             MountSpec(
                 host_path=ssh_dir,

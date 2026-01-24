@@ -36,37 +36,18 @@ class PromptConfirmTests(TestCase):
             default=True,
         )
 
-    def test_prompt_mount_git_config_delegates(self) -> None:
+    def test_prompt_mount_git_support_delegates(self) -> None:
+        items = [
+            ("Git config (name/email)", Path("/tmp/gitconfig")),
+            ("Git root (repository access)", Path("/tmp/root")),
+        ]
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
-            self.assertTrue(confirm.prompt_mount_git_config(Path("/tmp/gitconfig")))
+            self.assertTrue(confirm.prompt_mount_git_support(items))
         prompt_mock.assert_called_once_with(
-            f"Mount Git config from '{Path('/tmp/gitconfig')}' so Git uses your usual name/email?",
-            default=True,
-        )
-
-    def test_prompt_mount_git_root_delegates(self) -> None:
-        project_path = Path("/tmp/root/subdir")
-        git_root = Path("/tmp/root")
-        with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
-            self.assertTrue(confirm.prompt_mount_git_root(project_path, git_root))
-        prompt_mock.assert_called_once_with(
-            f"Mount Git root '{git_root}' to enable Git?",
-            default=True,
-        )
-
-    def test_prompt_mount_gpg_keys_delegates(self) -> None:
-        with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
-            self.assertTrue(confirm.prompt_mount_gpg_keys(Path("/tmp/gpg")))
-        prompt_mock.assert_called_once_with(
-            f"Mount GnuPG keys from '{Path('/tmp/gpg')}' so Git signing works like on your host?",
-            default=True,
-        )
-
-    def test_prompt_mount_ssh_keys_delegates(self) -> None:
-        with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
-            self.assertTrue(confirm.prompt_mount_ssh_keys(Path("/tmp/ssh")))
-        prompt_mock.assert_called_once_with(
-            f"Mount SSH keys from '{Path('/tmp/ssh')}' so Git signing works like on your host?",
+            "Enable Git support in the container by mounting:\n"
+            f"  - Git config (name/email): {Path('/tmp/gitconfig')}\n"
+            f"  - Git root (repository access): {Path('/tmp/root')}\n"
+            "Proceed?",
             default=True,
         )
 

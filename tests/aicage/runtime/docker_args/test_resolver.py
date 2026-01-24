@@ -36,6 +36,7 @@ class ResolverTests(TestCase):
         )
 
         with (
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_git_support_prefs") as git_support_mock,
             mock.patch("aicage.runtime.docker_args.resolver.resolve_git_config_mount",
                        return_value=[git_mount]) as git_mock,
             mock.patch(
@@ -59,6 +60,7 @@ class ResolverTests(TestCase):
             mounts,
         )
         self.assertEqual([("DOCKER_HOST", "tcp://host:2375")], [(item.name, item.value) for item in env])
+        git_support_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         git_mock.assert_called_once_with(project_cfg.agents["codex"])
         gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         ssh_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
@@ -77,6 +79,7 @@ class ResolverTests(TestCase):
         )
 
         with (
+            mock.patch("aicage.runtime.docker_args.resolver.resolve_git_support_prefs"),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_git_config_mount", return_value=[]),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_git_root_mount", return_value=[]),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_ssh_mount", return_value=[]),

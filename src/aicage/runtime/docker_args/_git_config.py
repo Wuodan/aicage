@@ -1,39 +1,17 @@
-from pathlib import Path
-
 from aicage.config.project_config import AgentConfig
 from aicage.paths import CONTAINER_GITCONFIG_PATH
 from aicage.runtime.run_args import MountSpec
 
-from ..prompts.confirm import prompt_mount_git_config
-from ._exec import capture_stdout
-
-
-def _resolve_git_config_path() -> Path | None:
-    stdout = capture_stdout(["git", "config", "--global", "--show-origin", "--list"])
-    if not stdout:
-        return None
-    for line in stdout.splitlines():
-        if not line.startswith("file:"):
-            continue
-        parts = line[5:].split()
-        if not parts:
-            continue
-        return Path(parts[0]).expanduser()
-    return None
+from ._git_support import resolve_git_config_path
 
 
 def resolve_git_config_mount(agent_cfg: AgentConfig) -> list[MountSpec]:
-    git_config = _resolve_git_config_path()
+    git_config = resolve_git_config_path()
     if not git_config or not git_config.exists():
         return []
 
     mounts_cfg = agent_cfg.mounts
-    pref = mounts_cfg.gitconfig
-    if pref is None:
-        pref = prompt_mount_git_config(git_config)
-        mounts_cfg.gitconfig = pref
-
-    if pref:
+    if mounts_cfg.gitconfig:
         return [
             MountSpec(
                 host_path=git_config,

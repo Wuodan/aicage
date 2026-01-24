@@ -31,24 +31,12 @@ def prompt_persist_docker_socket() -> bool:
     return _prompt_yes_no("Persist mounting the Docker socket for this project?", default=True)
 
 
-def prompt_mount_git_config(git_config: Path) -> bool:
-    question = f"Mount Git config from '{git_config}' so Git uses your usual name/email?"
-    return _prompt_yes_no(question, default=True)
-
-
-def prompt_mount_git_root(project_path: Path, git_root: Path) -> bool:
-    question = f"Mount Git root '{git_root}' to enable Git?"
-    return _prompt_yes_no(question, default=True)
-    return str(git_root)
-
-
-def prompt_mount_gpg_keys(gpg_home: Path) -> bool:
-    question = f"Mount GnuPG keys from '{gpg_home}' so Git signing works like on your host?"
-    return _prompt_yes_no(question, default=True)
-
-
-def prompt_mount_ssh_keys(ssh_dir: Path) -> bool:
-    question = f"Mount SSH keys from '{ssh_dir}' so Git signing works like on your host?"
+def prompt_mount_git_support(items: list[tuple[str, Path]]) -> bool:
+    details = "\n".join(
+        f"  - {label}: {path}"
+        for label, path in items
+    )
+    question = f"Enable Git support in the container by mounting:\n{details}\nProceed?"
     return _prompt_yes_no(question, default=True)
 
 

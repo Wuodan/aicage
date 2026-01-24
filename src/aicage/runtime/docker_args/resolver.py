@@ -9,6 +9,7 @@ from ._docker_socket import resolve_docker_socket_mount
 from ._entrypoint import resolve_entrypoint_mount
 from ._git_config import resolve_git_config_mount
 from ._git_root import resolve_git_root_mount
+from ._git_support import resolve_git_support_prefs
 from ._gpg import resolve_gpg_mount
 from ._ssh_keys import resolve_ssh_mount
 
@@ -20,8 +21,9 @@ def resolve_docker_args(
 ) -> tuple[list[MountSpec], list[EnvVar]]:
     agent_cfg = context.project_cfg.agents.setdefault(agent, AgentConfig())
 
-    git_mounts = resolve_git_config_mount(agent_cfg)
     project_path = Path(context.project_cfg.path)
+    resolve_git_support_prefs(project_path, agent_cfg)
+    git_mounts = resolve_git_config_mount(agent_cfg)
     gpg_mounts = resolve_gpg_mount(project_path, agent_cfg)
     ssh_mounts = resolve_ssh_mount(project_path, agent_cfg)
     git_root_mounts = resolve_git_root_mount(project_path, agent_cfg)
