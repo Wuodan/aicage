@@ -1,6 +1,7 @@
 import io
 from unittest import TestCase, mock
 
+from aicage import __version__
 from aicage.cli._errors import CliError
 from aicage.cli._parse import parse_cli
 
@@ -44,6 +45,20 @@ class ParseCliTests(TestCase):
                 parse_cli(["--help"])
         self.assertEqual(0, ctx.exception.code)
         self.assertIn("Usage:", stdout.getvalue())
+
+    def test_parse_cli_version_exits(self) -> None:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
+            with self.assertRaises(SystemExit) as ctx:
+                parse_cli(["--version"])
+        self.assertEqual(0, ctx.exception.code)
+        self.assertEqual(f"{__version__}\n", stdout.getvalue())
+
+    def test_parse_cli_short_version_exits(self) -> None:
+        with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
+            with self.assertRaises(SystemExit) as ctx:
+                parse_cli(["-v"])
+        self.assertEqual(0, ctx.exception.code)
+        self.assertEqual(f"{__version__}\n", stdout.getvalue())
 
     def test_parse_cli_requires_arguments(self) -> None:
         with self.assertRaises(CliError):

@@ -2,6 +2,7 @@ import argparse
 import sys
 from collections.abc import Sequence
 
+from aicage import __version__
 from aicage._logging import get_logger
 from aicage.cli._errors import CliError
 from aicage.cli_types import ParsedArgs
@@ -28,6 +29,11 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
 
     opts: argparse.Namespace
     remaining: list[str]
+    if len(pre_argv) == 1 and pre_argv[0] in ("-v", "--version") and post_argv is None:
+        print(__version__)
+        get_logger().info("Displayed CLI version.")
+        sys.exit(0)
+
     opts, remaining = parser.parse_known_args(pre_argv)
 
     if opts.help:
@@ -36,7 +42,8 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
             "  aicage <agent>\n"
             "  aicage [--dry-run] [--docker] [--aicage-entrypoint PATH] -- <agent> [<agent-args>]\n"
             "  aicage [--dry-run] [--docker] [--aicage-entrypoint PATH] <docker-args> -- <agent> [<agent-args>]\n"
-            "  aicage --config print\n\n"
+            "  aicage --config print\n"
+            "  aicage --version\n\n"
             "Any arguments between aicage and the agent require a '--' separator before the agent.\n"
             "<docker-args> are any arguments not recognized by aicage.\n"
             "These arguments are forwarded verbatim to docker run.\n"
