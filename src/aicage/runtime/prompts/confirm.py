@@ -36,6 +36,12 @@ def prompt_mount_git_config(git_config: Path) -> bool:
     return _prompt_yes_no(question, default=True)
 
 
+def prompt_mount_git_root(project_path: Path, git_root: Path) -> bool:
+    question = f"Mount Git root '{git_root}' to enable Git?"
+    return _prompt_yes_no(question, default=True)
+    return str(git_root)
+
+
 def prompt_mount_gpg_keys(gpg_home: Path) -> bool:
     question = f"Mount GnuPG keys from '{gpg_home}' so Git signing works like on your host?"
     return _prompt_yes_no(question, default=True)

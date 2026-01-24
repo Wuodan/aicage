@@ -15,6 +15,7 @@ _AGENT_IMAGE_REF_KEY: str = "image_ref"
 _AGENT_EXTENSIONS_KEY: str = "extensions"
 
 _MOUNT_GITCONFIG_KEY: str = "gitconfig"
+_MOUNT_GITROOT_KEY: str = "gitroot"
 _MOUNT_GNUPG_KEY: str = "gnupg"
 _MOUNT_SSH_KEY: str = "ssh"
 _MOUNT_DOCKER_KEY: str = "docker"
@@ -23,6 +24,7 @@ _MOUNT_DOCKER_KEY: str = "docker"
 @dataclass
 class _AgentMounts:
     gitconfig: bool | None = None
+    gitroot: bool | None = None
     gnupg: bool | None = None
     ssh: bool | None = None
     docker: bool | None = None
@@ -31,6 +33,7 @@ class _AgentMounts:
     def from_mapping(cls, data: dict[str, Any]) -> "_AgentMounts":
         return cls(
             gitconfig=data.get(_MOUNT_GITCONFIG_KEY),
+            gitroot=data.get(_MOUNT_GITROOT_KEY),
             gnupg=data.get(_MOUNT_GNUPG_KEY),
             ssh=data.get(_MOUNT_SSH_KEY),
             docker=data.get(_MOUNT_DOCKER_KEY),
@@ -40,6 +43,8 @@ class _AgentMounts:
         payload: dict[str, bool] = {}
         if self.gitconfig is not None:
             payload[_MOUNT_GITCONFIG_KEY] = self.gitconfig
+        if self.gitroot is not None:
+            payload[_MOUNT_GITROOT_KEY] = self.gitroot
         if self.gnupg is not None:
             payload[_MOUNT_GNUPG_KEY] = self.gnupg
         if self.ssh is not None:

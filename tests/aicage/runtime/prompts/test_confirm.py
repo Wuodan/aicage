@@ -44,6 +44,16 @@ class PromptConfirmTests(TestCase):
             default=True,
         )
 
+    def test_prompt_mount_git_root_delegates(self) -> None:
+        project_path = Path("/tmp/root/subdir")
+        git_root = Path("/tmp/root")
+        with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
+            self.assertTrue(confirm.prompt_mount_git_root(project_path, git_root))
+        prompt_mock.assert_called_once_with(
+            f"Mount Git root '{git_root}' to enable Git?",
+            default=True,
+        )
+
     def test_prompt_mount_gpg_keys_delegates(self) -> None:
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_mount_gpg_keys(Path("/tmp/gpg")))
