@@ -1,7 +1,9 @@
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from aicage._logging import get_logger
+from aicage.cli._errors import CliError
 from aicage.cli._parse import parse_cli
 from aicage.cli._print_config import print_project_config
 from aicage.cli_types import ParsedArgs
@@ -22,6 +24,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print_project_config()
             return 0
         run_config: RunConfig = load_run_config(parsed.agent, parsed)
+        _validate_home_mount_safety(run_config)
         logger.info("Resolved run config for agent %s", run_config.agent)
         ensure_image(run_config)
         run_args: DockerRunArgs = build_run_args(config=run_config, parsed=parsed)
@@ -41,3 +44,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"[aicage] {exc}", file=sys.stderr)
         logger.error("CLI error: %s", exc)
         return 1
+
+
+def _validate_home_mount_safety(run_config: RunConfig) -> None:
+    home_path = _resolve_home_path()
+    if _is_parent_or_same(run_config.project_path, home_path):
+        raise CliError(
+            "Refusing to start: this would mount your home directory into the container.",
+        )
+    for mount in run_config.mounts:
+        if _is_parent_or_same(mount.host_path, home_path):
+            raise CliError(
+                "Refusing to start: this would mount your home directory into the container.",
+            )
+
+
+def _resolve_home_path() -> Path:
+    return Path.home().resolve()
+
+
+def _is_parent_or_same(path: Path, home_path: Path) -> bool:
+    candidate = path.resolve()
+    return candidate == home_path or candidate in home_path.parents

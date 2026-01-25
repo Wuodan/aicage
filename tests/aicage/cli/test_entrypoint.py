@@ -1,4 +1,5 @@
 import tempfile
+from dataclasses import replace
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -167,3 +168,81 @@ class EntrypointTests(TestCase):
                 exit_code = main([])
 
             self.assertEqual(0, exit_code)
+
+    def test_main_rejects_project_path_at_home(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            home_path = Path(tmp_dir)
+            run_config = _build_run_config(
+                home_path,
+                "ghcr.io/aicage/aicage:codex-debian",
+            )
+            with (
+                mock.patch(
+                    "aicage.cli.entrypoint.parse_cli",
+                    return_value=ParsedArgs(
+                        False,
+                        "--cli",
+                        "codex",
+                        ["--flag"],
+                        None,
+                        False,
+                        None,
+                    ),
+                ),
+                mock.patch("aicage.cli.entrypoint.Path.home", return_value=home_path),
+                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
+                mock.patch("aicage.cli.entrypoint.ensure_image") as ensure_mock,
+                mock.patch("aicage.cli.entrypoint.build_run_args") as build_mock,
+                mock.patch("aicage.cli.entrypoint.run_container") as run_mock,
+            ):
+                exit_code = main([])
+
+            self.assertEqual(1, exit_code)
+            ensure_mock.assert_not_called()
+            build_mock.assert_not_called()
+            run_mock.assert_not_called()
+
+    def test_main_rejects_mount_at_home(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_path = Path(tmp_dir) / "project"
+            project_path.mkdir()
+            home_path = Path(tmp_dir) / "home"
+            home_path.mkdir()
+            run_config = _build_run_config(
+                project_path,
+                "ghcr.io/aicage/aicage:codex-debian",
+            )
+            run_config = replace(
+                run_config,
+                mounts=[
+                    MountSpec(
+                        host_path=home_path,
+                        container_path=CONTAINER_AGENT_CONFIG_DIR / ".home",
+                    )
+                ],
+            )
+            with (
+                mock.patch(
+                    "aicage.cli.entrypoint.parse_cli",
+                    return_value=ParsedArgs(
+                        False,
+                        "--cli",
+                        "codex",
+                        ["--flag"],
+                        None,
+                        False,
+                        None,
+                    ),
+                ),
+                mock.patch("aicage.cli.entrypoint.Path.home", return_value=home_path),
+                mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
+                mock.patch("aicage.cli.entrypoint.ensure_image") as ensure_mock,
+                mock.patch("aicage.cli.entrypoint.build_run_args") as build_mock,
+                mock.patch("aicage.cli.entrypoint.run_container") as run_mock,
+            ):
+                exit_code = main([])
+
+            self.assertEqual(1, exit_code)
+            ensure_mock.assert_not_called()
+            build_mock.assert_not_called()
+            run_mock.assert_not_called()
