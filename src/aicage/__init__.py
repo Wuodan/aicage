@@ -2,6 +2,8 @@
 # pyright: reportMissingImports=false
 from importlib import metadata
 
+__version__: str
+
 try:
     from ._version import __version__
 except ImportError:
