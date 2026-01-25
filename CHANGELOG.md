@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.27] - 2026-01-25
+
+### Added
+
+- Added `--version` to the CLI.
+
+### Changed
+
+- Unified Git support prompts (Git config, repo root, and signing keys) into a single flow.
+- Prompt to mount the Git repository root when running from a subfolder.
+- Renamed internal definition files from `.yaml` to `.yml`.
+
+### Fixed
+
+- Refuse to start when the project path or mounts would expose the host home directory.
+
 ## [0.8.22] - 2026-01-22
 
 ### Fixed
