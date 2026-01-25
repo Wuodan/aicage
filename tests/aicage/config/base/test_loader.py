@@ -16,7 +16,7 @@ class BaseLoaderTests(TestCase):
 
             ubuntu_dir = root / "base-build" / "bases" / "ubuntu"
             ubuntu_dir.mkdir(parents=True)
-            (ubuntu_dir / "base.yaml").write_text(
+            (ubuntu_dir / "base.yml").write_text(
                 "\n".join(
                     [
                         "from_image: ubuntu:latest",
@@ -29,7 +29,7 @@ class BaseLoaderTests(TestCase):
 
             debian_dir = root / "base-build" / "bases" / "debian"
             debian_dir.mkdir(parents=True)
-            (debian_dir / "base.yaml").write_text(
+            (debian_dir / "base.yml").write_text(
                 "\n".join(
                     [
                         "from_image: debian:latest",

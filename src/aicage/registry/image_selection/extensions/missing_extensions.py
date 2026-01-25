@@ -42,7 +42,7 @@ def _find_projects_using_image(
         return []
     store = context.store
     matches: list[tuple[str, Path]] = []
-    for path in sorted(store.projects_dir.glob("*.yaml")):
+    for path in sorted(store.projects_dir.glob("*.yml")):
         data = _load_yaml(path)
         if not isinstance(data, dict):
             continue

@@ -64,5 +64,5 @@ class ExtendedBuildStore:
         return path
 
     def _path(self, image_ref: str) -> Path:
-        filename = f"{sanitize(image_ref)}.yaml"
+        filename = f"{sanitize(image_ref)}.yml"
         return self._base_dir / filename

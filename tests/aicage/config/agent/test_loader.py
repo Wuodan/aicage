@@ -17,7 +17,7 @@ class AgentLoaderTests(TestCase):
 
             agent_dir = root / "agent-build" / "agents" / "codex"
             agent_dir.mkdir(parents=True)
-            (agent_dir / "agent.yaml").write_text(
+            (agent_dir / "agent.yml").write_text(
                 "\n".join(
                     [
                         "agent_path:",

@@ -4,8 +4,8 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 # AICAGE PATHS (for Python program on host)
 
-_AGENT_DEFINITION_FILENAME: str = "agent.yaml"
-EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yaml"
+_AGENT_DEFINITION_FILENAME: str = "agent.yml"
+EXTENDED_IMAGE_DEFINITION_FILENAME: str = "image-extended.yml"
 
 _CONFIG_BASE_DIR: Path = Path(expanduser("~/.aicage"))
 PROJECTS_DIR: Path = _CONFIG_BASE_DIR / "projects"
@@ -35,7 +35,7 @@ CUSTOM_BASE_DEFINITION_FILES: tuple[str, str] = (
 CUSTOM_AGENTS_DIR: Path = _CUSTOM_ROOT_DIR / "agents"
 CUSTOM_AGENT_DEFINITION_FILES: tuple[str, str] = (
     _AGENT_DEFINITION_FILENAME,
-    "agent.yml",
+    "agent.yaml",
 )
 
 CUSTOM_EXTENSIONS_DIR: Path = _CUSTOM_ROOT_DIR / "extensions"

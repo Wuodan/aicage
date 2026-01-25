@@ -25,7 +25,7 @@ class ExtendedImageSelectionTests(TestCase):
             base="ubuntu",
             extensions=["ext"],
             image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:custom",
-            path=Path("/tmp/custom/image-extended.yaml"),
+            path=Path("/tmp/custom/image-extended.yml"),
         )
         wrong_base = ExtendedImageConfig(
             name="wrong-base",
@@ -33,7 +33,7 @@ class ExtendedImageSelectionTests(TestCase):
             base="debian",
             extensions=["ext"],
             image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:wrong-base",
-            path=Path("/tmp/wrong/image-extended.yaml"),
+            path=Path("/tmp/wrong/image-extended.yml"),
         )
         other = ExtendedImageConfig(
             name="other",
@@ -41,7 +41,7 @@ class ExtendedImageSelectionTests(TestCase):
             base="ubuntu",
             extensions=["ext"],
             image_ref=f"{DEFAULT_EXTENDED_IMAGE_NAME}:other",
-            path=Path("/tmp/other/image-extended.yaml"),
+            path=Path("/tmp/other/image-extended.yml"),
         )
         with mock.patch(
             "aicage.registry.image_selection.extensions.extended_images.load_extended_images",

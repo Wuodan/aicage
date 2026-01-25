@@ -6,7 +6,7 @@ from aicage.runtime.prompts.missing_extensions import prompt_for_missing_extensi
 
 class PromptMissingExtensionsTests(TestCase):
     def test_prompt_for_missing_extensions_lists_projects(self) -> None:
-        other_projects = [("/tmp/one", Path("/tmp/one.yaml"))]
+        other_projects = [("/tmp/one", Path("/tmp/one.yml"))]
         with (
             mock.patch("aicage.runtime.prompts.missing_extensions.ensure_tty_for_prompt"),
             mock.patch("builtins.input", return_value="fresh"),
@@ -16,7 +16,7 @@ class PromptMissingExtensionsTests(TestCase):
                 agent="codex",
                 missing=["ext"],
                 stored_image_ref="aicage:codex-ubuntu",
-                project_config_path=Path("/tmp/project.yaml"),
+                project_config_path=Path("/tmp/project.yml"),
                 other_projects=other_projects,
             )
         self.assertEqual("fresh", result)
@@ -32,7 +32,7 @@ class PromptMissingExtensionsTests(TestCase):
                 agent="codex",
                 missing=["ext"],
                 stored_image_ref="",
-                project_config_path=Path("/tmp/project.yaml"),
+                project_config_path=Path("/tmp/project.yml"),
                 other_projects=[],
             )
         self.assertEqual("exit", result)

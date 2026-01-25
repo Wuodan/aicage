@@ -10,7 +10,7 @@ from aicage.config.project_config import _PROJECT_AGENTS_KEY
 class PrintConfigTests(TestCase):
     def test_print_project_config_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / "project.yml"
             store = mock.Mock()
             store.project_config_path.return_value = config_path
             with (
@@ -26,7 +26,7 @@ class PrintConfigTests(TestCase):
 
     def test_print_project_config_empty(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / "project.yml"
             config_path.write_text("", encoding="utf-8")
             store = mock.Mock()
             store.project_config_path.return_value = config_path
@@ -40,7 +40,7 @@ class PrintConfigTests(TestCase):
 
     def test_print_project_config_contents(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "project.yaml"
+            config_path = Path(tmp_dir) / "project.yml"
             config_path.write_text(f"{_PROJECT_AGENTS_KEY}: {{}}", encoding="utf-8")
             store = mock.Mock()
             store.project_config_path.return_value = config_path

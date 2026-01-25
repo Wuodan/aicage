@@ -27,7 +27,7 @@ class SettingsStore:
 
     def _project_path(self, project_realpath: Path) -> Path:
         digest = hashlib.sha256(str(project_realpath).encode("utf-8")).hexdigest()
-        return self.projects_dir / f"{digest}.yaml"
+        return self.projects_dir / f"{digest}.yml"
 
     def load_project(self, project_realpath: Path) -> ProjectConfig:
         path = self._project_path(project_realpath)

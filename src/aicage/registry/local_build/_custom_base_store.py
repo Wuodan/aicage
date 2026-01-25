@@ -55,5 +55,5 @@ class CustomBaseBuildStore:
         return path
 
     def _path(self, base: str) -> Path:
-        filename = f"base-{sanitize(base)}.yaml"
+        filename = f"base-{sanitize(base)}.yml"
         return self._base_dir / filename

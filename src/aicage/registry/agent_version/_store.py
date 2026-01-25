@@ -16,7 +16,7 @@ class VersionCheckStore:
 
     def save(self, agent: str, version: str) -> Path:
         self._base_dir.mkdir(parents=True, exist_ok=True)
-        path = self._base_dir / f"{_sanitize_agent_name(agent)}.yaml"
+        path = self._base_dir / f"{_sanitize_agent_name(agent)}.yml"
         with path.open("w", encoding="utf-8") as handle:
             payload = {
                 _AGENT_KEY: agent,

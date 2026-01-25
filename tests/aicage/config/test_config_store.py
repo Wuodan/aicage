@@ -24,7 +24,7 @@ class ConfigStoreTests(TestCase):
 
                 path = store.project_config_path(project_path)
 
-            self.assertEqual(store.projects_dir / f"{expected}.yaml", path)
+            self.assertEqual(store.projects_dir / f"{expected}.yml", path)
 
     def test_load_project_returns_empty_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

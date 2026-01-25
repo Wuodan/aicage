@@ -24,7 +24,7 @@ class VersionCheckStoreTests(TestCase):
 
                 path = store.save("custom/agent", "1.2.3")
 
-                self.assertEqual(base_dir / "custom_agent.yaml", path)
+                self.assertEqual(base_dir / "custom_agent.yml", path)
                 payload = yaml.safe_load(path.read_text(encoding="utf-8"))
                 self.assertEqual("custom/agent", payload[_AGENT_KEY])
                 self.assertEqual("1.2.3", payload[_VERSION_KEY])

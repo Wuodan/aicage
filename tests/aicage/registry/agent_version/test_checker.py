@@ -37,7 +37,7 @@ class AgentVersionCheckTests(TestCase):
                 )
 
             self.assertEqual("1.2.3", result)
-            stored = store_dir / "custom.yaml"
+            stored = store_dir / "custom.yml"
             self.assertTrue(stored.is_file())
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
@@ -72,7 +72,7 @@ class AgentVersionCheckTests(TestCase):
                 )
 
             self.assertEqual("1.2.3", result)
-            stored = store_dir / "custom.yaml"
+            stored = store_dir / "custom.yml"
             self.assertTrue(stored.is_file())
             data = yaml.safe_load(stored.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", data[_VERSION_KEY])
@@ -128,7 +128,7 @@ class AgentVersionCheckTests(TestCase):
                         self._agent_metadata(),
                         definition_dir=agent_dir,
                     )
-            self.assertFalse((store_dir / "custom.yaml").exists())
+            self.assertFalse((store_dir / "custom.yml").exists())
 
     @staticmethod
     def _agent_metadata() -> AgentMetadata:

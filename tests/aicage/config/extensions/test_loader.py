@@ -123,7 +123,7 @@ class ExtensionDiscoveryTests(TestCase):
 
     def test_load_extensions_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            missing_path = Path(tmp_dir) / "missing.yaml"
+            missing_path = Path(tmp_dir) / "missing.yml"
             with self.assertRaises(ConfigError):
                 load_yaml(missing_path)
 

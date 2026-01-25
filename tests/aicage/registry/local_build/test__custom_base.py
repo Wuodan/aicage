@@ -44,7 +44,7 @@ class CustomBaseBuildTests(TestCase):
                 _custom_base.ensure_custom_base_image("custom", base_metadata, base_dir)
 
             build_mock.assert_called_once()
-            record_path = state_dir / "base-custom.yaml"
+            record_path = state_dir / "base-custom.yml"
             payload = yaml.safe_load(record_path.read_text(encoding="utf-8"))
             self.assertEqual("custom", payload["base"])
             self.assertEqual("sha256:remote", payload["from_image_digest"])

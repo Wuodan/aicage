@@ -47,7 +47,7 @@ class LocalBuildStoreTests(TestCase):
                 base_dir,
             ):
                 store = BuildStore()
-                record_path = base_dir / "claude-ubuntu.yaml"
+                record_path = base_dir / "claude-ubuntu.yml"
                 record_path.write_text("- item\n", encoding="utf-8")
                 loaded = store.load("claude", "ubuntu")
 

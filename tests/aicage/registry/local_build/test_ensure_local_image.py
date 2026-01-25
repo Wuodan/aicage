@@ -145,7 +145,7 @@ class EnsureLocalImageTests(TestCase):
                 ensure_local_image_module.ensure_local_image(run_config)
 
             build_mock.assert_called_once()
-            record_path = state_dir / "claude-ubuntu.yaml"
+            record_path = state_dir / "claude-ubuntu.yml"
             payload = yaml.safe_load(record_path.read_text(encoding="utf-8"))
             self.assertEqual("1.2.3", payload[_AGENT_VERSION_KEY])
 
@@ -155,7 +155,7 @@ class EnsureLocalImageTests(TestCase):
             state_dir = Path(tmp_dir) / "state"
             log_dir = Path(tmp_dir) / "logs"
             run_config = build_run_config()
-            record_path = state_dir / "claude-ubuntu.yaml"
+            record_path = state_dir / "claude-ubuntu.yml"
             record_path.parent.mkdir(parents=True, exist_ok=True)
             record_path.write_text(
                 yaml.safe_dump(

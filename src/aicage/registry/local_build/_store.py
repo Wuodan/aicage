@@ -59,5 +59,5 @@ class BuildStore:
         return path
 
     def _path(self, agent: str, base: str) -> Path:
-        filename = f"{sanitize(agent)}-{base}.yaml"
+        filename = f"{sanitize(agent)}-{base}.yml"
         return self._base_dir / filename

@@ -19,14 +19,14 @@ class ExtendedImagesLoaderTests(TestCase):
         ):
             path = extended_images_module.extended_image_config_path("sample")
 
-        self.assertEqual(Path("/tmp/custom/sample/image-extended.yaml"), path)
+        self.assertEqual(Path("/tmp/custom/sample/image-extended.yml"), path)
 
     def test_load_extended_images_skips_missing_extensions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 extended_image_definition(
                     agent="codex",
@@ -62,7 +62,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 extended_image_definition(
                     agent="codex",
@@ -98,7 +98,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text("- not-a-mapping\n", encoding="utf-8")
             with mock.patch(
                 "aicage.config.extended_images.IMAGE_EXTENDED_STATE_DIR",
@@ -109,7 +109,7 @@ class ExtendedImagesLoaderTests(TestCase):
 
     def test_load_extended_images_reports_read_failure(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            missing_path = Path(tmp_dir) / "missing.yaml"
+            missing_path = Path(tmp_dir) / "missing.yml"
             with self.assertRaises(ConfigError):
                 load_yaml(missing_path)
 
@@ -118,7 +118,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 extended_image_definition(
                     agent="codex",
@@ -141,7 +141,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 extended_image_definition(
                     agent="\"\"",
@@ -163,7 +163,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 join_yaml(
                     [
@@ -187,7 +187,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 join_yaml(
                     [
@@ -212,7 +212,7 @@ class ExtendedImagesLoaderTests(TestCase):
             images_dir = Path(tmp_dir) / "image-extended"
             config_dir = images_dir / "custom"
             config_dir.mkdir(parents=True)
-            config_path = config_dir / "image-extended.yaml"
+            config_path = config_dir / "image-extended.yml"
             config_path.write_text(
                 join_yaml(
                     [
@@ -232,7 +232,7 @@ class ExtendedImagesLoaderTests(TestCase):
 
     def test_write_extended_image_config_writes_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            config_path = Path(tmp_dir) / "custom" / "image-extended.yaml"
+            config_path = Path(tmp_dir) / "custom" / "image-extended.yml"
             config = ExtendedImageConfig(
                 name="custom",
                 agent="codex",

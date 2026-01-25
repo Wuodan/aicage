@@ -93,7 +93,7 @@ class MissingExtensionsTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             store = mock.Mock()
             store.projects_dir = Path(tmp_dir)
-            matching = Path(tmp_dir) / "one.yaml"
+            matching = Path(tmp_dir) / "one.yml"
             matching.write_text(
                 "\n".join(
                     [
@@ -105,7 +105,7 @@ class MissingExtensionsTests(TestCase):
                 ),
                 encoding="utf-8",
             )
-            (Path(tmp_dir) / "invalid.yaml").write_text("not: [yaml", encoding="utf-8")
+            (Path(tmp_dir) / "invalid.yml").write_text("not: [yaml", encoding="utf-8")
             context = self._context(tmp_dir, AgentConfig())
             context.store = store
 
@@ -124,7 +124,7 @@ class MissingExtensionsTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             store = mock.Mock()
             store.projects_dir = Path(tmp_dir)
-            (Path(tmp_dir) / "one.yaml").write_text("path: /tmp/project\n", encoding="utf-8")
+            (Path(tmp_dir) / "one.yml").write_text("path: /tmp/project\n", encoding="utf-8")
             context = self._context(tmp_dir, AgentConfig())
             context.store = store
             with mock.patch(
@@ -139,7 +139,7 @@ class MissingExtensionsTests(TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             store = mock.Mock()
             store.projects_dir = Path(tmp_dir)
-            Path(tmp_dir, "one.yaml").write_text(
+            Path(tmp_dir, "one.yml").write_text(
                 "\n".join(
                     [
                         "path: /tmp/project",
@@ -158,7 +158,7 @@ class MissingExtensionsTests(TestCase):
 
     def test_load_yaml_returns_empty_on_non_mapping(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            path = Path(tmp_dir) / "project.yaml"
+            path = Path(tmp_dir) / "project.yml"
             path.write_text("- not-a-mapping\n", encoding="utf-8")
 
             data = _load_yaml(path)
