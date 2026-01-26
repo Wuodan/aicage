@@ -8,7 +8,7 @@ yamllint .
 pymarkdown \
   --config .pymarkdown.json scan \
   --recurse \
-  --exclude './.venv/' \
+  --exclude '**/.venv*/' \
   --exclude './aicage-custom-samples/' \
   --exclude './aicage-image/' \
   --exclude './aicage-image-base/' \
