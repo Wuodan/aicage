@@ -58,7 +58,6 @@ CONTAINER_AGENT_CONFIG_DIR: PurePosixPath = PurePosixPath("/aicage/agent-config"
 CONTAINER_GITCONFIG_PATH: PurePosixPath = PurePosixPath("/aicage/host/gitconfig")
 CONTAINER_SSH_DIR: PurePosixPath = PurePosixPath("/aicage/host/ssh")
 CONTAINER_GNUPG_DIR: PurePosixPath = PurePosixPath("/aicage/host/gnupg")
-CONTAINER_ENTRYPOINT_PATH: PurePosixPath = PurePosixPath("/usr/local/bin/entrypoint.sh")
 CONTAINER_DOCKER_SOCKET_PATH: PurePosixPath = PurePosixPath("/run/docker.sock")
 
 

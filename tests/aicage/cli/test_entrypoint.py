@@ -103,7 +103,7 @@ class EntrypointTests(TestCase):
         with (
             mock.patch(
                 "aicage.cli.entrypoint.parse_cli",
-                return_value=ParsedArgs(False, "", "", [], None, False, "print"),
+                return_value=ParsedArgs(False, "", "", [], False, "print"),
             ),
             mock.patch("aicage.cli.entrypoint.print_project_config") as print_mock,
             mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
@@ -130,7 +130,7 @@ class EntrypointTests(TestCase):
             with (
                 mock.patch(
                     "aicage.cli.entrypoint.parse_cli",
-                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
+                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], False, None),
                 ),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image"),
@@ -158,7 +158,7 @@ class EntrypointTests(TestCase):
             with (
                 mock.patch(
                     "aicage.cli.entrypoint.parse_cli",
-                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None),
+                    return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], False, None),
                 ),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image"),
@@ -184,7 +184,6 @@ class EntrypointTests(TestCase):
                         "--cli",
                         "codex",
                         ["--flag"],
-                        None,
                         False,
                         None,
                     ),
@@ -229,7 +228,6 @@ class EntrypointTests(TestCase):
                         "--cli",
                         "codex",
                         ["--flag"],
-                        None,
                         False,
                         None,
                     ),

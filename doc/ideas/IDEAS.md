@@ -14,11 +14,6 @@ We should add logic to verify we are using signed/provenanced images in:
 If the project-folder contains symlinks to outside it's structure, then those fail in containers.  
 To fix this we could collect such symlinks and propose to mount the targets to the containers.
 
-## Replace remove `aicage --aicage-entrypoint`
-
-This overrides the same parameter to docker run. And with `docker run --entrypoint` user can do the same. We have it
-only for debugging anyway.
-
 ## Put agent command in agent.yml
 
 Right now with `agents/<AGENT>`, `AGENT` is the command of the agent. This was done for simplicity in early stages of

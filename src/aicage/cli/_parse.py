@@ -17,11 +17,6 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     """
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
-    parser.add_argument(
-        "--aicage-entrypoint",
-        dest="entrypoint",
-        help="Override the container entrypoint with a host path.",
-    )
     parser.add_argument("--docker", action="store_true", help="Mount the host Docker socket into the container.")
     parser.add_argument("--config", help="Perform config actions such as 'print'.")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit.")
@@ -40,8 +35,8 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
         usage: str = (
             "Usage:\n"
             "  aicage <agent>\n"
-            "  aicage [--dry-run] [--docker] [--aicage-entrypoint PATH] -- <agent> [<agent-args>]\n"
-            "  aicage [--dry-run] [--docker] [--aicage-entrypoint PATH] <docker-args> -- <agent> [<agent-args>]\n"
+            "  aicage [--dry-run] [--docker] -- <agent> [<agent-args>]\n"
+            "  aicage [--dry-run] [--docker] <docker-args> -- <agent> [<agent-args>]\n"
             "  aicage --config print\n"
             "  aicage --version\n\n"
             "Any arguments between aicage and the agent require a '--' separator before the agent.\n"
@@ -60,7 +55,6 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
             "",
             "",
             [],
-            opts.entrypoint,
             opts.docker,
             opts.config,
         )
@@ -75,7 +69,6 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
         docker_args,
         agent,
         agent_args,
-        opts.entrypoint,
         opts.docker,
         None,
     )
@@ -97,7 +90,7 @@ def _validate_config_action(
 ) -> None:
     if opts.config != "print":
         raise CliError(f"Unknown config action: {opts.config}")
-    if remaining or post_argv or opts.entrypoint or opts.docker or opts.dry_run:
+    if remaining or post_argv or opts.docker or opts.dry_run:
         raise CliError("No additional arguments are allowed with --config.")
 
 

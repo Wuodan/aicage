@@ -20,14 +20,6 @@ class PromptConfirmTests(TestCase):
         ):
             self.assertTrue(confirm._prompt_yes_no("Continue?", default=False))
 
-    def test_prompt_persist_entrypoint_delegates(self) -> None:
-        with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
-            self.assertTrue(confirm.prompt_persist_entrypoint(Path("/tmp/entrypoint")))
-        prompt_mock.assert_called_once_with(
-            f"Persist entrypoint '{Path('/tmp/entrypoint')}' for this project?",
-            default=True,
-        )
-
     def test_prompt_persist_docker_socket_delegates(self) -> None:
         with mock.patch("aicage.runtime.prompts.confirm._prompt_yes_no", return_value=True) as prompt_mock:
             self.assertTrue(confirm.prompt_persist_docker_socket())

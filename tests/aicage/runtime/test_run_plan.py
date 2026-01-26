@@ -35,7 +35,7 @@ class RunPlanTests(TestCase):
             mounts=[],
             env=[],
         )
-        parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], None, False, None)
+        parsed = ParsedArgs(False, "--cli", "codex", ["--flag"], False, None)
         agent_config = AgentConfig(agent_path=["~/.codex"], agent_config_host=[Path("/tmp/.codex")])
 
         with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):
@@ -67,7 +67,7 @@ class RunPlanTests(TestCase):
             mounts=[mount],
             env=[],
         )
-        parsed = ParsedArgs(False, "", "codex", [], None, False, None)
+        parsed = ParsedArgs(False, "", "codex", [], False, None)
         agent_config = AgentConfig(agent_path=["~/.codex"], agent_config_host=[Path("/tmp/.codex")])
 
         with mock.patch("aicage.runtime.run_plan.resolve_agent_config", return_value=agent_config):

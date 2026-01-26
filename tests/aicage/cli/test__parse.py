@@ -25,7 +25,6 @@ class ParseCliTests(TestCase):
         self.assertEqual("-v /run/docker.sock:/run/docker.sock", parsed.docker_args)
         self.assertEqual("codex", parsed.agent)
         self.assertEqual(["--bar"], parsed.agent_args)
-        self.assertIsNone(parsed.entrypoint)
         self.assertFalse(parsed.docker_socket)
         self.assertIsNone(parsed.config_action)
 
@@ -35,7 +34,6 @@ class ParseCliTests(TestCase):
         self.assertEqual("", parsed.docker_args)
         self.assertEqual("codex", parsed.agent)
         self.assertEqual(["--flag"], parsed.agent_args)
-        self.assertIsNone(parsed.entrypoint)
         self.assertFalse(parsed.docker_socket)
         self.assertIsNone(parsed.config_action)
 
@@ -92,8 +90,6 @@ class ParseCliTests(TestCase):
         parsed = parse_cli(
             [
                 "--docker",
-                "--aicage-entrypoint",
-                "/tmp/entrypoint.sh",
                 "--dry-run",
                 "--",
                 "codex",
@@ -101,6 +97,5 @@ class ParseCliTests(TestCase):
         )
         self.assertTrue(parsed.dry_run)
         self.assertTrue(parsed.docker_socket)
-        self.assertEqual("/tmp/entrypoint.sh", parsed.entrypoint)
         self.assertEqual("", parsed.docker_args)
         self.assertEqual("codex", parsed.agent)

@@ -85,7 +85,6 @@ class RuntimeConfigTests(TestCase):
                 docker_args="--new",
                 agent="codex",
                 agent_args=[],
-                entrypoint=None,
                 docker_socket=False,
                 config_action=None,
             )

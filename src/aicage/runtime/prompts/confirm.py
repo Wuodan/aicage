@@ -18,10 +18,6 @@ def _prompt_yes_no(question: str, default: bool = False) -> bool:
     return choice
 
 
-def prompt_persist_entrypoint(entrypoint_path: Path) -> bool:
-    return _prompt_yes_no(f"Persist entrypoint '{entrypoint_path}' for this project?", default=True)
-
-
 def prompt_persist_docker_socket() -> bool:
     if os.name == "nt":
         print(

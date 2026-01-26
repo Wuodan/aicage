@@ -20,16 +20,11 @@ class ResolverTests(TestCase):
             bases=self._get_bases(),
             extensions={},
         )
-        parsed = ParsedArgs(False, "", "codex", [], None, False, None)
+        parsed = ParsedArgs(False, "", "codex", [], False, None)
         git_mount = MountSpec(host_path=Path("/tmp/git"), container_path=PurePosixPath("/git"))
         git_root_mount = MountSpec(host_path=Path("/tmp/git-root"), container_path=PurePosixPath("/git-root"))
         ssh_mount = MountSpec(host_path=Path("/tmp/ssh"), container_path=PurePosixPath("/ssh"))
         gpg_mount = MountSpec(host_path=Path("/tmp/gpg"), container_path=PurePosixPath("/gpg"))
-        entry_mount = MountSpec(
-            host_path=Path("/tmp/entry"),
-            container_path=PurePosixPath("/entry"),
-            read_only=True,
-        )
         docker_mount = MountSpec(
             host_path=Path("/tmp/docker"),
             container_path=PurePosixPath("/run/docker.sock"),
@@ -46,9 +41,6 @@ class ResolverTests(TestCase):
             mock.patch("aicage.runtime.docker_args.resolver.resolve_ssh_mount", return_value=[ssh_mount]) as ssh_mock,
             mock.patch("aicage.runtime.docker_args.resolver.resolve_gpg_mount", return_value=[gpg_mount]) as gpg_mock,
             mock.patch(
-                "aicage.runtime.docker_args.resolver.resolve_entrypoint_mount", return_value=[entry_mount]
-            ) as entry_mock,
-            mock.patch(
                 "aicage.runtime.docker_args.resolver.resolve_docker_socket_mount",
                 return_value=([docker_mount], [EnvVar(name="DOCKER_HOST", value="tcp://host:2375")]),
             ) as docker_mock,
@@ -56,7 +48,7 @@ class ResolverTests(TestCase):
             mounts, env = resolver.resolve_docker_args(context, "codex", parsed)
 
         self.assertEqual(
-            [git_mount, gpg_mount, ssh_mount, git_root_mount, entry_mount, docker_mount],
+            [git_mount, gpg_mount, ssh_mount, git_root_mount, docker_mount],
             mounts,
         )
         self.assertEqual([("DOCKER_HOST", "tcp://host:2375")], [(item.name, item.value) for item in env])
@@ -65,7 +57,6 @@ class ResolverTests(TestCase):
         gpg_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         ssh_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
         git_root_mock.assert_called_once_with(Path("/tmp/project"), project_cfg.agents["codex"])
-        entry_mock.assert_called_once_with(project_cfg.agents["codex"], None)
         docker_mock.assert_called_once_with(project_cfg.agents["codex"], False)
 
     def test_resolve_docker_args_inserts_agent_config(self) -> None:
@@ -84,7 +75,6 @@ class ResolverTests(TestCase):
             mock.patch("aicage.runtime.docker_args.resolver.resolve_git_root_mount", return_value=[]),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_ssh_mount", return_value=[]),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_gpg_mount", return_value=[]),
-            mock.patch("aicage.runtime.docker_args.resolver.resolve_entrypoint_mount", return_value=[]),
             mock.patch("aicage.runtime.docker_args.resolver.resolve_docker_socket_mount", return_value=([], [])),
         ):
             resolver.resolve_docker_args(context, "codex", None)

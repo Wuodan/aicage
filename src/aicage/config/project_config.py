@@ -9,7 +9,6 @@ _PROJECT_AGENTS_KEY: str = "agents"
 _DOCKER_ARGS_KEY: str = "docker_args"
 
 _AGENT_BASE_KEY: str = "base"
-_AGENT_ENTRYPOINT_KEY: str = "entrypoint"
 _AGENT_MOUNTS_KEY: str = "mounts"
 _AGENT_IMAGE_REF_KEY: str = "image_ref"
 _AGENT_EXTENSIONS_KEY: str = "extensions"
@@ -58,7 +57,6 @@ class _AgentMounts:
 class AgentConfig:
     base: str | None = None
     docker_args: str = ""
-    entrypoint: str | None = None
     mounts: _AgentMounts = field(default_factory=_AgentMounts)
     image_ref: str | None = None
     extensions: list[str] = field(default_factory=list)
@@ -69,7 +67,6 @@ class AgentConfig:
         return cls(
             base=data.get(_AGENT_BASE_KEY),
             docker_args=data.get(_DOCKER_ARGS_KEY, "") or "",
-            entrypoint=data.get(_AGENT_ENTRYPOINT_KEY),
             mounts=mounts,
             image_ref=data.get(_AGENT_IMAGE_REF_KEY),
             extensions=read_str_list_or_empty(data.get(_AGENT_EXTENSIONS_KEY)),
@@ -81,8 +78,6 @@ class AgentConfig:
             payload[_AGENT_BASE_KEY] = self.base
         if self.docker_args:
             payload[_DOCKER_ARGS_KEY] = self.docker_args
-        if self.entrypoint:
-            payload[_AGENT_ENTRYPOINT_KEY] = self.entrypoint
         mounts = self.mounts.to_mapping()
         if mounts:
             payload[_AGENT_MOUNTS_KEY] = mounts

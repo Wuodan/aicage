@@ -6,7 +6,6 @@ from aicage.config.project_config import AgentConfig
 from aicage.runtime.run_args import EnvVar, MountSpec
 
 from ._docker_socket import resolve_docker_socket_mount
-from ._entrypoint import resolve_entrypoint_mount
 from ._git_config import resolve_git_config_mount
 from ._git_root import resolve_git_root_mount
 from ._git_support import resolve_git_support_prefs
@@ -27,10 +26,6 @@ def resolve_docker_args(
     gpg_mounts = resolve_gpg_mount(project_path, agent_cfg)
     ssh_mounts = resolve_ssh_mount(project_path, agent_cfg)
     git_root_mounts = resolve_git_root_mount(project_path, agent_cfg)
-    entrypoint_mounts = resolve_entrypoint_mount(
-        agent_cfg,
-        parsed.entrypoint if parsed else None,
-    )
     docker_mounts, docker_env = resolve_docker_socket_mount(
         agent_cfg,
         parsed.docker_socket if parsed else False,
@@ -41,7 +36,6 @@ def resolve_docker_args(
     mounts.extend(gpg_mounts)
     mounts.extend(ssh_mounts)
     mounts.extend(git_root_mounts)
-    mounts.extend(entrypoint_mounts)
     mounts.extend(docker_mounts)
     env: list[EnvVar] = []
     env.extend(docker_env)
