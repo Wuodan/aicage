@@ -25,8 +25,10 @@ See [Why cage agents?](#why-cage-agents) for the full rationale.
 - Use one of these commands:
 
   ```bash
+  aicage claude
   aicage codex
   aicage copilot
+  aicage droid
   aicage gemini
   aicage goose
   aicage opencode
@@ -52,8 +54,10 @@ All base images have the same stack of tools installed.
 
 | CLI      | Agent              | Homepage                                                                           |
 |----------|--------------------|------------------------------------------------------------------------------------|
+| claude   | Claude Code        | [https://claude.com/product/claude-code](https://claude.com/product/claude-code)   |
 | codex    | Codex CLI          | [https://developers.openai.com/codex/cli](https://developers.openai.com/codex/cli) |
 | copilot  | GitHub Copilot CLI | [https://github.com/features/copilot/cli](https://github.com/features/copilot/cli) |
+| droid    | Factory CLI        | [https://factory.ai/product/cli](https://factory.ai/product/cli)                   |
 | gemini   | Gemini CLI         | [https://geminicli.com](https://geminicli.com)                                     |
 | goose    | Goose CLI          | [https://block.github.io/goose](https://block.github.io/goose)                     |
 | opencode | OpenCode           | [https://qwenlm.github.io/qwen-code-docs](https://qwenlm.github.io/qwen-code-docs) |
