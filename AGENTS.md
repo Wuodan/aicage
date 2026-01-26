@@ -1,7 +1,7 @@
 # AI Agent Playbook
 
-Audience: AI coding agents working in this repo and its submodules. Keep user-facing docs clean and
-follow [DEVELOPMENT.md](DEVELOPMENT.md) for workflows.
+Audience: AI coding agents working in this repo. Keep user-facing docs clean and follow [DEVELOPMENT.md](DEVELOPMENT.md) for
+workflows.
 
 ## Ground rules
 
@@ -47,10 +47,6 @@ Meaning:
 - [README.md](README.md) (users)
 - [DEVELOPMENT.md](DEVELOPMENT.md) (advanced users)
 - [Why cage agents?](README.md#why-cage-agents) (rationale).
-- Submodules:
-  - `aicage-image-base/` builds base OS layers
-  - `aicage-image/` builds final agent images
-  - `aicage-image-util/` builds utility images for `aicage` runtime tasks
 
 ## Linting
 

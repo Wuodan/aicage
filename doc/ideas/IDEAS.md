@@ -36,7 +36,7 @@ Maybe we could even allow user added custom plugins.
 ## Shellcheck version.sh
 
 The `version.sh` scripts for agents are run on the users system or as fallback in the Alpine `version-check` util-image
-(from submodule `aicage-image-util`). Those scripts should be strictly POSIX compliant and we should verify that with
+(from repo `aicage-image-util`). Those scripts should be strictly POSIX compliant and we should verify that with
 `shellcheck` in a GitHub release pipeline for `aicage-image` (where those scripts are defined).
 
 ## Tune locking of ~/.aicage

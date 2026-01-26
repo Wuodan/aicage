@@ -1,6 +1,6 @@
 # Development Guide
 
-This repo ships the `aicage` CLI. Image build logic lives in the submodules; this file is for
+This repo ships the `aicage` CLI. Image build logic lives in the other git-repos of owner `aicage`; this file is for
 advanced/power users who want to tweak or extend things.
 
 ## Repo layout
