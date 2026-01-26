@@ -14,11 +14,6 @@ We should add logic to verify we are using signed/provenanced images in:
 If the project-folder contains symlinks to outside it's structure, then those fail in containers.  
 To fix this we could collect such symlinks and propose to mount the targets to the containers.
 
-## Support git submodules
-
-Detect when in submodule and suggest to mount the parent repo.  
-Reason: git in container fails without parent repo
-
 ## Replace remove `aicage --aicage-entrypoint`
 
 This overrides the same parameter to docker run. And with `docker run --entrypoint` user can do the same. We have it
@@ -31,11 +26,6 @@ development. But by now this:
 - prevents having an agent with a second config (also locally)
 - is ugly
 - the code is mature enough by now to change this
-
-## Prevent starting in HOME
-
-Prevent starting in HOME (error when creating symlink in entrypoint) or `/` or similar. Or warn user at least.  
-But accidentally calling `aicage` and forgetting to cd to a project folder happens frequently to me.
 
 ## Plugins idea
 
@@ -57,13 +47,6 @@ The `version.sh` scripts for agents are run on the users system or as fallback i
 ## Tune locking of ~/.aicage
 
 The implementation is from an earlier state where we had less files. New files are not locked.
-
-## Agent claude needs more than 1 mount
-
-2 files and 1 folder:
-- /home/stefan/.claude.json
-- /home/stefan/.claude.json.backup
-- /home/stefan/.claude/
 
 ## Fix config file locking
 
