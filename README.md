@@ -37,17 +37,7 @@ See [Why cage agents?](#why-cage-agents) for the full rationale.
 
 ## Base images
 
-The first run asks which base image to use; pick Ubuntu or whatever matches your Linux distro.
-
-| Base   | Distro | Notes                                                                                              |
-|--------|--------|----------------------------------------------------------------------------------------------------|
-| ubuntu | Ubuntu | Good default for most users                                                                        |
-| debian | Debian | For Debian users                                                                                   |
-| fedora | Fedora | For RedHat/Fedora users                                                                            |
-| alpine | Alpine | Minimal footprint; experimental                                                                    |
-| node   | Ubuntu | Official Node image (all base images have Node)                                                    |
-| act    | Ubuntu | Default runner image from [act](https://github.com/nektos/act) (`act` runs GitHub Actions locally) |
-
+The first run asks which base image to use; pick Ubuntu or whatever matches your Linux distro.  
 All base images have the same stack of tools installed.
 
 ## Agents
