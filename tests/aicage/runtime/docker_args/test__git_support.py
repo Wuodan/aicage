@@ -135,7 +135,8 @@ class GitSupportTests(TestCase):
 
         self.assertTrue(agent_cfg.mounts.gnupg)
 
-    def test_resolve_git_support_prefs_skips_when_no_items(self) -> None:
+    @staticmethod
+    def test_resolve_git_support_prefs_skips_when_no_items() -> None:
         agent_cfg = AgentConfig(mounts=_AgentMounts(gitconfig=True, gitroot=False, gnupg=False, ssh=False))
         project_path = Path("/repo")
 

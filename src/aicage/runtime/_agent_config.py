@@ -21,7 +21,7 @@ def _ensure_agent_path(agent_path: str) -> Path:
     expanded = Path(os.path.expanduser(agent_path)).resolve()
     if expanded.exists():
         return expanded
-    if _looks_like_file(agent_path, expanded):
+    if _looks_like_file(agent_path):
         expanded.parent.mkdir(parents=True, exist_ok=True)
         expanded.touch()
     else:
@@ -29,5 +29,5 @@ def _ensure_agent_path(agent_path: str) -> Path:
     return expanded
 
 
-def _looks_like_file(agent_path: str, expanded: Path) -> bool:
+def _looks_like_file(agent_path: str) -> bool:
     return bool(Path(agent_path).suffix)
