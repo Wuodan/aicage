@@ -1,7 +1,7 @@
 # AI Agent Playbook
 
-Audience: AI coding agents working in this repo. Keep user-facing docs clean and follow [DEVELOPMENT.md](DEVELOPMENT.md) for
-workflows.
+Audience: AI coding agents working in this repo. Keep user-facing docs clean and follow [DEVELOPMENT.md](DEVELOPMENT.md)
+for workflows.
 
 ## Ground rules
 
