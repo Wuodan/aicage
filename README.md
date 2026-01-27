@@ -56,6 +56,16 @@ All base images have the same stack of tools installed.
 Your existing CLI config for each agent is mounted inside the container so you can keep using your
 preferences and credentials.
 
+## Customization
+
+You can customize images at three levels: extensions, agents, and base images.
+
+- Extensions: [Customization-Extensions](https://github.com/aicage/aicage/wiki/Customization-Extensions)
+- Custom agents: [Customization-Agents](https://github.com/aicage/aicage/wiki/Customization-Agents)
+- Custom base images: [Customization-Base-Images](https://github.com/aicage/aicage/wiki/Customization-Base-Images)
+
+Image updates are handled automatically; see [Updates](https://github.com/aicage/aicage/wiki/Updates).
+
 ## aicage options
 
 - `--dry-run` prints the composed `docker run` command without executing it.
