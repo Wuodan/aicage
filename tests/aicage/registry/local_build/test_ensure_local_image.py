@@ -37,7 +37,7 @@ class EnsureLocalImageTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
-                    return_value="sha256:base",
+                    return_value="ghcr.io/aicage/aicage-image-base@sha256:base",
                 ) as refresh_mock,
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.should_build",
@@ -56,7 +56,7 @@ class EnsureLocalImageTests(TestCase):
         with (
             mock.patch(
                 "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
-                return_value="sha256:base",
+                return_value="ghcr.io/aicage/aicage-image-base@sha256:base",
             ),
             mock.patch(
                 "aicage.registry.local_build.ensure_local_image.AgentVersionChecker"
@@ -132,7 +132,7 @@ class EnsureLocalImageTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
-                    return_value="sha256:base",
+                    return_value="ghcr.io/aicage/aicage-image-base@sha256:base",
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.run_build"
@@ -186,7 +186,7 @@ class EnsureLocalImageTests(TestCase):
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.refresh_base_digest",
-                    return_value="sha256:base",
+                    return_value="ghcr.io/aicage/aicage-image-base@sha256:base",
                 ),
                 mock.patch(
                     "aicage.registry.local_build.ensure_local_image.run_build"

@@ -17,6 +17,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 None,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertTrue(should_build)
 
@@ -30,6 +31,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 None,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertTrue(should_build)
 
@@ -57,6 +59,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertTrue(should_build)
 
@@ -84,6 +87,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertTrue(should_build)
 
@@ -111,6 +115,7 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertFalse(should_build)
 
@@ -138,5 +143,6 @@ class LocalBuildPlanTests(TestCase):
                 run_config,
                 record,
                 "1.2.3",
+                "ghcr.io/aicage/aicage-image-base@sha256:base",
             )
         self.assertFalse(should_build)

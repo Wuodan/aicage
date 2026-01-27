@@ -3,18 +3,19 @@ from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest_for_repo
 from aicage.registry._errors import RegistryError
 from aicage.registry._logs import pull_log_path
-from aicage.registry.digest.remote_digest import get_remote_digest
+from aicage.registry._signature import resolve_verified_digest
 
 
 def refresh_base_digest(
     base_image_ref: str,
     base_repository: str,
-) -> str | None:
+) -> str:
     logger = get_logger()
     local_digest = get_local_repo_digest_for_repo(base_image_ref, base_repository)
-    remote_digest = get_remote_digest(base_image_ref)
-    if remote_digest is None or remote_digest == local_digest:
-        return local_digest
+    digest_ref = resolve_verified_digest(base_image_ref)
+    remote_digest = digest_ref.split("@", 1)[1]
+    if remote_digest == local_digest:
+        return digest_ref
 
     log_path = pull_log_path(base_image_ref)
     try:
@@ -24,7 +25,7 @@ def refresh_base_digest(
             logger.warning(
                 "Base image pull failed; using local base image (logs: %s).", log_path
             )
-            return local_digest
+            return f"{base_repository}@{local_digest}"
         raise
 
-    return get_local_repo_digest_for_repo(base_image_ref, base_repository)
+    return digest_ref

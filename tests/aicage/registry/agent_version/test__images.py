@@ -18,6 +18,10 @@ class AgentVersionImagesTests(TestCase):
                     return_value=None,
                 ) as local_mock,
                 mock.patch("aicage.registry.agent_version._images.get_remote_digest") as remote_mock,
+                mock.patch(
+                    "aicage.registry.agent_version._images.resolve_verified_digest",
+                    return_value="ghcr.io/aicage/aicage-image-util@sha256:verified",
+                ) as verify_mock,
                 mock.patch("aicage.registry.agent_version._images.run_pull") as pull_mock,
                 mock.patch(
                     "aicage.registry.agent_version._images.pull_log_path",
@@ -30,6 +34,7 @@ class AgentVersionImagesTests(TestCase):
                 )
         local_mock.assert_called_once()
         remote_mock.assert_not_called()
+        verify_mock.assert_called_once_with(image_ref)
         pull_mock.assert_called_once_with(image_ref, log_path)
 
     @staticmethod
@@ -46,6 +51,9 @@ class AgentVersionImagesTests(TestCase):
                     "aicage.registry.agent_version._images.get_remote_digest",
                     return_value=None,
                 ) as remote_mock,
+                mock.patch(
+                    "aicage.registry.agent_version._images.resolve_verified_digest"
+                ) as verify_mock,
                 mock.patch("aicage.registry.agent_version._images.run_pull") as pull_mock,
                 mock.patch(
                     "aicage.registry.agent_version._images.pull_log_path",
@@ -57,4 +65,5 @@ class AgentVersionImagesTests(TestCase):
                     logger=mock.Mock(),
                 )
         remote_mock.assert_called_once()
+        verify_mock.assert_not_called()
         pull_mock.assert_not_called()

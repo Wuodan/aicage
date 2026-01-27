@@ -5,6 +5,7 @@ from aicage.docker.pull import run_pull
 from aicage.docker.query import get_local_repo_digest_for_repo
 from aicage.registry._errors import RegistryError
 from aicage.registry._logs import pull_log_path
+from aicage.registry._signature import resolve_verified_digest
 from aicage.registry.digest.remote_digest import get_remote_digest
 
 
@@ -27,6 +28,7 @@ def ensure_version_check_image(image_ref: str, logger: Logger) -> None:
 def _pull_version_check_image(image_ref: str, logger: Logger) -> None:
     log_path = pull_log_path(image_ref)
     try:
+        resolve_verified_digest(image_ref)
         run_pull(image_ref, log_path)
     except RegistryError:
         logger.warning("Version check image pull failed; using local image (logs: %s).", log_path)

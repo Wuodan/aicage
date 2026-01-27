@@ -31,19 +31,19 @@ def ensure_local_image(run_config: RunConfig) -> None:
         )
     else:
         base_repo = base_repository(run_config)
-        refresh_base_digest(
+        base_image = refresh_base_digest(
             base_image_ref=base_image,
             base_repository=base_repo,
         )
 
     store = BuildStore()
     record = store.load(run_config.agent, run_config.selection.base)
-
     agent_version = _get_agent_version(run_config, agent_metadata, definition_dir)
     needs_build = should_build(
         run_config=run_config,
         record=record,
         agent_version=agent_version,
+        base_image_ref=base_image,
     )
     if not needs_build:
         return

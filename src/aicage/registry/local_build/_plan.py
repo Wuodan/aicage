@@ -3,7 +3,6 @@ from aicage.config.runtime_config import RunConfig
 from aicage.docker.query import local_image_exists
 from aicage.registry._layers import base_layer_missing
 
-from ._refs import get_base_image_ref
 from ._store import BuildRecord
 
 
@@ -11,8 +10,8 @@ def should_build(
     run_config: RunConfig,
     record: BuildRecord | None,
     agent_version: str,
+    base_image_ref: str,
 ) -> bool:
-    base_image_ref = get_base_image_ref(run_config)
     image_ref = run_config.selection.base_image_ref
     if not local_image_exists(image_ref):
         return True

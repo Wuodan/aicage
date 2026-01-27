@@ -48,6 +48,10 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
+                    "aicage.registry._image_pull.resolve_verified_digest",
+                    return_value="repo@sha256:verified",
+                ) as verify_mock,
+                mock.patch(
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
@@ -56,6 +60,7 @@ class DockerInvocationTests(TestCase):
             ):
                 image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
+            verify_mock.assert_called_once_with(image_ref)
             self.assertIn("Pulling image repo:tag", stdout.getvalue())
             log_lines = log_path.read_text(encoding="utf-8").splitlines()
             self.assertEqual(2, len(log_lines))
@@ -84,6 +89,10 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
+                    "aicage.registry._image_pull.resolve_verified_digest",
+                    return_value="repo@sha256:verified",
+                ) as verify_mock,
+                mock.patch(
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
@@ -93,6 +102,7 @@ class DockerInvocationTests(TestCase):
                 with self.assertRaises(DockerException):
                     image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
+            verify_mock.assert_called_once_with(image_ref)
 
     def test_pull_image_skips_when_up_to_date(self) -> None:
         image_ref = "repo:tag"
@@ -107,12 +117,16 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_digest",
                     return_value="same",
                 ),
+                mock.patch(
+                    "aicage.registry._image_pull.resolve_verified_digest"
+                ) as verify_mock,
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
+            verify_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
 
     def test_pull_image_skips_when_remote_unknown(self) -> None:
@@ -128,10 +142,14 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._pull_decision.get_remote_digest",
                     return_value=None,
                 ),
+                mock.patch(
+                    "aicage.registry._image_pull.resolve_verified_digest"
+                ) as verify_mock,
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
+            verify_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
