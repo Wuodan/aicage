@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-01-27
+
+### Documentation
+
+- Added links to the new GitHub wiki for customization, updates, docker args, and debugging guides.
+
 ## [0.8.27] - 2026-01-25
 
 ### Added
