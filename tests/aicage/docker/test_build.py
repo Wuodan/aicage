@@ -184,12 +184,15 @@ class LocalBuildRunnerTests(TestCase):
     @staticmethod
     def test_cleanup_intermediate_images_logs_failures() -> None:
         logger = mock.Mock()
-        with mock.patch(
-            "aicage.docker.build.subprocess.run",
-            return_value=CompletedProcess([], 1),
+        with (
+            mock.patch("aicage.docker.build.get_logger", return_value=logger),
+            mock.patch(
+                "aicage.docker.build.subprocess.run",
+                return_value=CompletedProcess([], 1),
+            ),
         ):
-            build._cleanup_intermediate_images(["aicage:tmp"], logger)
-        logger.info.assert_called_once()
+            build._cleanup_intermediate_images(["aicage:tmp"])
+        logger.warning.assert_called_once()
 
 
 def _extension(extension_id: str) -> ExtensionMetadata:

@@ -1,5 +1,4 @@
 import subprocess
-from logging import Logger
 from pathlib import Path
 
 from aicage._logging import get_logger
@@ -100,7 +99,7 @@ def run_extended_build(
                     f"Extended image build failed for {run_config.selection.image_ref}. See log at {log_path}."
                 )
             current_image_ref = target_ref
-    _cleanup_intermediate_images(intermediate_refs, logger)
+    _cleanup_intermediate_images(intermediate_refs)
     logger.info("Extended image build succeeded for %s", run_config.selection.image_ref)
 
 
@@ -161,7 +160,8 @@ def _parse_image_ref(image_ref: str) -> tuple[str, str]:
     return repository, tag
 
 
-def _cleanup_intermediate_images(intermediate_refs: list[str], logger: Logger) -> None:
+def _cleanup_intermediate_images(intermediate_refs: list[str]) -> None:
+    logger = get_logger()
     for image_ref in intermediate_refs:
         result = subprocess.run(
             ["docker", "image", "rm", "-f", image_ref],
@@ -170,4 +170,4 @@ def _cleanup_intermediate_images(intermediate_refs: list[str], logger: Logger) -
             stderr=subprocess.DEVNULL,
         )
         if result.returncode != 0:
-            logger.info("Failed to remove intermediate image %s", image_ref)
+            logger.warning("Failed to remove intermediate image %s", image_ref)

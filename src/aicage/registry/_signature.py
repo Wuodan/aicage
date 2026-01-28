@@ -3,7 +3,11 @@ import subprocess
 from aicage._logging import get_logger
 from aicage.constants import COSIGN_IDENTITY_REGEXP, COSIGN_IMAGE_REF, COSIGN_OIDC_ISSUER
 from aicage.docker.pull import run_pull
-from aicage.docker.query import local_image_exists
+from aicage.docker.query import (
+    cleanup_old_digest,
+    get_local_repo_digest_for_repo,
+    local_image_exists,
+)
 from aicage.registry._errors import RegistryError
 from aicage.registry._logs import pull_log_path
 from aicage.registry.digest.remote_digest import get_remote_digest
@@ -68,9 +72,20 @@ def _format_cosign_output(result: subprocess.CompletedProcess[str]) -> str:
 
 def _ensure_cosign_image() -> None:
     logger = get_logger()
+    repository = _repository_for_image(COSIGN_IMAGE_REF)
+    local_digest = get_local_repo_digest_for_repo(COSIGN_IMAGE_REF, repository)
     if local_image_exists(COSIGN_IMAGE_REF):
         logger.info("Cosign image already present: %s", COSIGN_IMAGE_REF)
         return
     logger.info("Pulling cosign image %s for signature verification", COSIGN_IMAGE_REF)
     log_path = pull_log_path(COSIGN_IMAGE_REF)
     run_pull(COSIGN_IMAGE_REF, log_path)
+    cleanup_old_digest(repository, local_digest, COSIGN_IMAGE_REF)
+
+
+def _repository_for_image(image_ref: str) -> str:
+    name = image_ref.split("@", 1)[0]
+    last_colon = name.rfind(":")
+    if last_colon > name.rfind("/"):
+        return name[:last_colon]
+    return name

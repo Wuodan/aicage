@@ -18,6 +18,9 @@ class LocalBuildDigestTests(TestCase):
                 return_value="ghcr.io/aicage/aicage-image-base@sha256:local",
             ),
             mock.patch("aicage.registry.local_build._digest.run_pull") as run_mock,
+            mock.patch(
+                "aicage.registry.local_build._digest.cleanup_old_digest"
+            ) as cleanup_mock,
         ):
             digest = _digest.refresh_base_digest(
                 base_image_ref="ghcr.io/aicage/aicage-image-base:ubuntu",
@@ -25,6 +28,7 @@ class LocalBuildDigestTests(TestCase):
             )
         self.assertEqual("ghcr.io/aicage/aicage-image-base@sha256:local", digest)
         run_mock.assert_not_called()
+        cleanup_mock.assert_not_called()
 
     def test_refresh_base_digest_pull_failure_uses_local_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -41,6 +45,9 @@ class LocalBuildDigestTests(TestCase):
                     "aicage.registry.local_build._digest.run_pull",
                     side_effect=RegistryError("docker pull failed"),
                 ),
+                mock.patch(
+                    "aicage.registry.local_build._digest.cleanup_old_digest"
+                ) as cleanup_mock,
                 mock.patch("aicage.registry.local_build._digest.pull_log_path", return_value=Path(tmp_dir)),
             ):
                 digest = _digest.refresh_base_digest(
@@ -48,6 +55,7 @@ class LocalBuildDigestTests(TestCase):
                     base_repository="ghcr.io/aicage/aicage-image-base",
                 )
             self.assertEqual("ghcr.io/aicage/aicage-image-base@sha256:local", digest)
+            cleanup_mock.assert_not_called()
 
     def test_refresh_base_digest_pull_failure_without_local_raises(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -64,6 +72,9 @@ class LocalBuildDigestTests(TestCase):
                     "aicage.registry.local_build._digest.run_pull",
                     side_effect=RegistryError("docker pull failed"),
                 ),
+                mock.patch(
+                    "aicage.registry.local_build._digest.cleanup_old_digest"
+                ) as cleanup_mock,
                 mock.patch("aicage.registry.local_build._digest.pull_log_path", return_value=Path(tmp_dir)),
             ):
                 with self.assertRaises(RegistryError) as exc:
@@ -72,13 +83,14 @@ class LocalBuildDigestTests(TestCase):
                         base_repository="ghcr.io/aicage/aicage-image-base",
                     )
             self.assertIn("docker pull failed", str(exc.exception))
+            cleanup_mock.assert_not_called()
 
     def test_refresh_base_digest_pull_success_updates_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             with (
                 mock.patch(
                     "aicage.registry.local_build._digest.get_local_repo_digest_for_repo",
-                    return_value="sha256:old",
+                    side_effect=["sha256:old", "sha256:remote"],
                 ),
                 mock.patch(
                     "aicage.registry.local_build._digest.resolve_verified_digest",
@@ -88,6 +100,9 @@ class LocalBuildDigestTests(TestCase):
                     "aicage.registry.local_build._digest.run_pull",
                     return_value=None,
                 ),
+                mock.patch(
+                    "aicage.registry.local_build._digest.cleanup_old_digest"
+                ) as cleanup_mock,
                 mock.patch("aicage.registry.local_build._digest.pull_log_path", return_value=Path(tmp_dir)),
             ):
                 digest = _digest.refresh_base_digest(
@@ -95,3 +110,8 @@ class LocalBuildDigestTests(TestCase):
                     base_repository="ghcr.io/aicage/aicage-image-base",
                 )
             self.assertEqual("ghcr.io/aicage/aicage-image-base@sha256:remote", digest)
+            cleanup_mock.assert_called_once_with(
+                "ghcr.io/aicage/aicage-image-base",
+                "sha256:old",
+                "ghcr.io/aicage/aicage-image-base:ubuntu",
+            )

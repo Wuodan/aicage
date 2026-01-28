@@ -1,6 +1,6 @@
 from aicage._logging import get_logger
 from aicage.docker.pull import run_pull
-from aicage.docker.query import get_local_repo_digest_for_repo
+from aicage.docker.query import cleanup_old_digest, get_local_repo_digest_for_repo
 from aicage.registry._errors import RegistryError
 from aicage.registry._logs import pull_log_path
 from aicage.registry._signature import resolve_verified_digest
@@ -28,4 +28,5 @@ def refresh_base_digest(
             return f"{base_repository}@{local_digest}"
         raise
 
+    cleanup_old_digest(base_repository, local_digest, base_image_ref)
     return digest_ref

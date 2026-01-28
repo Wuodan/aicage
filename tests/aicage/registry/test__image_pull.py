@@ -45,6 +45,10 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
+                    "aicage.registry._image_pull.get_local_repo_digest_for_repo",
+                    side_effect=["sha256:old", "sha256:new"],
+                ),
+                mock.patch(
                     "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
@@ -55,12 +59,18 @@ class DockerInvocationTests(TestCase):
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
+                mock.patch("aicage.registry._image_pull.cleanup_old_digest") as cleanup_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
             verify_mock.assert_called_once_with(image_ref)
+            cleanup_mock.assert_called_once_with(
+                "ghcr.io/aicage/aicage",
+                "sha256:old",
+                image_ref,
+            )
             self.assertIn("Pulling image repo:tag", stdout.getvalue())
             log_lines = log_path.read_text(encoding="utf-8").splitlines()
             self.assertEqual(2, len(log_lines))
@@ -86,6 +96,10 @@ class DockerInvocationTests(TestCase):
                     return_value=None,
                 ),
                 mock.patch(
+                    "aicage.registry._image_pull.get_local_repo_digest_for_repo",
+                    side_effect=["sha256:old", "sha256:new"],
+                ),
+                mock.patch(
                     "aicage.registry._pull_decision.get_remote_digest"
                 ) as remote_mock,
                 mock.patch(
@@ -96,6 +110,7 @@ class DockerInvocationTests(TestCase):
                     "aicage.docker.pull.get_docker_client",
                     return_value=client,
                 ),
+                mock.patch("aicage.registry._image_pull.cleanup_old_digest") as cleanup_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
@@ -103,6 +118,7 @@ class DockerInvocationTests(TestCase):
                     image_pull.pull_image(image_ref)
             remote_mock.assert_not_called()
             verify_mock.assert_called_once_with(image_ref)
+            cleanup_mock.assert_not_called()
 
     def test_pull_image_skips_when_up_to_date(self) -> None:
         image_ref = "repo:tag"
@@ -114,6 +130,9 @@ class DockerInvocationTests(TestCase):
                     return_value="same",
                 ),
                 mock.patch(
+                    "aicage.registry._image_pull.get_local_repo_digest_for_repo"
+                ) as local_repo_mock,
+                mock.patch(
                     "aicage.registry._pull_decision.get_remote_digest",
                     return_value="same",
                 ),
@@ -121,12 +140,15 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._image_pull.resolve_verified_digest"
                 ) as verify_mock,
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
+                mock.patch("aicage.registry._image_pull.cleanup_old_digest") as cleanup_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
             verify_mock.assert_not_called()
+            local_repo_mock.assert_called_once()
+            cleanup_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())
 
     def test_pull_image_skips_when_remote_unknown(self) -> None:
@@ -139,6 +161,9 @@ class DockerInvocationTests(TestCase):
                     return_value="local",
                 ),
                 mock.patch(
+                    "aicage.registry._image_pull.get_local_repo_digest_for_repo"
+                ) as local_repo_mock,
+                mock.patch(
                     "aicage.registry._pull_decision.get_remote_digest",
                     return_value=None,
                 ),
@@ -146,10 +171,13 @@ class DockerInvocationTests(TestCase):
                     "aicage.registry._image_pull.resolve_verified_digest"
                 ) as verify_mock,
                 mock.patch("aicage.docker.pull.get_docker_client") as client_mock,
+                mock.patch("aicage.registry._image_pull.cleanup_old_digest") as cleanup_mock,
                 mock.patch("aicage.registry._image_pull.pull_log_path", return_value=log_path),
                 mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
             ):
                 image_pull.pull_image(image_ref)
             client_mock.assert_not_called()
             verify_mock.assert_not_called()
+            local_repo_mock.assert_called_once()
+            cleanup_mock.assert_not_called()
             self.assertEqual("", stdout.getvalue())

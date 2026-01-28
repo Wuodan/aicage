@@ -15,6 +15,10 @@ class SignatureVerificationTests(TestCase):
                 return_value="sha256:abc",
             ),
             mock.patch(
+                "aicage.registry._signature.get_local_repo_digest_for_repo",
+                return_value=None,
+            ),
+            mock.patch(
                 "aicage.registry._signature.local_image_exists",
                 return_value=True,
             ),
@@ -38,6 +42,10 @@ class SignatureVerificationTests(TestCase):
             mock.patch(
                 "aicage.registry._signature.get_remote_digest",
                 return_value="sha256:abc",
+            ),
+            mock.patch(
+                "aicage.registry._signature.get_local_repo_digest_for_repo",
+                return_value=None,
             ),
             mock.patch(
                 "aicage.registry._signature.local_image_exists",
@@ -64,6 +72,10 @@ class SignatureVerificationTests(TestCase):
                 return_value="sha256:abc",
             ),
             mock.patch(
+                "aicage.registry._signature.get_local_repo_digest_for_repo",
+                return_value=None,
+            ),
+            mock.patch(
                 "aicage.registry._signature.local_image_exists",
                 return_value=True,
             ),
@@ -88,6 +100,10 @@ class SignatureVerificationTests(TestCase):
                 return_value=None,
             ) as digest_mock,
             mock.patch(
+                "aicage.registry._signature.get_local_repo_digest_for_repo",
+                return_value=None,
+            ),
+            mock.patch(
                 "aicage.registry._signature._run_cosign_verify"
             ) as cosign_mock,
         ):
@@ -104,6 +120,10 @@ class SignatureVerificationTests(TestCase):
                 return_value="sha256:abc",
             ),
             mock.patch(
+                "aicage.registry._signature.get_local_repo_digest_for_repo",
+                return_value=None,
+            ),
+            mock.patch(
                 "aicage.registry._signature.local_image_exists",
                 return_value=False,
             ),
@@ -114,6 +134,9 @@ class SignatureVerificationTests(TestCase):
             mock.patch(
                 "aicage.registry._signature.run_pull"
             ) as pull_mock,
+            mock.patch(
+                "aicage.registry._signature.cleanup_old_digest"
+            ) as cleanup_mock,
             mock.patch(
                 "aicage.registry._signature._run_cosign_verify",
                 return_value=subprocess.CompletedProcess(
@@ -127,3 +150,8 @@ class SignatureVerificationTests(TestCase):
             _signature.resolve_verified_digest(image_ref)
         log_mock.assert_called_once_with(constants.COSIGN_IMAGE_REF)
         pull_mock.assert_called_once_with(constants.COSIGN_IMAGE_REF, log_mock.return_value)
+        cleanup_mock.assert_called_once_with(
+            "ghcr.io/sigstore/cosign/cosign",
+            None,
+            constants.COSIGN_IMAGE_REF,
+        )

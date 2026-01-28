@@ -3,6 +3,8 @@ from unittest import TestCase, mock
 from docker.errors import ImageNotFound
 
 from aicage.docker.query import (
+    _remove_old_image_digest,
+    cleanup_old_digest,
     get_local_repo_digest,
     get_local_repo_digest_for_repo,
     get_local_rootfs_layers,
@@ -106,3 +108,84 @@ class LocalQueryTests(TestCase):
         ):
             exists = local_image_exists("aicage:claude-ubuntu")
         self.assertFalse(exists)
+
+    def test_remove_old_image_digest_removes_image(self) -> None:
+        with (
+            mock.patch("aicage.docker.query.get_logger", return_value=mock.Mock()),
+            mock.patch(
+                "aicage.docker.query.subprocess.run",
+                return_value=mock.Mock(returncode=0),
+            ) as run_mock,
+        ):
+            _remove_old_image_digest(
+                repository="ghcr.io/aicage/aicage",
+                old_digest="sha256:old",
+            )
+        run_mock.assert_called_once_with(
+            ["docker", "image", "rm", "ghcr.io/aicage/aicage@sha256:old"],
+            check=False,
+            stdout=mock.ANY,
+            stderr=mock.ANY,
+        )
+
+    def test_remove_old_image_digest_ignores_docker_errors(self) -> None:
+        logger = mock.Mock()
+        with (
+            mock.patch("aicage.docker.query.get_logger", return_value=logger),
+            mock.patch(
+                "aicage.docker.query.subprocess.run",
+                return_value=mock.Mock(returncode=1),
+            ),
+        ):
+            _remove_old_image_digest(
+                repository="ghcr.io/aicage/aicage",
+                old_digest="sha256:old",
+            )
+        logger.warning.assert_called_once()
+
+    def test_cleanup_old_digest_skips_without_local(self) -> None:
+        logger = mock.Mock()
+        with (
+            mock.patch("aicage.docker.query.get_logger", return_value=logger),
+            mock.patch("aicage.docker.query.get_local_repo_digest_for_repo") as digest_mock,
+        ):
+            cleanup_old_digest(
+                repository="ghcr.io/aicage/aicage",
+                local_digest=None,
+                image_ref="repo:tag",
+            )
+        digest_mock.assert_not_called()
+
+    def test_cleanup_old_digest_skips_when_unchanged(self) -> None:
+        logger = mock.Mock()
+        with (
+            mock.patch("aicage.docker.query.get_logger", return_value=logger),
+            mock.patch(
+                "aicage.docker.query.get_local_repo_digest_for_repo",
+                return_value="sha256:old",
+            ),
+            mock.patch("aicage.docker.query._remove_old_image_digest") as remove_mock,
+        ):
+            cleanup_old_digest(
+                repository="ghcr.io/aicage/aicage",
+                local_digest="sha256:old",
+                image_ref="repo:tag",
+            )
+        remove_mock.assert_not_called()
+
+    def test_cleanup_old_digest_removes_when_updated(self) -> None:
+        logger = mock.Mock()
+        with (
+            mock.patch("aicage.docker.query.get_logger", return_value=logger),
+            mock.patch(
+                "aicage.docker.query.get_local_repo_digest_for_repo",
+                return_value="sha256:new",
+            ),
+            mock.patch("aicage.docker.query._remove_old_image_digest") as remove_mock,
+        ):
+            cleanup_old_digest(
+                repository="ghcr.io/aicage/aicage",
+                local_digest="sha256:old",
+                image_ref="repo:tag",
+            )
+        remove_mock.assert_called_once_with("ghcr.io/aicage/aicage", "sha256:old")

@@ -39,7 +39,7 @@ class AgentVersionChecker:
         )
         errors.append(host_result.error)
 
-        ensure_version_check_image(VERSION_CHECK_IMAGE, logger)
+        ensure_version_check_image(VERSION_CHECK_IMAGE)
         image_result = run_version_check_image(VERSION_CHECK_IMAGE, definition_dir)
         if image_result.success:
             logger.info("Version check succeeded in version check image for %s", agent_name)
