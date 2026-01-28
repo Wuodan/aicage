@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-01-28
+
+### Added
+
+- Verify signatures for AICAGE images using pinned digests during pulls and local builds.
+- Cache and verify the cosign image digest in CI using the release public key.
+
+### Changed
+
+- Pin base image references to registry digests for local builds.
+
 ## [0.9.0] - 2026-01-27
 
 ### Documentation
