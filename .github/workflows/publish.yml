@@ -67,6 +67,18 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.0.0
 
+      - name: Verify Cosign image
+        id: cosign
+        uses: ./.github/actions/verify-cosign-image
+
+      - name: Update cosign digest constant
+        env:
+          COSIGN_DIGEST: ${{ steps.cosign.outputs.digest }}
+        run: |
+          sed -i \
+            "s/^_COSIGN_IMAGE_DIGEST: str = .*/_COSIGN_IMAGE_DIGEST: str = \"${COSIGN_DIGEST}\"/" \
+            src/aicage/constants.py
+
       - name: Syncing metadata and agents with sub-project 'aicage-image'
         run: |
           scripts/sync-with-aicage-image-projects.sh

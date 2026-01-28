@@ -1,0 +1,51 @@
+name: Verify Cosign Image
+
+description: Resolve, verify, and expose digest for the cosign image.
+
+inputs:
+  image_ref:
+    description: Cosign image reference to resolve and verify.
+    required: false
+    default: ghcr.io/sigstore/cosign/cosign:latest
+
+outputs:
+  digest:
+    description: Resolved digest for the image reference.
+    value: ${{ steps.cosign-digest.outputs.digest }}
+  release_tag:
+    description: Release tag used to download the cosign release key.
+    value: ${{ steps.cosign-key.outputs.release_tag }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve Cosign digest
+      id: cosign-digest
+      shell: bash
+      run: |
+        docker pull "${{ inputs.image_ref }}"
+        digest_ref="$(docker inspect --format '{{index .RepoDigests 0}}' "${{ inputs.image_ref }}")"
+        digest="${digest_ref#*@}"
+        echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+
+    - name: Download cosign release key
+      id: cosign-key
+      shell: bash
+      run: |
+        release_tag="$(
+          curl -s -H 'User-Agent: aicage' https://api.github.com/repos/sigstore/cosign/releases/latest \
+            | jq -r '.tag_name'
+        )"
+        curl -s -L -o release-cosign.pub \
+          "https://github.com/sigstore/cosign/releases/download/${release_tag}/release-cosign.pub"
+        echo "release_tag=${release_tag}" >> "${GITHUB_OUTPUT}"
+
+    - name: Verify Cosign image signature
+      shell: bash
+      run: |
+        digest="${{ steps.cosign-digest.outputs.digest }}"
+        gcr_image="gcr.io/projectsigstore/cosign@${digest}"
+        docker pull "${gcr_image}"
+        cosign verify \
+          --key release-cosign.pub \
+          "${gcr_image}"
