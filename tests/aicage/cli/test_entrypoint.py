@@ -99,19 +99,34 @@ def _build_agents_and_bases(
 
 
 class EntrypointTests(TestCase):
-    def test_main_config_print(self) -> None:
+    def test_main_config_info(self) -> None:
         with (
             mock.patch(
                 "aicage.cli.entrypoint.parse_cli",
-                return_value=ParsedArgs(False, "", "", [], False, "print"),
+                return_value=ParsedArgs(False, "", "", [], False, "info"),
             ),
-            mock.patch("aicage.cli.entrypoint.print_project_config") as print_mock,
+            mock.patch("aicage.cli.entrypoint.info_project_config") as info_mock,
             mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
         ):
             exit_code = main([])
 
         self.assertEqual(0, exit_code)
-        print_mock.assert_called_once()
+        info_mock.assert_called_once()
+        load_mock.assert_not_called()
+
+    def test_main_config_remove(self) -> None:
+        with (
+            mock.patch(
+                "aicage.cli.entrypoint.parse_cli",
+                return_value=ParsedArgs(False, "", "", [], False, "remove"),
+            ),
+            mock.patch("aicage.cli.entrypoint.remove_project_config") as remove_mock,
+            mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
+        ):
+            exit_code = main([])
+
+        self.assertEqual(0, exit_code)
+        remove_mock.assert_called_once()
         load_mock.assert_not_called()
 
     def test_main_uses_project_base(self) -> None:

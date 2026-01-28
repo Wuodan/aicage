@@ -70,7 +70,7 @@ Image updates are handled automatically; see [Updates](https://github.com/aicage
 
 - `--dry-run` prints the composed `docker run` command without executing it.
 - `--docker` mounts `/run/docker.sock` into the container to enable Docker-in-Docker workflows.
-- `--config print` prints the project config path and its contents.
+- `--config info` prints the project config path and its contents.
 
 Configuration file formats are documented in [CONFIG.md](CONFIG.md). Extension authoring is documented in
 [doc/extensions.md](doc/extensions.md).

@@ -4,7 +4,7 @@ from aicage._logging import get_logger
 from aicage.config.config_store import SettingsStore
 
 
-def print_project_config() -> None:
+def info_project_config() -> None:
     logger = get_logger()
     store = SettingsStore()
     project_path = Path.cwd().resolve()

@@ -75,16 +75,28 @@ class ParseCliTests(TestCase):
             parse_cli(["-v", "/tmp/folder:/tmp/folder", "codex"])
         self.assertEqual("Docker args require '--' before the agent.", str(ctx.exception))
 
-    def test_parse_cli_config_print(self) -> None:
-        parsed = parse_cli(["--config", "print"])
-        self.assertEqual("print", parsed.config_action)
+    def test_parse_cli_config_info(self) -> None:
+        parsed = parse_cli(["--config", "info"])
+        self.assertEqual("info", parsed.config_action)
         self.assertEqual("", parsed.docker_args)
         self.assertEqual("", parsed.agent)
         self.assertEqual([], parsed.agent_args)
 
-    def test_parse_cli_config_print_rejects_args(self) -> None:
+    def test_parse_cli_config_print_alias(self) -> None:
+        parsed = parse_cli(["--config", "print"])
+        self.assertEqual("info", parsed.config_action)
+
+    def test_parse_cli_config_info_rejects_args(self) -> None:
         with self.assertRaises(CliError):
-            parse_cli(["--config", "print", "codex"])
+            parse_cli(["--config", "info", "codex"])
+
+    def test_parse_cli_config_remove(self) -> None:
+        parsed = parse_cli(["--config", "remove"])
+        self.assertEqual("remove", parsed.config_action)
+
+    def test_parse_cli_config_remove_rejects_args(self) -> None:
+        with self.assertRaises(CliError):
+            parse_cli(["--config", "remove", "codex"])
 
     def test_parse_cli_flags_before_separator(self) -> None:
         parsed = parse_cli(

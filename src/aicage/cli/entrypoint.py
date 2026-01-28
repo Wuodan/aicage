@@ -4,8 +4,9 @@ from pathlib import Path
 
 from aicage._logging import get_logger
 from aicage.cli._errors import CliError
+from aicage.cli._info_config import info_project_config
 from aicage.cli._parse import parse_cli
-from aicage.cli._print_config import print_project_config
+from aicage.cli._remove_config import remove_project_config
 from aicage.cli_types import ParsedArgs
 from aicage.config.runtime_config import RunConfig, load_run_config
 from aicage.docker.run import print_run_command, run_container
@@ -20,8 +21,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     logger = get_logger()
     try:
         parsed: ParsedArgs = parse_cli(parsed_argv)
-        if parsed.config_action == "print":
-            print_project_config()
+        if parsed.config_action == "info":
+            info_project_config()
+            return 0
+        if parsed.config_action == "remove":
+            remove_project_config()
             return 0
         run_config: RunConfig = load_run_config(parsed.agent, parsed)
         _validate_home_mount_safety(run_config)

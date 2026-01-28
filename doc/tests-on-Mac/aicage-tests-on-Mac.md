@@ -102,7 +102,7 @@ aicage gemini
 Select base "Ubuntu" and when asked to select extensions pick `marker`.  
 Confirm defaults for other choices.
 
-> If you accidentally did not select an extension, print the config with `aicage --config print` and delete the
+> If you accidentally did not select an extension, print the config with `aicage --config info` and delete the
 > `Project config path` file.
 
 #### Expectation

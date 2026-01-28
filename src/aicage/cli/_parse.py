@@ -8,6 +8,10 @@ from aicage.cli._errors import CliError
 from aicage.cli_types import ParsedArgs
 
 _MIN_REMAINING_WITH_AGENT = 2
+_CONFIG_ACTION_ALIASES: dict[str, str] = {
+    "print": "info",
+}
+_VALID_CONFIG_ACTIONS: set[str] = {"info", "remove"}
 
 
 def parse_cli(argv: Sequence[str]) -> ParsedArgs:
@@ -18,7 +22,7 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--dry-run", action="store_true", help="Print docker run command without executing.")
     parser.add_argument("--docker", action="store_true", help="Mount the host Docker socket into the container.")
-    parser.add_argument("--config", help="Perform config actions such as 'print'.")
+    parser.add_argument("--config", help="Perform config actions such as 'info' or 'remove'.")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit.")
     pre_argv, post_argv = _split_argv(argv)
 
@@ -37,7 +41,8 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
             "  aicage <agent>\n"
             "  aicage [--dry-run] [--docker] -- <agent> [<agent-args>]\n"
             "  aicage [--dry-run] [--docker] <docker-args> -- <agent> [<agent-args>]\n"
-            "  aicage --config print\n"
+            "  aicage --config info\n"
+            "  aicage --config remove\n"
             "  aicage --version\n\n"
             "Any arguments between aicage and the agent require a '--' separator before the agent.\n"
             "<docker-args> are any arguments not recognized by aicage.\n"
@@ -49,14 +54,15 @@ def parse_cli(argv: Sequence[str]) -> ParsedArgs:
         sys.exit(0)
 
     if opts.config:
-        _validate_config_action(opts, remaining, post_argv)
+        config_action = _normalize_config_action(opts.config)
+        _validate_config_action(config_action, opts.config, opts, remaining, post_argv)
         return ParsedArgs(
             opts.dry_run,
             "",
             "",
             [],
             opts.docker,
-            opts.config,
+            config_action,
         )
 
     docker_args, agent, agent_args = _parse_agent_section(remaining, post_argv)
@@ -83,13 +89,19 @@ def _split_argv(argv: Sequence[str]) -> tuple[list[str], list[str] | None]:
     return pre_argv, post_argv
 
 
+def _normalize_config_action(action: str) -> str:
+    return _CONFIG_ACTION_ALIASES.get(action, action)
+
+
 def _validate_config_action(
+    config_action: str,
+    raw_action: str,
     opts: argparse.Namespace,
     remaining: list[str],
     post_argv: list[str] | None,
 ) -> None:
-    if opts.config != "print":
-        raise CliError(f"Unknown config action: {opts.config}")
+    if config_action not in _VALID_CONFIG_ACTIONS:
+        raise CliError(f"Unknown config action: {raw_action}")
     if remaining or post_argv or opts.docker or opts.dry_run:
         raise CliError("No additional arguments are allowed with --config.")
 

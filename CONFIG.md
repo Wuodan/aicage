@@ -4,7 +4,8 @@
 
 - Global config: packaged `config/config.yaml`
 - Project config: `~/.aicage/projects/<sha256>.yaml`
-- `aicage --config print` prints the current project config path and contents.
+- `aicage --config info` prints the current project config path and contents (`print` is an alias).
+- `aicage --config remove` removes the current project config file.
 
 Project config filenames are the SHA-256 digest of the resolved project path string.
 
