@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-01-29
+
+### Internal
+
+- Release bump to validate update notifications.
+- Renamed the release workflow file to `release.yml`.
+
 ## [0.9.4] - 2026-01-29
 
 ### Added
