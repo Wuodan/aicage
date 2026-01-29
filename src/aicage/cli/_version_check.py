@@ -1,11 +1,11 @@
 import json
 import re
 import subprocess
-import sys
 import urllib.error
 import urllib.request
 
 from aicage._logging import get_logger
+from aicage.runtime.prompts.confirm import prompt_update_aicage
 
 _PYPI_URL: str = "https://pypi.org/pypi/aicage/json"
 _REQUEST_TIMEOUT_SECONDS: float = 2.5
@@ -40,22 +40,7 @@ def maybe_prompt_update(current_version: str) -> None:
     if not latest_version:
         return
 
-    print(
-        "A newer version of aicage is available "
-        f"(installed: {current_version}, latest: {latest_version})."
-    )
-
-    if not sys.stdin.isatty():
-        print(f"Update with: {_UPGRADE_COMMAND}")
-        return
-
-    try:
-        answer = input("Update now? [y/N] ").strip().lower()
-    except EOFError:
-        print(f"Update with: {_UPGRADE_COMMAND}")
-        return
-
-    if answer in {"y", "yes"}:
+    if prompt_update_aicage(current_version, latest_version):
         _run_upgrade()
     else:
         print(f"Update with: {_UPGRADE_COMMAND}")

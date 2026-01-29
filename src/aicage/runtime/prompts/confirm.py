@@ -42,3 +42,12 @@ def prompt_persist_docker_args(new_args: str, existing_args: str | None) -> bool
     else:
         question = f"Persist docker run args '{new_args}' for this project?"
     return _prompt_yes_no(question, default=True)
+
+
+def prompt_update_aicage(installed_version: str, latest_version: str) -> bool:
+    question = (
+        "A newer version of aicage is available "
+        f"(installed: {installed_version}, latest: {latest_version}). "
+        "Update now?"
+    )
+    return _prompt_yes_no(question, default=True)
