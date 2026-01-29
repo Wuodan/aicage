@@ -102,8 +102,8 @@ aicage gemini
 Select base "Ubuntu" and when asked to select extensions pick `marker`.  
 Confirm defaults for other choices.
 
-> If you accidentally did not select an extension, print the config with `aicage --config info` and delete the
-> `Project config path` file.
+> If you accidentally did not select an extension, just delete the `Project config path` file with:  
+> `aicage --config remove`
 
 #### Expectation
 
