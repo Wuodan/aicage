@@ -34,7 +34,7 @@ $env:AICAGE_RUN_INTEGRATION = $old
 ## CI workflow
 
 The reusable workflow `/.github/workflows/integration-test.yml` discovers integration tests and runs each test in its
-own job. The release workflow `/.github/workflows/publish.yml` calls the reusable workflow.
+own job. The release workflow `/.github/workflows/release.yml` calls the reusable workflow.
 
 ## Current integration tests
 
