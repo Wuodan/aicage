@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-01-29
+
+### Added
+
+- Added a startup check that prompts to upgrade when a newer aicage version is available.
+
 ## [0.9.3] - 2026-01-29
 
 ### Added
