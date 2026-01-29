@@ -107,6 +107,7 @@ class EntrypointTests(TestCase):
             ),
             mock.patch("aicage.cli.entrypoint.info_project_config") as info_mock,
             mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
+            mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
         ):
             exit_code = main([])
 
@@ -122,6 +123,7 @@ class EntrypointTests(TestCase):
             ),
             mock.patch("aicage.cli.entrypoint.remove_project_config") as remove_mock,
             mock.patch("aicage.cli.entrypoint.load_run_config") as load_mock,
+            mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
         ):
             exit_code = main([])
 
@@ -147,6 +149,7 @@ class EntrypointTests(TestCase):
                     "aicage.cli.entrypoint.parse_cli",
                     return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], False, None),
                 ),
+                mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
@@ -175,6 +178,7 @@ class EntrypointTests(TestCase):
                     "aicage.cli.entrypoint.parse_cli",
                     return_value=ParsedArgs(False, "--cli", "codex", ["--flag"], False, None),
                 ),
+                mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image"),
                 mock.patch("aicage.cli.entrypoint.build_run_args", return_value=run_args),
@@ -203,6 +207,7 @@ class EntrypointTests(TestCase):
                         None,
                     ),
                 ),
+                mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
                 mock.patch("aicage.cli.entrypoint.Path.home", return_value=home_path),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image") as ensure_mock,
@@ -247,6 +252,7 @@ class EntrypointTests(TestCase):
                         None,
                     ),
                 ),
+                mock.patch("aicage.cli.entrypoint.maybe_prompt_update"),
                 mock.patch("aicage.cli.entrypoint.Path.home", return_value=home_path),
                 mock.patch("aicage.cli.entrypoint.load_run_config", return_value=run_config),
                 mock.patch("aicage.cli.entrypoint.ensure_image") as ensure_mock,
