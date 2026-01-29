@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-01-29
+
+### Fixed
+
+- Move the update prompt into the shared prompt helpers and default to updating.
+
 ## [0.9.5] - 2026-01-29
 
 ### Internal
