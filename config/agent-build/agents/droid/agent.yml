@@ -4,3 +4,7 @@ agent_full_name: Factory CLI
 agent_homepage: https://factory.ai/product/cli
 # Build locally because the license does not allow redistributing prebuilt images.
 build_local: true
+base_exclude:
+  - alpine
+base_distro_exclude:
+  - Alpine
