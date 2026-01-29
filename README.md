@@ -35,6 +35,11 @@ See [Why cage agents?](#why-cage-agents) for the full rationale.
   aicage qwen
   ```
 
+## Full documentation
+
+The complete user documentation lives in the wiki:
+[aicage.wiki](https://github.com/aicage/aicage/wiki)
+
 ## Base images
 
 The first run asks which base image to use; pick Ubuntu or whatever matches your Linux distro.  
@@ -91,7 +96,3 @@ How aicage mitigates this:
 
 - Containers create a hard boundary: the agent can access only what you explicitly mount. Day-to-day
   use stays familiar—just with the host kept out of reach.
-
-## Development info
-
-More details are in [DEVELOPMENT.md](DEVELOPMENT.md).
